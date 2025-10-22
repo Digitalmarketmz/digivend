@@ -46,6 +46,23 @@
     </p>
 
     <p class="text-center text-gray-400 text-xs mt-10">© 2025 DIGIVEND. Todos os direitos reservados.<br>Feito com 💙 em Moçambique</p>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const email = document.getElementById('email').value;
+  const senha = document.getElementById('password').value;
+  const usuario = JSON.parse(localStorage.getItem('usuario'));
+
+  if (usuario && usuario.email === email && usuario.senha === senha) {
+    alert(`Bem-vindo(a), ${usuario.nome}!`);
+    window.location.href = 'painel.html';
+  } else {
+    alert('Email ou senha incorretos. Tente novamente.');
+  }
+});
+</script>
+
   </div>
 </body>
 </html>
