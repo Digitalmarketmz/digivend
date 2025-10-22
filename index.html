@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>DIGIVEND - Plataforma de Produtos Digitais</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
 
-  <!-- Navbar -->
-  <header class="flex justify-between items-center px-6 py-4 bg-white shadow-md sticky top-0 z-50">
+  <!-- Navbar (somente logo e botão Entrar) -->
+  <header class="flex justify-between items-center px-6 py-4 bg-white">
     <h1 class="text-2xl font-bold text-blue-600">DIGIVEND</h1>
-    <a href="login.html" class="text-gray-700 hover:text-blue-600 font-medium transition">Entrar</a>
+    <a href="login.html" class="text-blue-600 font-medium hover:underline">Entrar</a>
   </header>
 
   <!-- Hero Section -->
@@ -30,5 +30,57 @@
 
   <!-- Benefícios -->
   <section id="beneficios" class="py-16 px-6 bg-white">
-    <h3 class="text-3xl font-b
+    <h3 class="text-3xl font-bold text-center text-blue-700 mb-12">Por que escolher a DIGIVEND?</h3>
+
+    <!-- Grade de 3 cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+      
+      <!-- Card 1 -->
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm text-center hover:shadow-md transition">
+        <h4 class="text-xl font-semibold mb-2 text-blue-600">Pagamentos Instantâneos</h4>
+        <p class="text-gray-600">
+          Receba via Emola, Mpesa, Cartão ou PayPal de forma rápida e segura.
+        </p>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm text-center hover:shadow-md transition">
+        <h4 class="text-xl font-semibold mb-2 text-blue-600">Gestão Fácil</h4>
+        <p class="text-gray-600">
+          Acompanhe suas vendas, lucros e desempenho em tempo real através do painel do vendedor.
+        </p>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 shadow-sm text-center hover:shadow-md transition">
+        <h4 class="text-xl font-semibold mb-2 text-blue-600">Suporte Local</h4>
+        <p class="text-gray-600">
+          Atendimento rápido e dedicado, feito por quem entende do mercado moçambicano.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Sobre -->
+  <section id="sobre" class="py-16 px-6 bg-blue-50">
+    <div class="max-w-4xl mx-auto text-center">
+      <h3 class="text-3xl font-bold text-blue-700 mb-4">O que é a DIGIVEND?</h3>
+      <p class="text-gray-700 leading-relaxed text-lg">
+        A DIGIVEND é uma plataforma moderna de vendas de produtos digitais,  
+        inspirada em grandes marketplaces como Hotmart e Kiwi, mas feita com foco  
+        total no público de Moçambique e África.
+      </p>
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="bg-gray-900 text-gray-300 py-8 text-center mt-auto">
+    <h4 class="text-lg font-semibold text-white">DIGIVEND</h4>
+    <p class="text-sm mt-2">© 2025 DIGIVEND. Todos os direitos reservados.</p>
+    <p class="text-sm mt-1">Feito com 💙 em Moçambique</p>
+  </footer>
+
+</body>
+</html>
 
