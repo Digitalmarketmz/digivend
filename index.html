@@ -6,25 +6,71 @@
   <title>DIGIVEND - Plataforma de Produtos Digitais</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 flex flex-col min-h-screen">
 
   <!-- Navbar -->
-  <header class="flex justify-between items-center px-6 py-4 bg-white shadow-md">
+  <header class="flex justify-between items-center px-6 py-4 bg-white shadow-md sticky top-0 z-50">
     <h1 class="text-2xl font-bold text-blue-600">DIGIVEND</h1>
-    <nav class="space-x-6">
-      <a href="#sobre" class="text-gray-700 hover:text-blue-600">Sobre</a>
-      <a href="#beneficios" class="text-gray-700 hover:text-blue-600">Benefícios</a>
-      <a href="login.html" class="text-gray-700 hover:text-blue-600">Entrar</a>
+    <nav class="flex flex-wrap items-center space-x-4">
+      <a href="#sobre" class="text-gray-700 hover:text-blue-600 transition">Sobre</a>
+      <a href="#beneficios" class="text-gray-700 hover:text-blue-600 transition">Benefícios</a>
+      <a href="login.html" class="text-gray-700 hover:text-blue-600 transition">Entrar</a>
       <a href="cadastro.html" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Começar Agora</a>
     </nav>
   </header>
 
   <!-- Hero Section -->
-  <section class="text-center py-20 bg-gradient-to-b from-blue-50 to-white">
-    <h2 class="text-4xl md:text-5xl font-bold text-blue-700 mb-4">Venda e compre produtos digitais facilmente</h2>
-    <p class="text-gray-600 max-w-2xl mx-auto mb-6">
+  <section class="flex flex-col items-center text-center py-20 px-6 bg-gradient-to-b from-blue-50 to-white flex-grow">
+    <h2 class="text-4xl md:text-5xl font-bold text-blue-700 mb-4 leading-tight">
+      Venda e compre produtos digitais facilmente
+    </h2>
+    <p class="text-gray-600 max-w-2xl mx-auto mb-8 text-lg">
       A DIGIVEND conecta criadores e compradores em um só lugar.  
       Gerencie seus produtos, receba pagamentos e expanda seus negócios online.
     </p>
-    <a href="cadastro.html" class="bg-blue-600 text-whit
+    <a href="cadastro.html" class="bg-blue-600 text-white px-8 py-3 rounded-lg text-lg hover:bg-blue-700 transition">
+      Começar Agora
+    </a>
+  </section>
+
+  <!-- Benefícios -->
+  <section id="beneficios" class="py-16 px-6 bg-white">
+    <h3 class="text-3xl font-bold text-center text-blue-700 mb-12">Por que escolher a DIGIVEND?</h3>
+    <div class="grid sm:grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+      <div class="bg-gray-50 border rounded-xl p-6 shadow-sm text-center hover:shadow-md transition">
+        <h4 class="text-xl font-semibold mb-2 text-blue-600">Pagamentos Instantâneos</h4>
+        <p class="text-gray-600">Receba via Emola, Mpesa, Cartão ou PayPal de forma rápida e segura.</p>
+      </div>
+      <div class="bg-gray-50 border rounded-xl p-6 shadow-sm text-center hover:shadow-md transition">
+        <h4 class="text-xl font-semibold mb-2 text-blue-600">Gestão Fácil</h4>
+        <p class="text-gray-600">Acompanhe suas vendas e lucros em tempo real através do painel do vendedor.</p>
+      </div>
+      <div class="bg-gray-50 border rounded-xl p-6 shadow-sm text-center hover:shadow-md transition">
+        <h4 class="text-xl font-semibold mb-2 text-blue-600">Suporte Local</h4>
+        <p class="text-gray-600">Atendimento rápido e dedicado, feito por quem entende do mercado moçambicano.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sobre -->
+  <section id="sobre" class="py-16 px-6 bg-blue-50">
+    <div class="max-w-4xl mx-auto text-center">
+      <h3 class="text-3xl font-bold text-blue-700 mb-4">O que é a DIGIVEND?</h3>
+      <p class="text-gray-700 leading-relaxed text-lg">
+        A DIGIVEND é uma plataforma moderna de vendas de produtos digitais,  
+        inspirada em grandes marketplaces como Hotmart e Kiwi, mas feita com foco  
+        total no público de Moçambique e África.
+      </p>
+    </div>
+  </section>
+
+  <!-- Rodapé -->
+  <footer class="bg-gray-900 text-gray-300 py-8 text-center mt-auto">
+    <h4 class="text-lg font-semibold text-white">DIGIVEND</h4>
+    <p class="text-sm mt-2">© 2025 DIGIVEND. Todos os direitos reservados.</p>
+    <p class="text-sm mt-1">Feito com 💙 em Moçambique</p>
+  </footer>
+
+</body>
+</html>
 
