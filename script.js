@@ -103,3 +103,10 @@ function redefinirSenha() {
   window.location.href = "login.html";
 }
 
+// Função de logout
+function logout() {
+  localStorage.removeItem("usuarioLogado");
+  alert("Sessão encerrada!");
+  window.location.href = "login.html";
+}
+

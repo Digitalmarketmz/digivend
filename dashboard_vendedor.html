@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard do Vendedor - DIGIVEND</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+
+  <!-- Sidebar -->
+  <aside class="w-64 bg-blue-700 text-white flex flex-col justify-between p-6">
+    <div>
+      <h1 class="text-2xl font-bold mb-8 text-center">DIGIVEND</h1>
+      <nav class="space-y-3">
+        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">🏠 Painel</a>
+        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">📦 Meus Produtos</a>
+        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">💰 Vendas</a>
+        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">⚙️ Configurações</a>
+      </nav>
+    </div>
+    <button onclick="logout()" class="bg-blue-900 py-2 rounded-lg hover:bg-blue-800 transition">
+      🚪 Sair
+    </button>
+  </aside>
+
+  <!-- Conteúdo -->
+  <main class="flex-1 p-8">
+    <header class="flex justify-between items-center mb-8">
+      <h2 class="text-2xl font-bold text-gray-800">Bem-vindo, <span id="nomeUsuario"></span> 👋</h2>
+      <p class="text-gray-600" id="tipoConta">Conta: Vendedor</p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white rounded-xl p-6 shadow">
+        <h3 class="text-lg font-semibold text-blue-600 mb-2">Produtos à venda</h3>
+        <p class="text-3xl font-bold text-gray-800">8</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-6 shadow">
+        <h3 class="text-lg font-semibold text-blue-600 mb-2">Lucro Total</h3>
+        <p class="text-3xl font-bold text-gray-800">7.320 MT</p>
+      </div>
+
+      <div class="bg-white rounded-xl p-6 shadow">
+        <h3 class="text-lg font-semibold text-blue-600 mb-2">Clientes Ativos</h3>
+        <p class="text-3xl font-bold text-gray-800">23</p>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+  <script>
+    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
+    if (!usuario || usuario.tipo !== "vendedor") {
+      window.location.href = "login.html";
+    } else {
+      document.getElementById("nomeUsuario").innerText = usuario.email.split("@")[0];
+    }
+  </script>
+</body>
+</html>
+
