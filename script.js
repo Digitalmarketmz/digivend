@@ -49,3 +49,37 @@ if (graficoCanvas) {
   });
 }
 
+function login() {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+
+  if (!email || !senha) {
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  const usuario = JSON.parse(localStorage.getItem(email));
+
+  if (!usuario) {
+    alert("Conta não encontrada! Cadastre-se primeiro.");
+    return;
+  }
+
+  if (usuario.senha !== senha) {
+    alert("Senha incorreta!");
+    return;
+  }
+
+  // Redireciona conforme o tipo de conta
+  if (usuario.tipo === "vendedor") {
+    window.location.href = "dashboard_vendedor.html";
+  } else {
+    window.location.href = "dashboard_comprador.html";
+  }
+}
+
+function toggleSenha() {
+  const senhaInput = document.getElementById("senha");
+  senhaInput.type = senhaInput.type === "password" ? "text" : "password";
+}
+
