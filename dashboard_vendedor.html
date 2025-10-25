@@ -1,63 +1,68 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard do Vendedor - DIGIVEND</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIGIVEND | Dashboard Vendedor</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="flex bg-gray-100 min-h-screen">
+
+<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
+  <!-- Navbar -->
+  <header class="flex justify-between items-center px-6 py-4 bg-gray-800 shadow-md sticky top-0 z-50">
+    <button id="sidebarToggle" class="text-blue-400 text-2xl">&#9776;</button>
+    <h1 class="text-xl font-bold text-blue-500">DIGIVEND</h1>
+    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" alt="perfil"
+      class="w-8 h-8 rounded-full border border-blue-400" />
+  </header>
 
   <!-- Sidebar -->
-  <aside class="w-64 bg-blue-700 text-white flex flex-col justify-between p-6">
-    <div>
-      <h1 class="text-2xl font-bold mb-8 text-center">DIGIVEND</h1>
-      <nav class="space-y-3">
-        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">🏠 Painel</a>
-        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">📦 Meus Produtos</a>
-        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">💰 Vendas</a>
-        <a href="#" class="block py-2 px-3 rounded-lg hover:bg-blue-800 transition">⚙️ Configurações</a>
-      </nav>
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 bg-gray-800 border-r border-blue-500 transform -translate-x-full transition-transform duration-300 z-40">
+    <div class="flex justify-between items-center p-4 border-b border-blue-500">
+      <h2 class="text-lg font-semibold text-blue-400">Menu</h2>
+      <button id="closeSidebar" class="text-blue-400 text-xl">&times;</button>
     </div>
-    <button onclick="logout()" class="bg-blue-900 py-2 rounded-lg hover:bg-blue-800 transition">
-      🚪 Sair
-    </button>
+    <nav class="flex flex-col p-4 space-y-3">
+      <a href="#" class="hover:text-blue-400">📦 Meus Produtos</a>
+      <a href="#" class="hover:text-blue-400">💰 Vendas</a>
+      <a href="#" class="hover:text-blue-400">📈 Estatísticas</a>
+      <a href="login.html" class="hover:text-blue-400">🚪 Sair</a>
+    </nav>
   </aside>
 
   <!-- Conteúdo -->
-  <main class="flex-1 p-8">
-    <header class="flex justify-between items-center mb-8">
-      <h2 class="text-2xl font-bold text-gray-800">Bem-vindo, <span id="nomeUsuario"></span> 👋</h2>
-      <p class="text-gray-600" id="tipoConta">Conta: Vendedor</p>
-    </header>
+  <main class="flex-1 p-6 transition-all duration-300">
+    <h2 class="text-2xl font-bold text-blue-400 mb-2">Olá, vendedor!</h2>
+    <p class="text-gray-400 mb-8">Gerencie suas vendas e acompanhe seus resultados abaixo.</p>
 
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="bg-white rounded-xl p-6 shadow">
-        <h3 class="text-lg font-semibold text-blue-600 mb-2">Produtos à venda</h3>
-        <p class="text-3xl font-bold text-gray-800">8</p>
+    <!-- Cards -->
+    <div class="grid gap-6">
+      <div class="p-6 rounded-2xl bg-gray-800 border border-blue-500 shadow-lg">
+        <h3 class="text-lg font-semibold text-blue-300 mb-2">Vendas Totais</h3>
+        <p class="text-2xl font-bold">85</p>
       </div>
 
-      <div class="bg-white rounded-xl p-6 shadow">
-        <h3 class="text-lg font-semibold text-blue-600 mb-2">Lucro Total</h3>
-        <p class="text-3xl font-bold text-gray-800">7.320 MT</p>
+      <div class="p-6 rounded-2xl bg-gray-800 border border-blue-500 shadow-lg">
+        <h3 class="text-lg font-semibold text-blue-300 mb-2">Receita</h3>
+        <p class="text-2xl font-bold">45.200 MT</p>
       </div>
 
-      <div class="bg-white rounded-xl p-6 shadow">
-        <h3 class="text-lg font-semibold text-blue-600 mb-2">Clientes Ativos</h3>
-        <p class="text-3xl font-bold text-gray-800">23</p>
+      <div class="p-6 rounded-2xl bg-gray-800 border border-blue-500 shadow-lg">
+        <h3 class="text-lg font-semibold text-blue-300 mb-2">Produtos Ativos</h3>
+        <p>12 cursos e 5 ebooks publicados.</p>
       </div>
-    </section>
+    </div>
+
+    <!-- Gráfico -->
+    <div class="mt-10 bg-gray-800 p-6 rounded-2xl border border-blue-500 shadow-lg">
+      <h3 class="text-lg font-semibold text-blue-300 mb-4">Gráfico de Vendas</h3>
+      <canvas id="graficoVendas" height="100"></canvas>
+    </div>
   </main>
 
   <script src="script.js"></script>
-  <script>
-    const usuario = JSON.parse(localStorage.getItem("usuarioLogado"));
-    if (!usuario || usuario.tipo !== "vendedor") {
-      window.location.href = "login.html";
-    } else {
-      document.getElementById("nomeUsuario").innerText = usuario.email.split("@")[0];
-    }
-  </script>
 </body>
 </html>
 
