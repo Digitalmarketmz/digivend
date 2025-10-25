@@ -1,66 +1,105 @@
-// --- Esqueci Senha ---
-const forgotForm = document.getElementById("forgotForm");
-if (forgotForm) {
-  forgotForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const email = document.getElementById("email").value.trim();
+// Função de cadastro (tanto vendedor quanto comprador)
+function cadastrar(tipo) {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
+  const confirmarSenha = document.getElementById("confirmar_senha").value.trim();
 
-    const userData = JSON.parse(localStorage.getItem(email));
-    if (!userData) {
-      alert("Email não encontrado. Verifique e tente novamente.");
-      return;
-    }
+  if (senha !== confirmarSenha) {
+    alert("As senhas não coincidem!");
+    return;
+  }
 
-    // Simulação de envio de código (sem servidor real)
-    localStorage.setItem("resetEmail", email);
-    alert("Código de redefinição enviado! Você será redirecionado para redefinir a senha.");
-    window.location.href = "redefinir_senha.html";
-  });
+  if (senha.length < 8 || !/[A-Z]/.test(senha) || !/[0-9]/.test(senha)) {
+    alert("A senha deve conter pelo menos 8 caracteres, uma letra maiúscula e um número.");
+    return;
+  }
+
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+  if (usuarios.find(u => u.email === email)) {
+    alert("Este email já está cadastrado!");
+    return;
+  }
+
+  usuarios.push({ email, senha, tipo });
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
+  alert("Conta criada com sucesso!");
+  window.location.href = "login.html";
 }
 
-// --- Redefinir Senha ---
-const resetForm = document.getElementById("resetForm");
-if (resetForm) {
-  resetForm.addEventListener("submit", (e) => {
-    e.preventDefault();
-    const novaSenha = document.getElementById("novaSenha").value;
-    const confirmarSenha = document.getElementById("confirmarSenha").value;
-    const email = localStorage.getItem("resetEmail");
+// Função de login
+function login() {
+  const email = document.getElementById("email").value.trim();
+  const senha = document.getElementById("senha").value.trim();
 
-    if (!email) {
-      alert("Erro: nenhum email encontrado para redefinição.");
-      return;
-    }
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  const usuario = usuarios.find(u => u.email === email);
 
-    if (novaSenha !== confirmarSenha) {
-      alert("As senhas não coincidem!");
-      return;
-    }
+  if (!usuario) {
+    alert("Usuário não encontrado!");
+    return;
+  }
 
-    if (novaSenha.length < 8) {
-      alert("A senha deve ter pelo menos 8 caracteres.");
-      return;
-    }
+  if (usuario.senha !== senha) {
+    alert("Senha incorreta!");
+    return;
+  }
 
-    const userData = JSON.parse(localStorage.getItem(email));
-    userData.senha = novaSenha;
-    localStorage.setItem(email, JSON.stringify(userData));
+  alert("Login bem-sucedido!");
+  localStorage.setItem("usuarioLogado", JSON.stringify(usuario));
 
-    localStorage.removeItem("resetEmail");
-    alert("Senha redefinida com sucesso!");
-    window.location.href = "login.html";
-  });
+  if (usuario.tipo === "vendedor") {
+    window.location.href = "dashboard_vendedor.html";
+  } else {
+    window.location.href = "dashboard_comprador.html";
+  }
 }
 
-// --- Mostrar senha ---
-const checkbox = document.getElementById("mostrarSenha");
-if (checkbox) {
-  checkbox.addEventListener("change", () => {
-    const senha = document.getElementById("novaSenha");
-    const confirmar = document.getElementById("confirmarSenha");
-    const tipo = checkbox.checked ? "text" : "password";
-    senha.type = tipo;
-    confirmar.type = tipo;
-  });
+// Função de "Esqueci minha senha"
+function enviarRedefinicao() {
+  const email = document.getElementById("email_recuperacao").value.trim();
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+
+  const usuario = usuarios.find(u => u.email === email);
+  if (!usuario) {
+    alert("Email não encontrado!");
+    return;
+  }
+
+  localStorage.setItem("redefinirEmail", email);
+  alert("Link de redefinição enviado (simulado). Redirecionando...");
+  window.location.href = "redefinir_senha.html";
+}
+
+// Função de redefinição de senha
+function redefinirSenha() {
+  const nova = document.getElementById("nova_senha").value.trim();
+  const confirmar = document.getElementById("confirmar_senha").value.trim();
+
+  if (nova !== confirmar) {
+    alert("As senhas não coincidem!");
+    return;
+  }
+
+  const email = localStorage.getItem("redefinirEmail");
+  if (!email) {
+    alert("Erro: Nenhum email encontrado para redefinição.");
+    return;
+  }
+
+  const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+  const index = usuarios.findIndex(u => u.email === email);
+
+  if (index === -1) {
+    alert("Usuário não encontrado!");
+    return;
+  }
+
+  usuarios[index].senha = nova;
+  localStorage.setItem("usuarios", JSON.stringify(usuarios));
+  localStorage.removeItem("redefinirEmail");
+
+  alert("Senha redefinida com sucesso!");
+  window.location.href = "login.html";
 }
 
