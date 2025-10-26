@@ -3,184 +3,228 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard do Vendedor - DIGIVEND</title>
+  <title>Dashboard do Vendedor | DIGIVEND</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    .card-glow {
-      position: relative;
-      overflow: hidden;
-    }
-    .card-glow::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 5px;
-      height: 100%;
-      background: linear-gradient(180deg, #3b82f6, #60a5fa, #93c5fd);
-      box-shadow: 0 0 10px #60a5fa;
-      border-radius: 8px 0 0 8px;
-    }
-  </style>
 </head>
 
-<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
-  <!-- Header -->
-  <header class="bg-gray-800 p-4 flex justify-between items-center shadow-md">
-    <button id="menuBtn" class="text-blue-400 text-2xl hover:text-blue-500 transition">☰</button>
+<body class="bg-gray-950 text-white flex flex-col min-h-screen font-sans">
 
-    <h1 class="text-2xl font-bold text-blue-400 tracking-wider">DIGIVEND</h1>
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gray-900 transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="flex items-center justify-between px-4 py-4 border-b border-gray-800">
+      <h2 class="text-xl font-bold text-blue-500">DIGIVEND</h2>
+      <button id="closeSidebar" class="text-gray-400 hover:text-red-500">✕</button>
+    </div>
+    <nav class="p-4 space-y-3">
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Dashboard</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Meus produtos</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Vendas</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Pagamentos</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Configurações</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600" onclick="logout()">Sair</button>
+    </nav>
+  </aside>
 
-    <div class="relative">
-      <button id="profileBtn" class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold hover:brightness-110 transition">
-        D
+  <!-- TOPO -->
+  <header class="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-40">
+    <button id="menuBtn" class="text-white text-2xl">☰</button>
+    <h1 class="text-2xl font-bold text-blue-500">DIGIVEND</h1>
+
+    <div class="flex items-center gap-6">
+      <!-- Notificações -->
+      <button id="notifyBtn" class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0" />
+        </svg>
+        <span class="absolute -top-1 -right-1 border border-white rounded-full w-3 h-3 animate-pulse"></span>
       </button>
 
-      <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
-        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Meu Perfil</a>
-        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Configurações</a>
-        <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+      <!-- Perfil -->
+      <div class="relative">
+        <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">V</button>
+        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Suporte</a>
+          <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-gray-700">Sair</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Sidebar -->
-  <aside id="sidebar" class="fixed top-0 left-0 h-full w-60 bg-gray-800 text-gray-200 transform -translate-x-full transition-transform duration-300 z-50">
-    <div class="flex justify-between items-center p-4 border-b border-gray-700">
-      <h2 class="text-lg font-bold text-blue-400">Menu</h2>
-      <button id="closeSidebar" class="text-gray-400 hover:text-red-500 text-xl">✕</button>
+  <!-- Painel de notificações -->
+  <div id="notifyPanel" class="hidden absolute right-6 top-20 bg-gray-800 border border-gray-700 w-80 rounded-lg shadow-lg z-50">
+    <div class="p-3 border-b border-gray-700 font-semibold text-blue-400">Notificações</div>
+    <div class="p-3 text-gray-300 space-y-2 text-sm">
+      <p>💰 Novo saque solicitado com sucesso.</p>
+      <p>📦 Você vendeu um novo produto!</p>
+      <p>📈 Seu número de afiliados aumentou.</p>
     </div>
-    <nav class="p-4 space-y-3">
-      <a href="dashboard_vendedor.html" class="block hover:text-blue-400 menu-item">🏠 Dashboard</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">💰 Minhas Vendas</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">📦 Produtos</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">🤝 Afiliados</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">⚙️ Configurações</a>
-    </nav>
-  </aside>
+  </div>
 
-  <!-- Conteúdo Principal -->
-  <main class="flex-grow p-6">
-    <div class="text-left mb-10">
-      <h2 class="text-3xl font-bold text-blue-400 mb-2">Bem-vindo ao seu Dashboard</h2>
-      <p class="text-gray-400 text-lg">Gerencie suas vendas, afiliados e produtos facilmente 🚀</p>
-    </div>
+  <!-- CONTEÚDO -->
+  <main class="flex-1 p-6 mt-4">
+    <h2 class="text-xl font-bold text-blue-400 mb-6">👋 Bem-vindo ao seu Dashboard, Vendedor!</h2>
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Total de Vendas</h3>
-        <p class="text-3xl font-bold text-white">87</p>
-      </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Afiliados</h3>
-        <p class="text-3xl font-bold text-white">23</p>
-      </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos</h3>
-        <p class="text-3xl font-bold text-white">12</p>
-      </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Saques</h3>
-        <p class="text-3xl font-bold text-white">5</p>
-      </div>
+    <!-- Cards 2x2 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="card"><h3>Total de Vendas</h3><p>82</p></div>
+      <div class="card"><h3>Afiliados</h3><p>15</p></div>
+      <div class="card"><h3>Produtos</h3><p>9</p></div>
+      <div class="card"><h3>Saques Pendentes</h3><p>2</p></div>
     </div>
 
     <!-- Gráfico -->
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl mb-10 card-glow">
-      <h3 class="text-lg font-semibold text-blue-400 mb-4">Resumo de Vendas e Saques</h3>
-      <canvas id="salesChart" height="120"></canvas>
+    <div class="bg-gray-900 border-l-4 border-blue-600 rounded-xl p-4 shadow-lg mb-8">
+      <h3 class="text-lg font-semibold mb-4 text-blue-400">Estatísticas de Vendas</h3>
+      <canvas id="vendasChart" height="100"></canvas>
     </div>
 
-    <!-- Últimas Atividades -->
-    <div class="space-y-4">
-      <h3 class="text-xl font-semibold text-blue-400 mb-2">Últimas Atividades</h3>
-
-      <div class="bg-gray-800 border border-blue-500/30 rounded-2xl p-4 shadow-md hover:shadow-blue-500/10 transition">
-        <p class="text-white"><strong>Venda:</strong> Ebook "Negócios Digitais"</p>
-        <p class="text-gray-400 text-sm">Valor: MT 750 — Há 2 horas</p>
+    <!-- Notificações recentes -->
+    <div class="bg-gray-900 border-l-4 border-blue-600 rounded-xl p-4 shadow-lg mb-8">
+      <h3 class="text-lg font-semibold mb-3 text-blue-400">Últimas atividades</h3>
+      <div class="space-y-2 text-gray-300 text-sm">
+        <p>✅ Venda concluída: "Curso de Marketing Digital"</p>
+        <p>💳 Saque processado com sucesso.</p>
+        <p>🤝 Novo afiliado vinculado à sua conta.</p>
+        <p>📦 Produto “Design para Iniciantes” recebeu 5 novas vendas.</p>
       </div>
+    </div>
 
-      <div class="bg-gray-800 border border-blue-500/30 rounded-2xl p-4 shadow-md hover:shadow-blue-500/10 transition">
-        <p class="text-white"><strong>Saque:</strong> MT 1,200 para M-Pesa</p>
-        <p class="text-gray-400 text-sm">Status: Concluído — Ontem</p>
-      </div>
+    <!-- Botão Marketplace -->
+    <div class="text-center mt-8">
+      <a href="index.html" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold shadow-md transition">
+        Ir para o Marketplace
+      </a>
     </div>
   </main>
 
-  <footer class="bg-gray-800 text-center text-gray-500 py-4 border-t border-gray-700 mt-10">
-    © 2025 DIGIVEND. Todos os direitos reservados.
-  </footer>
+  <!-- CHATBOT -->
+  <button id="chatbotToggle" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30">💬</button>
 
-  <script src="script.js"></script>
+  <div id="chatbotPanel" class="hidden fixed bottom-24 left-6 w-80 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-md z-50">
+    <div class="bg-gray-900 text-blue-400 font-semibold p-3 border-b border-gray-700 flex justify-between items-center">
+      <span>Suporte DIGIVEND 💬</span>
+      <button id="closeChatbot" class="text-gray-400 hover:text-red-500">✕</button>
+    </div>
+    <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-3 text-sm max-h-80">
+      <div class="bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]">👋 Olá! Aqui é o suporte da DIGIVEND. Como posso te ajudar?</div>
+    </div>
+    <div class="flex border-t border-gray-700">
+      <input id="chatInput" type="text" placeholder="Digite sua mensagem..." class="flex-1 p-2 bg-gray-900 text-gray-200 outline-none text-sm" />
+      <button id="sendChat" class="px-4 text-blue-400 font-bold hover:text-blue-300">➤</button>
+    </div>
+  </div>
 
+  <!-- SCRIPT -->
   <script>
+    function verificarAcessoDashboard(tipo) {
+      const usuarioLogado = localStorage.getItem("usuarioLogado");
+      if (!usuarioLogado) window.location.href = "login.html";
+    }
     verificarAcessoDashboard("vendedor");
 
-    // Sidebar funcional
+    // Sidebar
     const sidebar = document.getElementById("sidebar");
     const menuBtn = document.getElementById("menuBtn");
     const closeSidebar = document.getElementById("closeSidebar");
     const menuItems = document.querySelectorAll(".menu-item");
+    menuBtn.onclick = () => sidebar.classList.remove("-translate-x-full");
+    closeSidebar.onclick = () => sidebar.classList.add("-translate-x-full");
+    menuItems.forEach(i => i.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
 
-    menuBtn.addEventListener("click", () => sidebar.classList.remove("-translate-x-full"));
-    closeSidebar.addEventListener("click", () => sidebar.classList.add("-translate-x-full"));
-    menuItems.forEach(item => item.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
-
-    // Menu do perfil
+    // Perfil e Notificações
     const profileBtn = document.getElementById("profileBtn");
     const profileMenu = document.getElementById("profileMenu");
+    const notifyBtn = document.getElementById("notifyBtn");
+    const notifyPanel = document.getElementById("notifyPanel");
 
-    profileBtn.addEventListener("click", () => profileMenu.classList.toggle("hidden"));
-    window.addEventListener("click", e => {
-      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
-        profileMenu.classList.add("hidden");
-      }
-    });
+    profileBtn.onclick = () => profileMenu.classList.toggle("hidden");
+    notifyBtn.onclick = () => notifyPanel.classList.toggle("hidden");
+    window.onclick = e => {
+      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.classList.add("hidden");
+      if (!notifyBtn.contains(e.target) && !notifyPanel.contains(e.target)) notifyPanel.classList.add("hidden");
+    };
 
-    // Gráfico com barras brancas
-    const ctx = document.getElementById("salesChart").getContext("2d");
+    // Chatbot
+    const chatbotToggle = document.getElementById("chatbotToggle");
+    const chatbotPanel = document.getElementById("chatbotPanel");
+    const closeChatbot = document.getElementById("closeChatbot");
+    const sendChat = document.getElementById("sendChat");
+    const chatInput = document.getElementById("chatInput");
+    const chatMessages = document.getElementById("chatMessages");
+
+    chatbotToggle.onclick = () => chatbotPanel.classList.toggle("hidden");
+    closeChatbot.onclick = () => chatbotPanel.classList.add("hidden");
+
+    sendChat.onclick = enviarMensagem;
+    chatInput.addEventListener("keypress", e => e.key === "Enter" && enviarMensagem());
+
+    function enviarMensagem() {
+      const texto = chatInput.value.trim();
+      if (!texto) return;
+      chatInput.value = "";
+
+      const msgUser = document.createElement("div");
+      msgUser.className = "bg-blue-600 text-white p-2 rounded-xl self-end max-w-[80%]";
+      msgUser.textContent = texto;
+      chatMessages.appendChild(msgUser);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      setTimeout(() => {
+        const resposta = document.createElement("div");
+        resposta.className = "bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]";
+        resposta.textContent = "💬 Obrigado pela sua mensagem! Um atendente responderá em breve.";
+        chatMessages.appendChild(resposta);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1000);
+    }
+
+    // Gráfico
+    const ctx = document.getElementById("vendasChart").getContext("2d");
     new Chart(ctx, {
       type: "bar",
       data: {
         labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
-        datasets: [
-          {
-            label: "Vendas (MT)",
-            data: [300, 500, 450, 600, 800, 700],
-            backgroundColor: "rgba(255, 255, 255, 0.85)",
-            borderRadius: 8,
-          },
-          {
-            label: "Saques (MT)",
-            data: [100, 200, 150, 250, 300, 280],
-            backgroundColor: "rgba(255, 255, 255, 0.5)",
-            borderRadius: 8,
-          },
-        ],
+        datasets: [{
+          label: "Vendas",
+          data: [8, 12, 9, 14, 11, 15],
+          backgroundColor: "rgba(255,255,255,0.9)",
+          borderRadius: 8
+        }]
       },
       options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            labels: { color: "#fff" },
-          },
-        },
+        plugins: { legend: { labels: { color: "#fff" } } },
         scales: {
-          x: {
-            ticks: { color: "#ddd" },
-            grid: { color: "rgba(255,255,255,0.05)" },
-          },
-          y: {
-            ticks: { color: "#ddd" },
-            grid: { color: "rgba(255,255,255,0.05)" },
-          },
-        },
-      },
+          x: { ticks: { color: "#ddd" }, grid: { color: "rgba(255,255,255,0.05)" } },
+          y: { ticks: { color: "#ddd" }, grid: { color: "rgba(255,255,255,0.05)" } }
+        }
+      }
     });
+
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "login.html";
+    }
   </script>
+
+  <style>
+    .card {
+      background-color: #0d1117;
+      border-left: 4px solid #2563eb;
+      border-radius: 1rem;
+      text-align: center;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    }
+    .card h3 { font-size: 1rem; color: #60a5fa; margin-bottom: 0.5rem; }
+    .card p { font-size: 1.5rem; font-weight: bold; }
+  </style>
 </body>
 </html>
 

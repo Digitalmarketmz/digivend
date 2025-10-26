@@ -3,143 +3,171 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard do Comprador - DIGIVEND</title>
+  <title>Dashboard do Comprador | DIGIVEND</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    .card-glow {
-      position: relative;
-      overflow: hidden;
-    }
-    .card-glow::before {
-      content: "";
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 5px;
-      height: 100%;
-      background: linear-gradient(180deg, #3b82f6, #60a5fa, #93c5fd);
-      box-shadow: 0 0 10px #60a5fa;
-      border-radius: 8px 0 0 8px;
-    }
-  </style>
 </head>
 
-<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
-  <!-- Header -->
-  <header class="bg-gray-800 p-4 flex justify-between items-center shadow-md">
-    <!-- Sidebar toggle -->
-    <button id="menuBtn" class="text-blue-400 text-2xl hover:text-blue-500 transition">☰</button>
+<body class="bg-gray-950 text-white flex flex-col min-h-screen font-sans">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gray-900 transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="flex items-center justify-between px-4 py-4 border-b border-gray-800">
+      <h2 class="text-xl font-bold text-blue-500">DIGIVEND</h2>
+      <button id="closeSidebar" class="text-gray-400 hover:text-red-500">✕</button>
+    </div>
+    <nav class="p-4 space-y-3">
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Dashboard</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Meus produtos</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Lista de desejos</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Meus pagamentos</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Configurações</button>
+      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600" onclick="logout()">Sair</button>
+    </nav>
+  </aside>
 
-    <!-- Logo -->
-    <h1 class="text-2xl font-bold text-blue-400 tracking-wider">DIGIVEND</h1>
-
-    <!-- Ícones à direita -->
-    <div class="flex items-center gap-4 relative">
-      <!-- Notificações -->
-      <button id="notifyBtn" class="text-gray-300 hover:text-blue-400 transition text-xl">🔔</button>
-
-      <!-- Perfil -->
-      <button id="profileBtn" class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold hover:brightness-110 transition">
-        C
+  <!-- TOPO -->
+  <header class="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-40">
+    <button id="menuBtn" class="text-white text-2xl">☰</button>
+    <h1 class="text-2xl font-bold text-blue-500">DIGIVEND</h1>
+    <div class="flex items-center gap-6">
+      <button id="notifyBtn" class="relative">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="white" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="M14 10V6a2 2 0 10-4 0v4m-2 4h8m4 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="absolute -top-1 -right-1 bg-blue-600 w-3 h-3 rounded-full animate-pulse"></span>
       </button>
 
-      <!-- Menu do perfil -->
-      <div id="profileMenu" class="hidden absolute right-0 top-12 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
-        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Meu Perfil</a>
-        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Configurações</a>
-        <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+      <div class="relative">
+        <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">C</button>
+        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
+          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Suporte</a>
+          <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-gray-700">Sair</button>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- Sidebar -->
-  <aside id="sidebar" class="fixed top-0 left-0 h-full w-60 bg-gray-800 text-gray-200 transform -translate-x-full transition-transform duration-300 z-50">
-    <div class="flex justify-between items-center p-4 border-b border-gray-700">
-      <h2 class="text-lg font-bold text-blue-400">Menu</h2>
-      <button id="closeSidebar" class="text-gray-400 hover:text-red-500 text-xl">✕</button>
+  <!-- Notificações -->
+  <div id="notifyPanel" class="hidden absolute right-6 top-20 bg-gray-800 border border-gray-700 w-80 rounded-lg shadow-lg z-50">
+    <div class="p-3 border-b border-gray-700 font-semibold text-blue-400">Notificações</div>
+    <div class="p-3 text-gray-300 space-y-2 text-sm">
+      <p>📦 Sua última compra foi confirmada.</p>
+      <p>💰 Você recebeu um reembolso parcial de um produto.</p>
+      <p>📣 Nova promoção: 10% de desconto em produtos afiliados!</p>
     </div>
-    <nav class="p-4 space-y-3">
-      <a href="dashboard_comprador.html" class="block hover:text-blue-400 menu-item">🏠 Dashboard</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">🛍️ Meus Produtos</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">💖 Lista de Desejos</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">💳 Meus Pagamentos</a>
-      <a href="#" class="block hover:text-blue-400 menu-item">⚙️ Configurações</a>
-      <button onclick="logout()" class="w-full text-left text-red-500 hover:text-red-400 mt-4">🚪 Sair</button>
-    </nav>
-  </aside>
+  </div>
 
-  <!-- Conteúdo principal -->
-  <main class="flex-grow p-6">
-    <div class="text-left mb-10">
-      <h2 class="text-3xl font-bold text-blue-400 mb-2">Bem-vindo ao seu Dashboard</h2>
-      <p class="text-gray-400 text-lg">Gerencie suas compras, produtos e pagamentos com facilidade 💳</p>
-    </div>
+  <!-- CONTEÚDO -->
+  <main class="flex-1 p-6 mt-4">
+    <h2 class="text-xl font-bold text-blue-400 mb-6">👋 Bem-vindo ao seu Dashboard, Comprador!</h2>
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Total de Compras</h3>
-        <p class="text-3xl font-bold text-white">45</p>
-      </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos Reembolsados</h3>
-        <p class="text-3xl font-bold text-white">3</p>
-      </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos Afiliados</h3>
-        <p class="text-3xl font-bold text-white">8</p>
-      </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Visitantes</h3>
-        <p class="text-3xl font-bold text-white">120</p>
-      </div>
+    <!-- Cards 2x2 -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <div class="card"><h3>Total de Compras</h3><p>37</p></div>
+      <div class="card"><h3>Reembolsos</h3><p>3</p></div>
+      <div class="card"><h3>Produtos Afiliados</h3><p>8</p></div>
+      <div class="card"><h3>Visitantes (links)</h3><p>154</p></div>
     </div>
 
     <!-- Gráfico -->
-    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl mb-10 card-glow">
-      <h3 class="text-lg font-semibold text-blue-400 mb-4">Resumo de Atividades</h3>
-      <canvas id="compradorChart" height="120"></canvas>
+    <div class="bg-gray-900 border-l-4 border-blue-600 rounded-xl p-4 shadow-lg">
+      <h3 class="text-lg font-semibold mb-4 text-blue-400">Estatísticas Recentes</h3>
+      <canvas id="compradorChart" height="100"></canvas>
     </div>
 
-    <!-- Botão para Marketplace -->
-    <div class="text-center mt-10">
-      <a href="marketplace.html" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-semibold text-lg hover:brightness-110 shadow-lg hover:shadow-blue-500/30 transition">
-        🌐 Ir para o Marketplace
+    <!-- Botão Marketplace -->
+    <div class="text-center mt-8">
+      <a href="index.html" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold shadow-md transition">
+        Ir para o Marketplace
       </a>
     </div>
   </main>
 
-  <footer class="bg-gray-800 text-center text-gray-500 py-4 border-t border-gray-700 mt-10">
-    © 2025 DIGIVEND. Todos os direitos reservados.
-  </footer>
+  <!-- CHATBOT -->
+  <button id="chatbotToggle" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30">💬</button>
 
-  <script src="script.js"></script>
+  <div id="chatbotPanel" class="hidden fixed bottom-24 left-6 w-80 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-md z-50">
+    <div class="bg-gray-900 text-blue-400 font-semibold p-3 border-b border-gray-700 flex justify-between items-center">
+      <span>Suporte DIGIVEND 💬</span>
+      <button id="closeChatbot" class="text-gray-400 hover:text-red-500">✕</button>
+    </div>
+    <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-3 text-sm max-h-80">
+      <div class="bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]">👋 Olá! Aqui é o suporte da DIGIVEND. Como posso te ajudar?</div>
+    </div>
+    <div class="flex border-t border-gray-700">
+      <input id="chatInput" type="text" placeholder="Digite sua mensagem..." class="flex-1 p-2 bg-gray-900 text-gray-200 outline-none text-sm" />
+      <button id="sendChat" class="px-4 text-blue-400 font-bold hover:text-blue-300">➤</button>
+    </div>
+  </div>
 
+  <!-- SCRIPT -->
   <script>
+    // Verificar login
+    function verificarAcessoDashboard(tipo) {
+      const usuarioLogado = localStorage.getItem("usuarioLogado");
+      if (!usuarioLogado) window.location.href = "login.html";
+    }
     verificarAcessoDashboard("comprador");
 
+    // Sidebar
     const sidebar = document.getElementById("sidebar");
     const menuBtn = document.getElementById("menuBtn");
     const closeSidebar = document.getElementById("closeSidebar");
     const menuItems = document.querySelectorAll(".menu-item");
+    menuBtn.onclick = () => sidebar.classList.remove("-translate-x-full");
+    closeSidebar.onclick = () => sidebar.classList.add("-translate-x-full");
+    menuItems.forEach(i => i.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
 
-    menuBtn.addEventListener("click", () => sidebar.classList.remove("-translate-x-full"));
-    closeSidebar.addEventListener("click", () => sidebar.classList.add("-translate-x-full"));
-    menuItems.forEach(item => item.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
-
+    // Perfil + Notificações
     const profileBtn = document.getElementById("profileBtn");
     const profileMenu = document.getElementById("profileMenu");
+    const notifyBtn = document.getElementById("notifyBtn");
+    const notifyPanel = document.getElementById("notifyPanel");
 
-    profileBtn.addEventListener("click", () => profileMenu.classList.toggle("hidden"));
-    window.addEventListener("click", e => {
-      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
-        profileMenu.classList.add("hidden");
-      }
-    });
+    profileBtn.onclick = () => profileMenu.classList.toggle("hidden");
+    notifyBtn.onclick = () => notifyPanel.classList.toggle("hidden");
+    window.onclick = e => {
+      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.classList.add("hidden");
+      if (!notifyBtn.contains(e.target) && !notifyPanel.contains(e.target)) notifyPanel.classList.add("hidden");
+    };
 
-    // Gráfico comprador
+    // Chatbot
+    const chatbotToggle = document.getElementById("chatbotToggle");
+    const chatbotPanel = document.getElementById("chatbotPanel");
+    const closeChatbot = document.getElementById("closeChatbot");
+    const sendChat = document.getElementById("sendChat");
+    const chatInput = document.getElementById("chatInput");
+    const chatMessages = document.getElementById("chatMessages");
+
+    chatbotToggle.onclick = () => chatbotPanel.classList.toggle("hidden");
+    closeChatbot.onclick = () => chatbotPanel.classList.add("hidden");
+
+    sendChat.onclick = enviarMensagem;
+    chatInput.addEventListener("keypress", e => e.key === "Enter" && enviarMensagem());
+
+    function enviarMensagem() {
+      const texto = chatInput.value.trim();
+      if (!texto) return;
+      chatInput.value = "";
+
+      const msgUser = document.createElement("div");
+      msgUser.className = "bg-blue-600 text-white p-2 rounded-xl self-end max-w-[80%]";
+      msgUser.textContent = texto;
+      chatMessages.appendChild(msgUser);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      setTimeout(() => {
+        const resposta = document.createElement("div");
+        resposta.className = "bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]";
+        resposta.textContent = "💬 Obrigado pela sua mensagem! Em breve um atendente responderá.";
+        chatMessages.appendChild(resposta);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }, 1000);
+    }
+
+    // Gráfico
     const ctx = document.getElementById("compradorChart").getContext("2d");
     new Chart(ctx, {
       type: "bar",
@@ -149,37 +177,58 @@
           {
             label: "Compras",
             data: [5, 9, 7, 12, 8, 10],
-            backgroundColor: "rgba(255, 255, 255, 0.85)",
+            backgroundColor: "rgba(255,255,255,0.9)",
             borderRadius: 8,
           },
           {
             label: "Reembolsos",
             data: [1, 0, 1, 2, 0, 1],
-            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            backgroundColor: "rgba(255,255,255,0.4)",
             borderRadius: 8,
           },
         ],
       },
       options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            labels: { color: "#fff" },
-          },
-        },
+        plugins: { legend: { labels: { color: "#fff" } } },
         scales: {
-          x: {
-            ticks: { color: "#ddd" },
-            grid: { color: "rgba(255,255,255,0.05)" },
-          },
-          y: {
-            ticks: { color: "#ddd" },
-            grid: { color: "rgba(255,255,255,0.05)" },
-          },
+          x: { ticks: { color: "#ddd" }, grid: { color: "rgba(255,255,255,0.05)" } },
+          y: { ticks: { color: "#ddd" }, grid: { color: "rgba(255,255,255,0.05)" } },
         },
       },
     });
+
+    // Logout
+    function logout() {
+      localStorage.removeItem("usuarioLogado");
+      window.location.href = "login.html";
+    }
   </script>
+
+  <!-- Estilos -->
+  <style>
+    .card {
+      background-color: #0d1117;
+      border-left: 4px solid #2563eb;
+      border-radius: 1rem;
+      text-align: center;
+      padding: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+    }
+    .card h3 {
+      font-size: 1rem;
+      color: #60a5fa;
+      margin-bottom: 0.5rem;
+    }
+    .card p {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+  </style>
 </body>
 </html>
 
