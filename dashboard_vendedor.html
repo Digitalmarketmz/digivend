@@ -18,10 +18,10 @@
       position: absolute;
       left: 0;
       top: 0;
-      width: 6px;
+      width: 5px;
       height: 100%;
       background: linear-gradient(180deg, #2563eb, #3b82f6, #60a5fa);
-      box-shadow: 0 0 15px #3b82f6;
+      box-shadow: 0 0 10px #3b82f6;
       border-radius: 8px 0 0 8px;
     }
   </style>
@@ -34,9 +34,17 @@
 
     <h1 class="text-2xl font-bold text-blue-400 tracking-wider">DIGIVEND</h1>
 
-    <div class="flex items-center space-x-3">
-      <span id="userEmail" class="text-sm text-gray-400"></span>
-      <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold">D</div>
+    <div class="relative">
+      <button id="profileBtn" class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold hover:brightness-110 transition">
+        D
+      </button>
+
+      <!-- Menu do perfil -->
+      <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
+        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Meu Perfil</a>
+        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Configurações</a>
+        <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+      </div>
     </div>
   </header>
 
@@ -48,39 +56,39 @@
       <button id="closeSidebar" class="text-gray-400 hover:text-red-500 text-xl">✕</button>
     </div>
     <nav class="p-4 space-y-3">
-      <a href="dashboard_vendedor.html" class="block hover:text-blue-400">🏠 Dashboard</a>
-      <a href="#" class="block hover:text-blue-400">💰 Minhas Vendas</a>
-      <a href="#" class="block hover:text-blue-400">📦 Produtos</a>
-      <a href="#" class="block hover:text-blue-400">⚙️ Configurações</a>
-      <button onclick="logout()" class="w-full mt-4 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg">Sair</button>
+      <a href="dashboard_vendedor.html" class="block hover:text-blue-400 menu-item">🏠 Dashboard</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">💰 Minhas Vendas</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">📦 Produtos</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">🤝 Afiliados</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">⚙️ Configurações</a>
     </nav>
   </aside>
 
   <!-- Conteúdo Principal -->
   <main class="flex-grow p-6">
     <!-- Saudação -->
-    <div class="text-center mb-10">
+    <div class="text-left mb-10">
       <h2 class="text-3xl font-bold text-blue-400 mb-2">Bem-vindo ao seu Dashboard</h2>
-      <p class="text-gray-400 text-lg">Gerencie suas vendas, saques e desempenho em um só lugar 🚀</p>
+      <p class="text-gray-400 text-lg">Gerencie suas vendas, afiliados e produtos facilmente 🚀</p>
     </div>
 
-    <!-- Cards (2x2) -->
+    <!-- Cards (2x2 menores e centralizados) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Vendas Totais</h3>
-        <p class="text-3xl font-bold text-white">MT 45,200</p>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Total de Vendas</h3>
+        <p class="text-3xl font-bold text-white">87</p>
       </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Lucro do Mês</h3>
-        <p class="text-3xl font-bold text-white">MT 12,800</p>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Afiliados</h3>
+        <p class="text-3xl font-bold text-white">23</p>
       </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos Ativos</h3>
-        <p class="text-3xl font-bold text-white">18</p>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos</h3>
+        <p class="text-3xl font-bold text-white">12</p>
       </div>
-      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow">
-        <h3 class="text-lg font-semibold text-blue-400 mb-2">Saques Pendentes</h3>
-        <p class="text-3xl font-bold text-white">MT 4,600</p>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Saques</h3>
+        <p class="text-3xl font-bold text-white">5</p>
       </div>
     </div>
 
@@ -95,18 +103,13 @@
       <h3 class="text-xl font-semibold text-blue-400 mb-2">Últimas Atividades</h3>
 
       <div class="bg-gray-800 border border-blue-500/30 rounded-2xl p-4 shadow-md hover:shadow-blue-500/10 transition">
-        <p class="text-white"><strong>Venda:</strong> Ebook "Marketing Digital Pro"</p>
-        <p class="text-gray-400 text-sm">Valor: MT 950 — Há 2 horas</p>
+        <p class="text-white"><strong>Venda:</strong> Ebook "Negócios Digitais"</p>
+        <p class="text-gray-400 text-sm">Valor: MT 750 — Há 2 horas</p>
       </div>
 
       <div class="bg-gray-800 border border-blue-500/30 rounded-2xl p-4 shadow-md hover:shadow-blue-500/10 transition">
-        <p class="text-white"><strong>Saque:</strong> MT 1,500 para M-Pesa</p>
+        <p class="text-white"><strong>Saque:</strong> MT 1,200 para M-Pesa</p>
         <p class="text-gray-400 text-sm">Status: Concluído — Ontem</p>
-      </div>
-
-      <div class="bg-gray-800 border border-blue-500/30 rounded-2xl p-4 shadow-md hover:shadow-blue-500/10 transition">
-        <p class="text-white"><strong>Venda:</strong> Curso "Design Avançado"</p>
-        <p class="text-gray-400 text-sm">Valor: MT 700 — Há 1 dia</p>
       </div>
     </div>
   </main>
@@ -118,22 +121,34 @@
   <script src="script.js"></script>
 
   <script>
-    // Controle de acesso
     verificarAcessoDashboard("vendedor");
 
-    // Sidebar
+    // Sidebar funcional
     const sidebar = document.getElementById("sidebar");
     const menuBtn = document.getElementById("menuBtn");
     const closeSidebar = document.getElementById("closeSidebar");
+    const menuItems = document.querySelectorAll(".menu-item");
 
     menuBtn.addEventListener("click", () => sidebar.classList.remove("-translate-x-full"));
     closeSidebar.addEventListener("click", () => sidebar.classList.add("-translate-x-full"));
+    menuItems.forEach(item => item.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
+
+    // Menu do perfil
+    const profileBtn = document.getElementById("profileBtn");
+    const profileMenu = document.getElementById("profileMenu");
+
+    profileBtn.addEventListener("click", () => profileMenu.classList.toggle("hidden"));
+    window.addEventListener("click", e => {
+      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+        profileMenu.classList.add("hidden");
+      }
+    });
 
     // Mostra email do usuário
     const user = getCurrentUser();
-    if (user) document.getElementById("userEmail").innerText = user.email;
+    if (user) document.getElementById("userEmail")?.innerText = user.email;
 
-    // Gráfico elegante
+    // Gráfico
     const ctx = document.getElementById("salesChart").getContext("2d");
     new Chart(ctx, {
       type: "bar",
@@ -142,13 +157,13 @@
         datasets: [
           {
             label: "Vendas (MT)",
-            data: [5000, 7000, 6500, 9000, 12000, 10500],
+            data: [900, 1100, 800, 1200, 1500, 1000],
             backgroundColor: "rgba(37, 99, 235, 0.6)",
             borderRadius: 10,
           },
           {
             label: "Saques (MT)",
-            data: [2000, 3500, 3000, 4500, 6000, 5500],
+            data: [400, 700, 500, 800, 600, 550],
             backgroundColor: "rgba(96, 165, 250, 0.4)",
             borderRadius: 10,
           },
