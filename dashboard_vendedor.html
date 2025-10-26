@@ -8,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* Luz azul lateral dos cards */
     .card-glow {
       position: relative;
       overflow: hidden;
@@ -20,8 +19,8 @@
       top: 0;
       width: 5px;
       height: 100%;
-      background: linear-gradient(180deg, #2563eb, #3b82f6, #60a5fa);
-      box-shadow: 0 0 10px #3b82f6;
+      background: linear-gradient(180deg, #3b82f6, #60a5fa, #93c5fd);
+      box-shadow: 0 0 10px #60a5fa;
       border-radius: 8px 0 0 8px;
     }
   </style>
@@ -39,7 +38,6 @@
         D
       </button>
 
-      <!-- Menu do perfil -->
       <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
         <a href="#" class="block px-4 py-2 hover:bg-gray-700">Meu Perfil</a>
         <a href="#" class="block px-4 py-2 hover:bg-gray-700">Configurações</a>
@@ -49,8 +47,7 @@
   </header>
 
   <!-- Sidebar -->
-  <aside id="sidebar"
-    class="fixed top-0 left-0 h-full w-60 bg-gray-800 text-gray-200 transform -translate-x-full transition-transform duration-300 z-50">
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-60 bg-gray-800 text-gray-200 transform -translate-x-full transition-transform duration-300 z-50">
     <div class="flex justify-between items-center p-4 border-b border-gray-700">
       <h2 class="text-lg font-bold text-blue-400">Menu</h2>
       <button id="closeSidebar" class="text-gray-400 hover:text-red-500 text-xl">✕</button>
@@ -66,13 +63,12 @@
 
   <!-- Conteúdo Principal -->
   <main class="flex-grow p-6">
-    <!-- Saudação -->
     <div class="text-left mb-10">
       <h2 class="text-3xl font-bold text-blue-400 mb-2">Bem-vindo ao seu Dashboard</h2>
       <p class="text-gray-400 text-lg">Gerencie suas vendas, afiliados e produtos facilmente 🚀</p>
     </div>
 
-    <!-- Cards (2x2 menores e centralizados) -->
+    <!-- Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
       <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
         <h3 class="text-lg font-semibold text-blue-400 mb-2">Total de Vendas</h3>
@@ -98,7 +94,7 @@
       <canvas id="salesChart" height="120"></canvas>
     </div>
 
-    <!-- Notificações -->
+    <!-- Últimas Atividades -->
     <div class="space-y-4">
       <h3 class="text-xl font-semibold text-blue-400 mb-2">Últimas Atividades</h3>
 
@@ -144,11 +140,7 @@
       }
     });
 
-    // Mostra email do usuário
-    const user = getCurrentUser();
-    if (user) document.getElementById("userEmail")?.innerText = user.email;
-
-    // Gráfico
+    // Gráfico com barras brancas
     const ctx = document.getElementById("salesChart").getContext("2d");
     new Chart(ctx, {
       type: "bar",
@@ -157,33 +149,33 @@
         datasets: [
           {
             label: "Vendas (MT)",
-            data: [900, 1100, 800, 1200, 1500, 1000],
-            backgroundColor: "rgba(37, 99, 235, 0.6)",
-            borderRadius: 10,
+            data: [300, 500, 450, 600, 800, 700],
+            backgroundColor: "rgba(255, 255, 255, 0.85)",
+            borderRadius: 8,
           },
           {
             label: "Saques (MT)",
-            data: [400, 700, 500, 800, 600, 550],
-            backgroundColor: "rgba(96, 165, 250, 0.4)",
-            borderRadius: 10,
+            data: [100, 200, 150, 250, 300, 280],
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            borderRadius: 8,
           },
         ],
       },
       options: {
         responsive: true,
-        scales: {
-          x: {
-            ticks: { color: "#a5b4fc" },
-            grid: { color: "rgba(59, 130, 246, 0.1)" },
-          },
-          y: {
-            ticks: { color: "#a5b4fc" },
-            grid: { color: "rgba(59, 130, 246, 0.1)" },
-          },
-        },
         plugins: {
           legend: {
-            labels: { color: "#60a5fa" },
+            labels: { color: "#fff" },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: "#ddd" },
+            grid: { color: "rgba(255,255,255,0.05)" },
+          },
+          y: {
+            ticks: { color: "#ddd" },
+            grid: { color: "rgba(255,255,255,0.05)" },
           },
         },
       },
