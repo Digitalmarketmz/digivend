@@ -3,60 +3,183 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DIGIVEND | Dashboard Comprador</title>
+  <title>Dashboard do Comprador - DIGIVEND</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    .card-glow {
+      position: relative;
+      overflow: hidden;
+    }
+    .card-glow::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 5px;
+      height: 100%;
+      background: linear-gradient(180deg, #3b82f6, #60a5fa, #93c5fd);
+      box-shadow: 0 0 10px #60a5fa;
+      border-radius: 8px 0 0 8px;
+    }
+  </style>
 </head>
 
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col">
-  <!-- Navbar -->
-  <header class="flex justify-between items-center px-6 py-4 bg-gray-800 shadow-md sticky top-0 z-50">
-    <button id="sidebarToggle" class="text-blue-400 text-2xl">&#9776;</button>
-    <h1 class="text-xl font-bold text-blue-500">DIGIVEND</h1>
-    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png" alt="perfil"
-      class="w-8 h-8 rounded-full border border-blue-400" />
+<body class="bg-gray-900 text-gray-200 min-h-screen flex flex-col">
+  <!-- Header -->
+  <header class="bg-gray-800 p-4 flex justify-between items-center shadow-md">
+    <!-- Sidebar toggle -->
+    <button id="menuBtn" class="text-blue-400 text-2xl hover:text-blue-500 transition">☰</button>
+
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-blue-400 tracking-wider">DIGIVEND</h1>
+
+    <!-- Ícones à direita -->
+    <div class="flex items-center gap-4 relative">
+      <!-- Notificações -->
+      <button id="notifyBtn" class="text-gray-300 hover:text-blue-400 transition text-xl">🔔</button>
+
+      <!-- Perfil -->
+      <button id="profileBtn" class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-semibold hover:brightness-110 transition">
+        C
+      </button>
+
+      <!-- Menu do perfil -->
+      <div id="profileMenu" class="hidden absolute right-0 top-12 w-40 bg-gray-800 border border-gray-700 rounded-lg shadow-lg">
+        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Meu Perfil</a>
+        <a href="#" class="block px-4 py-2 hover:bg-gray-700">Configurações</a>
+        <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+      </div>
+    </div>
   </header>
 
   <!-- Sidebar -->
-  <aside id="sidebar"
-    class="fixed top-0 left-0 h-full w-64 bg-gray-800 border-r border-blue-500 transform -translate-x-full transition-transform duration-300 z-40">
-    <div class="flex justify-between items-center p-4 border-b border-blue-500">
-      <h2 class="text-lg font-semibold text-blue-400">Menu</h2>
-      <button id="closeSidebar" class="text-blue-400 text-xl">&times;</button>
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-60 bg-gray-800 text-gray-200 transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="flex justify-between items-center p-4 border-b border-gray-700">
+      <h2 class="text-lg font-bold text-blue-400">Menu</h2>
+      <button id="closeSidebar" class="text-gray-400 hover:text-red-500 text-xl">✕</button>
     </div>
-    <nav class="flex flex-col p-4 space-y-3">
-      <a href="#" class="hover:text-blue-400">🏠 Início</a>
-      <a href="#" class="hover:text-blue-400">🛒 Minhas Compras</a>
-      <a href="#" class="hover:text-blue-400">💬 Suporte</a>
-      <a href="login.html" class="hover:text-blue-400">🚪 Sair</a>
+    <nav class="p-4 space-y-3">
+      <a href="dashboard_comprador.html" class="block hover:text-blue-400 menu-item">🏠 Dashboard</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">🛍️ Meus Produtos</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">💖 Lista de Desejos</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">💳 Meus Pagamentos</a>
+      <a href="#" class="block hover:text-blue-400 menu-item">⚙️ Configurações</a>
+      <button onclick="logout()" class="w-full text-left text-red-500 hover:text-red-400 mt-4">🚪 Sair</button>
     </nav>
   </aside>
 
-  <!-- Conteúdo -->
-  <main class="flex-1 p-6 transition-all duration-300">
-    <h2 class="text-2xl font-bold text-blue-400 mb-2">Bem-vindo(a) à sua conta!</h2>
-    <p class="text-gray-400 mb-8">Aqui estão suas informações de comprador.</p>
+  <!-- Conteúdo principal -->
+  <main class="flex-grow p-6">
+    <div class="text-left mb-10">
+      <h2 class="text-3xl font-bold text-blue-400 mb-2">Bem-vindo ao seu Dashboard</h2>
+      <p class="text-gray-400 text-lg">Gerencie suas compras, produtos e pagamentos com facilidade 💳</p>
+    </div>
 
     <!-- Cards -->
-    <div class="grid gap-6">
-      <div class="p-6 rounded-2xl bg-gray-800 border border-blue-500 shadow-lg">
-        <h3 class="text-lg font-semibold text-blue-300 mb-2">Saldo</h3>
-        <p class="text-2xl font-bold">2.450 MT</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Total de Compras</h3>
+        <p class="text-3xl font-bold text-white">45</p>
       </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos Reembolsados</h3>
+        <p class="text-3xl font-bold text-white">3</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Produtos Afiliados</h3>
+        <p class="text-3xl font-bold text-white">8</p>
+      </div>
+      <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl card-glow flex flex-col items-center justify-center">
+        <h3 class="text-lg font-semibold text-blue-400 mb-2">Visitantes</h3>
+        <p class="text-3xl font-bold text-white">120</p>
+      </div>
+    </div>
 
-      <div class="p-6 rounded-2xl bg-gray-800 border border-blue-500 shadow-lg">
-        <h3 class="text-lg font-semibold text-blue-300 mb-2">Última Compra</h3>
-        <p>Curso de Marketing Digital - 20/10/2025</p>
-      </div>
+    <!-- Gráfico -->
+    <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-xl mb-10 card-glow">
+      <h3 class="text-lg font-semibold text-blue-400 mb-4">Resumo de Atividades</h3>
+      <canvas id="compradorChart" height="120"></canvas>
+    </div>
 
-      <div class="p-6 rounded-2xl bg-gray-800 border border-blue-500 shadow-lg">
-        <h3 class="text-lg font-semibold text-blue-300 mb-2">Suporte Ativo</h3>
-        <p>Nenhum ticket aberto.</p>
-      </div>
+    <!-- Botão para Marketplace -->
+    <div class="text-center mt-10">
+      <a href="marketplace.html" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-full font-semibold text-lg hover:brightness-110 shadow-lg hover:shadow-blue-500/30 transition">
+        🌐 Ir para o Marketplace
+      </a>
     </div>
   </main>
 
+  <footer class="bg-gray-800 text-center text-gray-500 py-4 border-t border-gray-700 mt-10">
+    © 2025 DIGIVEND. Todos os direitos reservados.
+  </footer>
+
   <script src="script.js"></script>
+
+  <script>
+    verificarAcessoDashboard("comprador");
+
+    const sidebar = document.getElementById("sidebar");
+    const menuBtn = document.getElementById("menuBtn");
+    const closeSidebar = document.getElementById("closeSidebar");
+    const menuItems = document.querySelectorAll(".menu-item");
+
+    menuBtn.addEventListener("click", () => sidebar.classList.remove("-translate-x-full"));
+    closeSidebar.addEventListener("click", () => sidebar.classList.add("-translate-x-full"));
+    menuItems.forEach(item => item.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
+
+    const profileBtn = document.getElementById("profileBtn");
+    const profileMenu = document.getElementById("profileMenu");
+
+    profileBtn.addEventListener("click", () => profileMenu.classList.toggle("hidden"));
+    window.addEventListener("click", e => {
+      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) {
+        profileMenu.classList.add("hidden");
+      }
+    });
+
+    // Gráfico comprador
+    const ctx = document.getElementById("compradorChart").getContext("2d");
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+        datasets: [
+          {
+            label: "Compras",
+            data: [5, 9, 7, 12, 8, 10],
+            backgroundColor: "rgba(255, 255, 255, 0.85)",
+            borderRadius: 8,
+          },
+          {
+            label: "Reembolsos",
+            data: [1, 0, 1, 2, 0, 1],
+            backgroundColor: "rgba(255, 255, 255, 0.5)",
+            borderRadius: 8,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            labels: { color: "#fff" },
+          },
+        },
+        scales: {
+          x: {
+            ticks: { color: "#ddd" },
+            grid: { color: "rgba(255,255,255,0.05)" },
+          },
+          y: {
+            ticks: { color: "#ddd" },
+            grid: { color: "rgba(255,255,255,0.05)" },
+          },
+        },
+      },
+    });
+  </script>
 </body>
 </html>
 
