@@ -1,50 +1,141 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Notificações | DIGIVEND</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Notificações | DIGIVEND</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
+<body class="bg-gray-950 text-white min-h-screen">
 
-<body class="bg-gray-950 text-white min-h-screen flex flex-col items-center p-8">
-  <h1 class="text-2xl font-bold text-blue-500 mb-6">📬 Suas Notificações</h1>
+  <main class="max-w-3xl mx-auto p-6">
+    <h1 class="text-2xl font-bold text-blue-400 mb-4">📬 Notificações</h1>
 
-  <div id="listaNotificacoes" class="space-y-4 w-full max-w-xl"></div>
+    <div id="list" class="space-y-3 mb-8"></div>
 
-  <a href="dashboard_vendedor.html" class="mt-8 text-blue-400 hover:underline">⬅ Voltar ao Dashboard</a>
+    <div id="openArea"></div>
 
-  <script>
-    const listaNotificacoes = document.getElementById("listaNotificacoes");
-    let notificacoes = JSON.parse(localStorage.getItem("notificacoes")) || [];
+    <a href="dashboard_vendedor.html" class="text-blue-400 hover:underline block mt-8">⬅ Voltar ao Dashboard</a>
+  </main>
 
-    function renderNotificacoes() {
-      listaNotificacoes.innerHTML = "";
+<script>
+  // mesma chave usada no dashboard
+  const NOTIF_KEY = "digivend_notificacoes_vendedor";
 
-      if (notificacoes.length === 0) {
-        listaNotificacoes.innerHTML = "<p class='text-gray-400 text-center'>Nenhuma notificação disponível.</p>";
-        return;
-      }
+  function getNotificacoes() {
+    return JSON.parse(localStorage.getItem(NOTIF_KEY)) || [];
+  }
+  function saveNotificacoes(arr) {
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(arr));
+  }
 
-      notificacoes.forEach((n) => {
-        const div = document.createElement("div");
-        div.className = "bg-gray-900 border-l-4 border-blue-600 p-4 rounded-xl flex justify-between items-center";
-        div.innerHTML = `
-          <span>${n.titulo}</span>
-          <button onclick="lerNotificacao(${n.id})" class="text-gray-300 hover:text-red-400">✕</button>
-        `;
-        listaNotificacoes.appendChild(div);
+  const params = new URLSearchParams(window.location.search);
+  const openId = params.get("id") ? parseInt(params.get("id")) : null;
+
+  const list = document.getElementById("list");
+  const openArea = document.getElementById("openArea");
+
+  function renderList() {
+    const nots = getNotificacoes().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime));
+    list.innerHTML = "";
+    if (nots.length === 0) {
+      list.innerHTML = "<p class='text-gray-400'>Nenhuma notificação.</p>";
+      return;
+    }
+    nots.forEach(n => {
+      const row = document.createElement("div");
+      row.className = "p-3 rounded-lg flex justify-between items-center " + (n.read ? "bg-gray-850" : "bg-gray-800 border-l-4 border-blue-600 shadow-md");
+      row.innerHTML = `
+        <div>
+          <div class="font-semibold">${n.name} <span class="text-sm text-gray-400">• ${new Date(n.datetime).toLocaleString()}</span></div>
+          <div class="text-sm text-gray-300 mt-1">${n.subject}</div>
+        </div>
+        <div class="flex gap-2 items-center">
+          <button class="text-gray-300 text-sm" data-open="${n.id}">Abrir</button>
+          <button class="text-gray-300 text-sm" data-close="${n.id}">✕</button>
+        </div>
+      `;
+      list.appendChild(row);
+    });
+
+    // eventos abrir/fechar
+    list.querySelectorAll("[data-open]").forEach(b=>{
+      b.addEventListener("click", ()=> {
+        const id = parseInt(b.getAttribute("data-open"));
+        openNotificacao(id);
       });
-    }
+    });
+    list.querySelectorAll("[data-close]").forEach(b=>{
+      b.addEventListener("click", ()=> {
+        const id = parseInt(b.getAttribute("data-close"));
+        marcarComoLida(id, true); // remover
+      });
+    });
+  }
 
-    function lerNotificacao(id) {
-      notificacoes = notificacoes.filter(n => n.id !== id);
-      localStorage.setItem("notificacoes", JSON.stringify(notificacoes));
-      renderNotificacoes();
-    }
+  function openNotificacao(id) {
+    const nots = getNotificacoes();
+    const n = nots.find(x=>x.id===id);
+    if (!n) return;
+    // render modal-like card no centro da página (no openArea)
+    openArea.innerHTML = `
+      <div id="openCard" class="bg-gray-900 p-6 rounded-xl shadow-2xl border-l-4 border-blue-600">
+        <div class="flex justify-between items-start">
+          <div>
+            <div class="text-sm text-blue-300 font-semibold">${n.name}</div>
+            <div class="text-xs text-gray-400">${new Date(n.datetime).toLocaleString()}</div>
+            <div class="text-lg font-bold mt-3">${n.subject}</div>
+          </div>
+          <div>
+            <button id="closeOpen" class="text-gray-300 text-xl">✕</button>
+          </div>
+        </div>
+        <div class="mt-4 text-gray-200">${escapeHtml(n.message)}</div>
+      </div>
+    `;
+    // ao abrir, vamos abrir a notificação: marcar como lida e atualizar badge
+    marcarComoLida(id, false); // marcar lida (sem remover da lista imediatamente)
+    // evento fechar
+    document.getElementById("closeOpen").addEventListener("click", ()=> {
+      // ao fechar: tirar brilho (se quiser remover do correio, removemos do array)
+      marcarComoLida(id, true); // remover da lista
+      // apagar aula visual
+      document.getElementById("openCard").remove();
+      renderList();
+      // atualizar badge no dashboard (elas lerão do mesmo localStorage)
+      // quando usuário voltar ao dashboard, badge refletirá mudanças
+    });
+  }
 
-    renderNotificacoes();
-  </script>
+  function marcarComoLida(id, remover=false) {
+    let nots = getNotificacoes();
+    if (remover) {
+      nots = nots.filter(n=> n.id !== id);
+    } else {
+      nots = nots.map(n => n.id===id ? {...n, read:true} : n);
+    }
+    saveNotificacoes(nots);
+    renderList();
+  }
+
+  // escape básico para evitar html injection
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML.replace(/\n/g, '<br/>');
+  }
+
+  renderList();
+
+  // Se veio ?id=NN abrir diretamente
+  if (openId) {
+    setTimeout(()=> openNotificacao(openId), 250);
+  }
+</script>
+
+<style>
+  .bg-gray-850 { background: #0f1724; border-radius:8px; padding:0.75rem; }
+</style>
 </body>
 </html>
 

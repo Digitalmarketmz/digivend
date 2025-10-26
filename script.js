@@ -158,3 +158,31 @@ function verificarAcessoDashboard(tipoEsperado) {
   }
 }
 
+// --- Notificações helpers (para usar cross-pages) ---
+const NOTIF_KEY = "digivend_notificacoes_vendedor";
+
+function seedNotificacoesIfNeeded() {
+  if (!localStorage.getItem(NOTIF_KEY)) {
+    const demo = [
+      { id: 1, name: "DIGIVEND (Admin)", sender: "admin@digivend", datetime: new Date().toISOString(), subject: "Promoção semanal", message: "Temos uma promoção especial: 10% para afiliados.", read: false },
+      { id: 2, name: "Suporte", sender: "suporte@digivend", datetime: new Date(new Date().getTime() - 3600*1000).toISOString(), subject: "Saque concluído", message: "O seu saque de MT1,500 foi concluído.", read: false }
+    ];
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(demo));
+  }
+}
+function getNotificacoes() { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; }
+function saveNotificacoes(arr) { localStorage.setItem(NOTIF_KEY, JSON.stringify(arr)); }
+
+// chamada inicial
+seedNotificacoesIfNeeded();
+
+// função útil caso queira criar nova notificação (ex: administrador envia)
+function criarNotificacao({name, sender, subject, message}) {
+  const list = getNotificacoes();
+  const id = (list.reduce((m,x)=> Math.max(m,x.id||0),0) || 0) + 1;
+  list.push({ id, name, sender, datetime: new Date().toISOString(), subject, message, read:false });
+  saveNotificacoes(list);
+  // atualizar badge (se dashboard aberto)
+  if (typeof atualizarBadge === "function") atualizarBadge();
+}
+
