@@ -22,7 +22,7 @@
       <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Vendas</button>
       <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Pagamentos</button>
       <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Configurações</button>
-      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600" onclick="logout()">Sair</button>
+      <button onclick="logout()" class="w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Sair</button>
     </nav>
   </aside>
 
@@ -32,12 +32,17 @@
     <h1 class="text-2xl font-bold text-blue-500">DIGIVEND</h1>
 
     <div class="flex items-center gap-6">
+      <!-- Correio -->
+      <button id="mailBtn" class="relative">
+        <span class="text-white text-xl">📬</span>
+        <span id="mailBadge" class="absolute -top-1 -right-1 bg-red-500 text-xs px-1 rounded-full hidden">!</span>
+      </button>
+
       <!-- Notificações -->
       <button id="notifyBtn" class="relative">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white" class="w-6 h-6">
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0a3 3 0 11-6 0" />
         </svg>
-        <span class="absolute -top-1 -right-1 border border-white rounded-full w-3 h-3 animate-pulse"></span>
       </button>
 
       <!-- Perfil -->
@@ -52,21 +57,10 @@
     </div>
   </header>
 
-  <!-- Painel de notificações -->
-  <div id="notifyPanel" class="hidden absolute right-6 top-20 bg-gray-800 border border-gray-700 w-80 rounded-lg shadow-lg z-50">
-    <div class="p-3 border-b border-gray-700 font-semibold text-blue-400">Notificações</div>
-    <div class="p-3 text-gray-300 space-y-2 text-sm">
-      <p>💰 Novo saque solicitado com sucesso.</p>
-      <p>📦 Você vendeu um novo produto!</p>
-      <p>📈 Seu número de afiliados aumentou.</p>
-    </div>
-  </div>
-
   <!-- CONTEÚDO -->
   <main class="flex-1 p-6 mt-4">
     <h2 class="text-xl font-bold text-blue-400 mb-6">👋 Bem-vindo ao seu Dashboard, Vendedor!</h2>
 
-    <!-- Cards 2x2 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="card"><h3>Total de Vendas</h3><p>82</p></div>
       <div class="card"><h3>Afiliados</h3><p>15</p></div>
@@ -74,24 +68,20 @@
       <div class="card"><h3>Saques Pendentes</h3><p>2</p></div>
     </div>
 
-    <!-- Gráfico -->
     <div class="bg-gray-900 border-l-4 border-blue-600 rounded-xl p-4 shadow-lg mb-8">
       <h3 class="text-lg font-semibold mb-4 text-blue-400">Estatísticas de Vendas</h3>
       <canvas id="vendasChart" height="100"></canvas>
     </div>
 
-    <!-- Notificações recentes -->
     <div class="bg-gray-900 border-l-4 border-blue-600 rounded-xl p-4 shadow-lg mb-8">
       <h3 class="text-lg font-semibold mb-3 text-blue-400">Últimas atividades</h3>
       <div class="space-y-2 text-gray-300 text-sm">
         <p>✅ Venda concluída: "Curso de Marketing Digital"</p>
         <p>💳 Saque processado com sucesso.</p>
         <p>🤝 Novo afiliado vinculado à sua conta.</p>
-        <p>📦 Produto “Design para Iniciantes” recebeu 5 novas vendas.</p>
       </div>
     </div>
 
-    <!-- Botão Marketplace -->
     <div class="text-center mt-8">
       <a href="index.html" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold shadow-md transition">
         Ir para o Marketplace
@@ -99,88 +89,31 @@
     </div>
   </main>
 
-  <!-- CHATBOT -->
-  <button id="chatbotToggle" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30">💬</button>
-
-  <div id="chatbotPanel" class="hidden fixed bottom-24 left-6 w-80 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-md z-50">
-    <div class="bg-gray-900 text-blue-400 font-semibold p-3 border-b border-gray-700 flex justify-between items-center">
-      <span>Suporte DIGIVEND 💬</span>
-      <button id="closeChatbot" class="text-gray-400 hover:text-red-500">✕</button>
-    </div>
-    <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-3 text-sm max-h-80">
-      <div class="bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]">👋 Olá! Aqui é o suporte da DIGIVEND. Como posso te ajudar?</div>
-    </div>
-    <div class="flex border-t border-gray-700">
-      <input id="chatInput" type="text" placeholder="Digite sua mensagem..." class="flex-1 p-2 bg-gray-900 text-gray-200 outline-none text-sm" />
-      <button id="sendChat" class="px-4 text-blue-400 font-bold hover:text-blue-300">➤</button>
-    </div>
-  </div>
-
   <!-- SCRIPT -->
   <script>
-    function verificarAcessoDashboard(tipo) {
-      const usuarioLogado = localStorage.getItem("usuarioLogado");
-      if (!usuarioLogado) window.location.href = "login.html";
-    }
-    verificarAcessoDashboard("vendedor");
+    const mailBtn = document.getElementById('mailBtn');
+    const mailBadge = document.getElementById('mailBadge');
 
-    // Sidebar
-    const sidebar = document.getElementById("sidebar");
-    const menuBtn = document.getElementById("menuBtn");
-    const closeSidebar = document.getElementById("closeSidebar");
-    const menuItems = document.querySelectorAll(".menu-item");
-    menuBtn.onclick = () => sidebar.classList.remove("-translate-x-full");
-    closeSidebar.onclick = () => sidebar.classList.add("-translate-x-full");
-    menuItems.forEach(i => i.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
+    const notificacoes = [
+      { id: 1, titulo: '💼 Nova atualização de políticas', lida: false },
+      { id: 2, titulo: '📦 Seu produto foi destacado no marketplace!', lida: false },
+    ];
 
-    // Perfil e Notificações
-    const profileBtn = document.getElementById("profileBtn");
-    const profileMenu = document.getElementById("profileMenu");
-    const notifyBtn = document.getElementById("notifyBtn");
-    const notifyPanel = document.getElementById("notifyPanel");
-
-    profileBtn.onclick = () => profileMenu.classList.toggle("hidden");
-    notifyBtn.onclick = () => notifyPanel.classList.toggle("hidden");
-    window.onclick = e => {
-      if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.classList.add("hidden");
-      if (!notifyBtn.contains(e.target) && !notifyPanel.contains(e.target)) notifyPanel.classList.add("hidden");
-    };
-
-    // Chatbot
-    const chatbotToggle = document.getElementById("chatbotToggle");
-    const chatbotPanel = document.getElementById("chatbotPanel");
-    const closeChatbot = document.getElementById("closeChatbot");
-    const sendChat = document.getElementById("sendChat");
-    const chatInput = document.getElementById("chatInput");
-    const chatMessages = document.getElementById("chatMessages");
-
-    chatbotToggle.onclick = () => chatbotPanel.classList.toggle("hidden");
-    closeChatbot.onclick = () => chatbotPanel.classList.add("hidden");
-
-    sendChat.onclick = enviarMensagem;
-    chatInput.addEventListener("keypress", e => e.key === "Enter" && enviarMensagem());
-
-    function enviarMensagem() {
-      const texto = chatInput.value.trim();
-      if (!texto) return;
-      chatInput.value = "";
-
-      const msgUser = document.createElement("div");
-      msgUser.className = "bg-blue-600 text-white p-2 rounded-xl self-end max-w-[80%]";
-      msgUser.textContent = texto;
-      chatMessages.appendChild(msgUser);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-
-      setTimeout(() => {
-        const resposta = document.createElement("div");
-        resposta.className = "bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]";
-        resposta.textContent = "💬 Obrigado pela sua mensagem! Um atendente responderá em breve.";
-        chatMessages.appendChild(resposta);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      }, 1000);
+    // Atualiza contador do correio
+    function atualizarCorreio() {
+      const naoLidas = notificacoes.filter(n => !n.lida).length;
+      mailBadge.classList.toggle('hidden', naoLidas === 0);
     }
 
-    // Gráfico
+    // Ao clicar no 📬
+    mailBtn.addEventListener('click', () => {
+      localStorage.setItem('notificacoes', JSON.stringify(notificacoes));
+      window.location.href = 'notificacoes.html';
+    });
+
+    atualizarCorreio();
+
+    // Gráfico branco
     const ctx = document.getElementById("vendasChart").getContext("2d");
     new Chart(ctx, {
       type: "bar",
