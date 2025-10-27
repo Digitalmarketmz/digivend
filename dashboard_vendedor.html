@@ -1,406 +1,206 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Dashboard do Vendedor | DIGIVEND</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DIGIVEND - Dashboard Vendedor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-950 text-white min-h-screen">
+<body class="bg-gray-950 text-white min-h-screen flex flex-col">
 
-  <!-- SIDEBAR -->
-  <aside id="sidebar" class="fixed top-0 left-0 w-64 h-full bg-gray-900 transform -translate-x-full transition-transform duration-300 z-50">
-    <div class="flex items-center justify-between px-4 py-4 border-b border-gray-800">
-      <h2 class="text-xl font-bold text-blue-500">DIGIVEND</h2>
-      <button id="closeSidebar" class="text-gray-400 hover:text-red-500">✕</button>
-    </div>
-    <nav class="p-4 space-y-3">
-      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Dashboard</button>
-      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Meus produtos</button>
-      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Vendas</button>
-      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Pagamentos</button>
-      <button class="menu-item w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Configurações</button>
-      <button onclick="logout()" class="w-full text-left px-3 py-2 rounded-md hover:bg-blue-600">Sair</button>
-    </nav>
-  </aside>
+  <!-- Header -->
+  <header class="flex justify-between items-center px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-50">
+    <!-- Sidebar Toggle -->
+    <button id="menu-toggle" class="text-white hover:text-blue-400 text-2xl">☰</button>
 
-  <!-- TOPBAR -->
-  <header class="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-40">
-    <button id="menuBtn" class="text-white text-2xl">☰</button>
-    <h1 class="text-2xl font-bold text-blue-500">DIGIVEND</h1>
+    <!-- Logo -->
+    <h1 class="text-2xl font-bold text-blue-400">DIGIVEND</h1>
 
-    <div class="flex items-center gap-4">
-      <!-- Sininho (único) -->
+    <!-- Right Controls -->
+    <div class="flex items-center space-x-6 relative">
+      <!-- Notificações -->
       <div class="relative">
-        <button id="bellBtn" class="p-1 rounded-md hover:bg-gray-800" title="Notificações">
-          <!-- sino com borda branca e centro transparente -->
-          <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.3" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 17H9" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 22a2 2 0 0 0 2-2H10a2 2 0 0 0 2 2z" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M18 8a6 6 0 10-12 0v5l-2 2v1h16v-1l-2-2V8z" stroke-linecap="round" stroke-linejoin="round"/>
+        <button id="notification-button" class="relative">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white hover:text-blue-400 transition" fill="none"
+            viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.9 18 13V9a6 6 0 10-12 0v4c0 .9-.21 1.79-.595 2.595L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <span id="badgeCount" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center text-[11px] hidden">0</span>
+          <span id="notification-count"
+            class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5 hidden">0</span>
         </button>
 
-        <!-- dropdown do sino -->
-        <div id="bellDropdown" class="hidden absolute right-0 mt-2 w-96 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50">
-          <div class="p-3 border-b border-gray-700 text-blue-300 font-semibold">Notificações recentes</div>
-          <div id="bellList" class="max-h-64 overflow-y-auto p-2 space-y-2"></div>
-          <div class="p-3 border-t border-gray-700 text-sm text-gray-400">Clique em uma notificação para abrir</div>
+        <!-- Painel de notificações -->
+        <div id="notification-panel"
+          class="hidden absolute right-0 mt-3 w-80 max-h-96 overflow-y-auto bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-3 z-50">
+          <h3 class="text-blue-400 text-lg font-semibold mb-2">Notificações</h3>
+          <ul id="notification-list" class="space-y-2"></ul>
         </div>
       </div>
 
       <!-- Perfil -->
-      <div class="relative">
-        <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">V</button>
-        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-40 bg-gray-800 rounded-lg shadow-lg border border-gray-700">
-          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Suporte</a>
-          <button onclick="logout()" class="w-full text-left px-4 py-2 hover:bg-gray-700">Sair</button>
-        </div>
-      </div>
+      <button id="profile-button"
+        class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition text-white font-bold">👤</button>
     </div>
   </header>
 
-  <!-- MAIN -->
-  <main class="flex-1 p-6 mt-4">
-    <h2 id="welcome" class="text-xl font-bold text-blue-400 mb-6 text-left">👋 Bem-vindo ao seu Dashboard, Vendedor!</h2>
+  <!-- Sidebar -->
+  <aside id="sidebar"
+    class="fixed top-0 left-0 h-full w-64 bg-gray-900 border-r border-gray-800 transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
+    <div class="p-4 border-b border-gray-800 flex justify-between items-center">
+      <h2 class="text-xl font-bold text-blue-400">Menu</h2>
+      <button id="close-sidebar" class="text-gray-400 hover:text-white text-2xl font-bold">×</button>
+    </div>
+    <nav class="p-4 space-y-3">
+      <a href="#" class="block hover:bg-gray-800 p-2 rounded">🏠 Dashboard</a>
+      <a href="#" class="block hover:bg-gray-800 p-2 rounded">📦 Meus Produtos</a>
+      <a href="#" class="block hover:bg-gray-800 p-2 rounded">💰 Saques</a>
+      <a href="#" class="block hover:bg-gray-800 p-2 rounded">👥 Afiliados</a>
+      <a href="#" class="block hover:bg-gray-800 p-2 rounded">⚙️ Configurações</a>
+      <a href="index.html" class="block hover:bg-gray-800 p-2 rounded text-red-500">🚪 Sair</a>
+    </nav>
+  </aside>
 
-    <!-- 2x2 cards -->
+  <!-- Saudação -->
+  <main class="flex-1 p-8">
+    <h2 class="text-3xl font-bold text-blue-400 mb-6">👋 Bem-vindo ao seu Dashboard, Vendedor!</h2>
+
+    <!-- Cards principais -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <div class="card-glow-small flex flex-col items-center justify-center">
-        <h3 class="text-blue-300 font-semibold mb-2">Total de Vendas</h3>
-        <p class="text-3xl font-bold">82</p>
+      <!-- Card 1 -->
+      <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
+        <h3 class="text-lg font-semibold text-gray-300">Total de Vendas</h3>
+        <p class="text-3xl font-bold text-white mt-2">124</p>
       </div>
-      <div class="card-glow-small flex flex-col items-center justify-center">
-        <h3 class="text-blue-300 font-semibold mb-2">Afiliados</h3>
-        <p class="text-3xl font-bold">15</p>
+
+      <!-- Card 2 -->
+      <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
+        <h3 class="text-lg font-semibold text-gray-300">Afiliados</h3>
+        <p class="text-3xl font-bold text-white mt-2">32</p>
       </div>
-      <div class="card-glow-small flex flex-col items-center justify-center">
-        <h3 class="text-blue-300 font-semibold mb-2">Produtos</h3>
-        <p class="text-3xl font-bold">9</p>
+
+      <!-- Card 3 -->
+      <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
+        <h3 class="text-lg font-semibold text-gray-300">Produtos</h3>
+        <p class="text-3xl font-bold text-white mt-2">15</p>
       </div>
-      <div class="card-glow-small flex flex-col items-center justify-center">
-        <h3 class="text-blue-300 font-semibold mb-2">Saques</h3>
-        <p class="text-3xl font-bold">2</p>
+
+      <!-- Card 4 -->
+      <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
+        <h3 class="text-lg font-semibold text-gray-300">Saques Pendentes</h3>
+        <p class="text-3xl font-bold text-white mt-2">3</p>
       </div>
     </div>
 
-    <!-- gráfico -->
-    <div class="bg-gray-900 rounded-xl p-4 shadow-lg mb-8 border-l-4 border-blue-600">
-      <h3 class="text-lg font-semibold mb-4 text-blue-400">Estatísticas de Vendas</h3>
-      <canvas id="vendasChart" height="100"></canvas>
+    <!-- Gráfico -->
+    <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md mb-8">
+      <h3 class="text-lg font-semibold text-gray-300 mb-4">Estatísticas de Vendas</h3>
+      <canvas id="salesChart" height="120"></canvas>
     </div>
 
-    <!-- últimas atividades (cards) -->
-    <div class="bg-gray-900 rounded-xl p-4 shadow-lg mb-8 border-l-4 border-blue-600">
-      <h3 class="text-lg font-semibold mb-3 text-blue-400">Últimas atividades</h3>
-      <div id="recentList" class="space-y-2 text-gray-300 text-sm">
-        <div class="p-3 rounded-lg bg-gray-850">✅ Venda concluída: "Curso de Marketing Digital"</div>
-        <div class="p-3 rounded-lg bg-gray-850">💳 Saque processado com sucesso.</div>
-        <div class="p-3 rounded-lg bg-gray-850">🤝 Novo afiliado vinculado à sua conta.</div>
-      </div>
-    </div>
-
-    <div class="text-center mt-8">
-      <a href="index.html" class="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-xl font-semibold shadow-md transition">
-        Ir para o Marketplace
-      </a>
+    <!-- Notificações recentes -->
+    <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md">
+      <h3 class="text-lg font-semibold text-gray-300 mb-3">Últimas Atualizações</h3>
+      <ul id="updates-list" class="space-y-3 text-sm text-gray-300">
+        <li class="border-l-4 border-blue-500 pl-3">💸 Você recebeu um pagamento de 500 MZN</li>
+        <li class="border-l-4 border-blue-500 pl-3">📦 Novo produto aprovado: “Curso de Marketing”</li>
+        <li class="border-l-4 border-blue-500 pl-3">🧾 Saque solicitado - aguardando confirmação</li>
+      </ul>
     </div>
   </main>
 
-  <!-- Chatbot (flutuante) -->
-  <button id="chatbotToggle" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30 z-50">💬</button>
+  <!-- Chatbot -->
+  <button id="chatbot-btn"
+    class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center text-2xl transition">
+    💬
+  </button>
 
-  <div id="chatbotPanel" class="hidden fixed bottom-24 left-6 w-80 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-md z-50">
-    <div class="bg-gray-900 text-blue-400 font-semibold p-3 border-b border-gray-700 flex justify-between items-center">
-      <span>Suporte DIGIVEND 💬</span>
-      <button id="closeChatbot" class="text-gray-400 hover:text-red-500">✕</button>
-    </div>
-    <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-3 text-sm max-h-80">
-      <div class="bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]">👋 Olá! Eu sou o assistente automático da DIGIVEND — como posso ajudar?</div>
-    </div>
-    <div class="flex border-t border-gray-700">
-      <input id="chatInput" type="text" placeholder="Digite sua mensagem..." class="flex-1 p-2 bg-gray-900 text-gray-200 outline-none text-sm" />
-      <button id="sendChat" class="px-4 text-blue-400 font-bold hover:text-blue-300">➤</button>
-    </div>
-  </div>
-
-  <!-- SCRIPTS -->
   <script>
-  /*********************
-   * Notificações logic
-   *********************/
-  // Key storage
-  const NOTIF_KEY = "digivend_notificacoes_vendedor";
+    // Sidebar
+    const sidebar = document.getElementById("sidebar");
+    document.getElementById("menu-toggle").onclick = () => sidebar.classList.remove("-translate-x-full");
+    document.getElementById("close-sidebar").onclick = () => sidebar.classList.add("-translate-x-full");
 
-  // Se não existir, criar um conjunto demo de notificações
-  function seedNotificacoesDemo() {
-    if (!localStorage.getItem(NOTIF_KEY)) {
-      const demo = [
-        { id: 1, sender: "Admin DIGIVEND", name: "DIGIVEND", datetime: new Date().toISOString(), subject: "Atualização de política", message: "Atualizamos as políticas de venda. Verifique os termos.", read: false },
-        { id: 2, sender: "Suporte", name: "Suporte DIGIVEND", datetime: new Date(new Date().getTime() - 3600*1000).toISOString(), subject: "Seu saque foi processado", message: "Seu saque de MT1,500 foi processado com sucesso.", read: false }
-      ];
-      localStorage.setItem(NOTIF_KEY, JSON.stringify(demo));
+    // Notificações
+    const notificationButton = document.getElementById("notification-button");
+    const notificationPanel = document.getElementById("notification-panel");
+    const notificationCount = document.getElementById("notification-count");
+    const notificationList = document.getElementById("notification-list");
+
+    const notifications = [
+      { id: 1, sender: "Admin DIGIVEND", time: "10:32", date: "27/10/2025", subject: "Bem-vindo!", message: "Olá! Seja bem-vindo ao seu Dashboard de vendedor." },
+      { id: 2, sender: "Suporte", time: "09:45", date: "26/10/2025", subject: "Saque aprovado", message: "Seu saque de 500 MZN foi processado com sucesso." }
+    ];
+
+    function renderNotifications() {
+      notificationList.innerHTML = "";
+      notifications.forEach(n => {
+        const li = document.createElement("li");
+        li.className = "bg-gray-700 hover:bg-gray-600 rounded-lg p-3 cursor-pointer border-l-4 border-blue-500";
+        li.innerHTML = `<p class='text-sm font-semibold text-white'>${n.subject}</p>
+          <p class='text-xs text-gray-300'>De: ${n.sender} — ${n.date} às ${n.time}</p>`;
+        li.onclick = () => openNotification(n);
+        notificationList.appendChild(li);
+      });
+      notificationCount.textContent = notifications.length;
+      notificationCount.classList.toggle("hidden", notifications.length === 0);
     }
-  }
 
-  seedNotificacoesDemo();
-
-  function getNotificacoes() {
-    return JSON.parse(localStorage.getItem(NOTIF_KEY)) || [];
-  }
-  function saveNotificacoes(arr) {
-    localStorage.setItem(NOTIF_KEY, JSON.stringify(arr));
-    atualizarBadge();
-  }
-
-  const bellBtn = document.getElementById("bellBtn");
-  const bellDropdown = document.getElementById("bellDropdown");
-  const bellList = document.getElementById("bellList");
-  const badgeCount = document.getElementById("badgeCount");
-
-  function atualizarBadge() {
-    const nots = getNotificacoes();
-    const naoLidas = nots.filter(n => !n.read).length;
-    if (naoLidas > 0) {
-      badgeCount.textContent = naoLidas;
-      badgeCount.classList.remove("hidden");
-    } else {
-      badgeCount.classList.add("hidden");
-    }
-  }
-
-  function renderBellList() {
-    const nots = getNotificacoes().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime));
-    bellList.innerHTML = "";
-    if (nots.length === 0) {
-      bellList.innerHTML = '<div class="p-3 text-gray-400">Sem notificações</div>';
-      return;
-    }
-    nots.forEach(n => {
-      // estilo: se não lida -> brilho e barra azul (left border)
-      const item = document.createElement("div");
-      item.className = "p-3 rounded-md flex justify-between items-start cursor-pointer " + (n.read ? "bg-gray-850" : "bg-gray-800 shadow-md border-l-4 border-blue-600");
-      item.innerHTML = `
-        <div>
-          <div class="text-sm font-semibold text-white">${n.name} <span class="text-xs text-gray-400">• ${formataDataCurta(n.datetime)}</span></div>
-          <div class="text-sm text-gray-300 mt-1">${n.subject}</div>
-        </div>
-        <div class="text-xs text-gray-400 pl-2">›</div>
-      `;
-      item.onclick = () => {
-        // ao clicar, abrir page notificacoes com id
-        window.location.href = `notificacoes.html?id=${n.id}`;
+    function openNotification(n) {
+      const modal = document.createElement("div");
+      modal.className = "fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50";
+      modal.innerHTML = `
+        <div class="bg-gray-900 text-white p-6 rounded-xl w-96 shadow-2xl relative">
+          <button class="absolute top-2 right-3 text-gray-400 hover:text-white text-xl font-bold" id="close-notif">×</button>
+          <h2 class="text-xl text-blue-400 font-bold mb-2">${n.subject}</h2>
+          <p class="text-sm text-gray-400 mb-1">De: ${n.sender}</p>
+          <p class="text-xs text-gray-500 mb-3">${n.date} às ${n.time}</p>
+          <p class="text-gray-200 leading-relaxed">${n.message}</p>
+        </div>`;
+      document.body.appendChild(modal);
+      document.getElementById("close-notif").onclick = () => {
+        modal.remove();
+        notifications.splice(notifications.indexOf(n), 1);
+        renderNotifications();
       };
-      bellList.appendChild(item);
-    });
-  }
-
-  function formataDataCurta(iso) {
-    const d = new Date(iso);
-    return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
-  }
-
-  // eventos bell
-  bellBtn.addEventListener("click", (e) => {
-    e.stopPropagation();
-    bellDropdown.classList.toggle("hidden");
-    if (!bellDropdown.classList.contains("hidden")) {
-      renderBellList();
-    }
-  });
-
-  // close dropdown clicking outside
-  window.addEventListener("click", (e) => {
-    if (!bellDropdown.contains(e.target) && !bellBtn.contains(e.target)) {
-      bellDropdown.classList.add("hidden");
-    }
-  });
-
-  // inicializa badge
-  atualizarBadge();
-
-  /*********************
-   * Chatbot logic
-   *********************/
-  // simples FAQ -> respostas automáticas
-  const FAQ = [
-    { q: /pagamento|pagar|como recebo/i, a: "Recebes via Emola, Mpesa, cartão ou PayPal configurando na seção Pagamentos do seu painel." },
-    { q: /saque|retirar|sacar/i, a: "Os saques são processados em até 48h úteis. Verifique a seção Saques para status e histórico." },
-    { q: /afiliad/i, a: "Podes convidar afiliados pelo link do teu produto — comissão configurável na página do produto." },
-    { q: /cadastro|conta/i, a: "Para criar conta, vá em Cadastro. Lembre-se que um email só pode ser usado por uma conta." }
-  ];
-
-  const CHAT_LIMIT = 50; // limite local de respostas automáticas por sessão/usuário
-  const CHAT_USAGE_KEY = "digivend_chat_usage";
-  const CHAT_HELPFUL_KEY = "digivend_chat_helpful";
-
-  function getChatUsage() { return parseInt(localStorage.getItem(CHAT_USAGE_KEY) || "0"); }
-  function setChatUsage(v) { localStorage.setItem(CHAT_USAGE_KEY, String(v)); }
-  function getChatHelpful() { return parseInt(localStorage.getItem(CHAT_HELPFUL_KEY) || "0"); }
-  function setChatHelpful(v) { localStorage.setItem(CHAT_HELPFUL_KEY, String(v)); }
-
-  const chatbotToggle = document.getElementById("chatbotToggle");
-  const chatbotPanel = document.getElementById("chatbotPanel");
-  const closeChatbot = document.getElementById("closeChatbot");
-  const sendChat = document.getElementById("sendChat");
-  const chatInput = document.getElementById("chatInput");
-  const chatMessages = document.getElementById("chatMessages");
-
-  chatbotToggle.addEventListener("click", ()=> chatbotPanel.classList.toggle("hidden"));
-  closeChatbot.addEventListener("click", ()=> chatbotPanel.classList.add("hidden"));
-  sendChat.addEventListener("click", enviarChat);
-  chatInput.addEventListener("keypress", (e)=> { if (e.key==='Enter') enviarChat(); });
-
-  function enviarChat() {
-    const txt = (chatInput.value || "").trim();
-    if (!txt) return;
-    chatInput.value = "";
-
-    // mostra mensagem do usuário
-    appendChatBubble(txt, "user");
-
-    // checar limite
-    let usage = getChatUsage();
-    if (usage >= CHAT_LIMIT) {
-      appendChatBubble("Limite de respostas automáticas atingido. Por favor contacte o suporte: WhatsApp +258 8XX XXX XXX ou suporte@digivend.mz", "bot");
-      appendFeedbackButtons();
-      return;
     }
 
-    // tenta casar com FAQ
-    let matched = null;
-    for (const f of FAQ) {
-      if (f.q.test(txt)) { matched = f; break; }
-    }
+    notificationButton.onclick = (e) => {
+      e.stopPropagation();
+      notificationPanel.classList.toggle("hidden");
+    };
 
-    // responde
-    if (matched) {
-      setTimeout(()=> {
-        appendChatBubble(matched.a, "bot");
-        setChatUsage(usage+1);
-        appendFeedbackButtons();
-      }, 500 + Math.random()*400);
-    } else {
-      // fallback genérico
-      setTimeout(()=> {
-        appendChatBubble("Desculpe, não encontrei uma resposta automática. Deseja abrir um ticket para o suporte? (ou contacte via WhatsApp: +258 8XX XXX XXX)", "bot");
-        setChatUsage(usage+1);
-        appendFeedbackButtons();
-      }, 600);
-    }
-  }
-
-  function appendChatBubble(text, who) {
-    const el = document.createElement("div");
-    if (who === "user") {
-      el.className = "bg-blue-600 text-white p-2 rounded-xl self-end max-w-[80%]";
-    } else {
-      el.className = "bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]";
-    }
-    el.textContent = text;
-    chatMessages.appendChild(el);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  function appendFeedbackButtons() {
-    const box = document.createElement("div");
-    box.className = "flex gap-2";
-    const yes = document.createElement("button");
-    yes.className = "px-3 py-1 bg-green-600 rounded text-white text-sm";
-    yes.textContent = "👍 Útil";
-    const no = document.createElement("button");
-    no.className = "px-3 py-1 bg-red-600 rounded text-white text-sm";
-    no.textContent = "👎 Não ajudou";
-
-    yes.addEventListener("click", ()=>{
-      setChatHelpful(getChatHelpful()+1);
-      // feedback positivo
-      appendChatBubble("Obrigadx! A tua avaliação ajuda-nos a melhorar.", "bot");
-      box.remove();
-    });
-    no.addEventListener("click", ()=>{
-      appendChatBubble("Lamentamos. Queres que eu abra um ticket para o suporte? (sim / não)", "bot");
-      box.remove();
-    });
-
-    box.appendChild(yes);
-    box.appendChild(no);
-    chatMessages.appendChild(box);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
-  }
-
-  /*********************
-   * Inicialização e gráfico
-   *********************/
-  // inicializa badge / bell
-  atualizarBadge();
-
-  // gráfico (branco)
-  const ctx = document.getElementById("vendasChart").getContext("2d");
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: ["Jan","Fev","Mar","Abr","Mai","Jun"],
-      datasets: [{
-        label: "Vendas",
-        data: [8,12,9,14,11,15],
-        backgroundColor: "rgba(255,255,255,0.95)",
-        borderRadius: 8
-      }]
-    },
-    options: {
-      plugins:{ legend:{ labels:{ color:"#fff" } } },
-      scales: {
-        x: { ticks:{ color:"#ddd" }, grid:{ color:"rgba(255,255,255,0.05)" } },
-        y: { ticks:{ color:"#ddd" }, grid:{ color:"rgba(255,255,255,0.05)" } }
+    document.addEventListener("click", (e) => {
+      if (!notificationPanel.contains(e.target) && !notificationButton.contains(e.target)) {
+        notificationPanel.classList.add("hidden");
       }
-    }
-  });
+    });
 
-  // small card style via JS: (mantemos CSS no final)
-  document.querySelectorAll(".card-glow-small").forEach(el=>{
-    el.style.background="#0d1117";
-    el.style.borderRadius="12px";
-    el.style.padding="1.25rem";
-    el.style.borderLeft="6px solid #2563eb";
-    el.style.boxShadow="0 6px 18px rgba(37,99,235,0.08)";
-  });
+    renderNotifications();
 
-  // profile menu open/close
-  const profileBtn = document.getElementById("profileBtn");
-  const profileMenu = document.getElementById("profileMenu");
-  profileBtn.addEventListener("click", (e) => { e.stopPropagation(); profileMenu.classList.toggle("hidden"); });
-
-  window.addEventListener("click", (e)=>{
-    if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.classList.add("hidden");
-  });
-
-  // sidebar toggles
-  const menuBtn = document.getElementById("menuBtn");
-  const closeSidebar = document.getElementById("closeSidebar");
-  const sidebar = document.getElementById("sidebar");
-  menuBtn.addEventListener("click", ()=> sidebar.classList.remove("-translate-x-full"));
-  closeSidebar.addEventListener("click", ()=> sidebar.classList.add("-translate-x-full"));
-  document.querySelectorAll(".menu-item").forEach(i=> i.addEventListener("click", ()=> sidebar.classList.add("-translate-x-full")));
-
-  // expose helper to global for notificacoes page
-  window.getNotificacoes = getNotificacoes;
-  window.saveNotificacoes = saveNotificacoes;
-  window.formataDataCurta = formataDataCurta;
-  window.atualizarBadge = atualizarBadge;
-
-  // marcar notificação como lida (usada pela page notificacoes.html via localStorage)
-  // not necessary here; notificacoes.html fará o update direto
+    // Gráfico
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
+        datasets: [{
+          label: 'Vendas Semanais',
+          data: [4, 6, 3, 8, 5, 2, 7],
+          backgroundColor: 'rgba(255,255,255,0.9)',
+          borderRadius: 6,
+        }]
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { color: '#bbb' }, grid: { color: 'transparent' } },
+          y: { ticks: { color: '#bbb' }, grid: { color: '#333' } }
+        }
+      }
+    });
   </script>
-
-  <style>
-    /* estilos cards pequenos */
-    .card-glow-small { background:#0d1117; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-    .bg-gray-850 { background: #0f1724; border-radius:8px; padding:0.75rem; }
-  </style>
 </body>
 </html>
 
