@@ -1,206 +1,252 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DIGIVEND - Dashboard Vendedor</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DIGIVEND — Dashboard Vendedor</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-950 text-white min-h-screen flex flex-col">
+<body class="bg-gray-950 text-white min-h-screen font-sans">
 
-  <!-- Header -->
-  <header class="flex justify-between items-center px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-50">
-    <!-- Sidebar Toggle -->
-    <button id="menu-toggle" class="text-white hover:text-blue-400 text-2xl">☰</button>
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-900 transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="flex items-center justify-between px-4 py-4 border-b border-gray-800">
+      <h2 class="text-xl font-bold text-blue-400">DIGIVEND</h2>
+      <button id="close-sidebar" class="text-gray-400 hover:text-white text-2xl font-bold">×</button>
+    </div>
 
-    <!-- Logo -->
-    <h1 class="text-2xl font-bold text-blue-400">DIGIVEND</h1>
+    <nav class="p-4 space-y-2">
+      <a href="dashboard_vendedor.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">🏠 Dashboard</a>
+      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">📦 Meus Produtos</a>
+      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">💰 Saques</a>
+      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">👥 Afiliados</a>
+      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">⚙️ Configurações</a>
+      <a href="index.html" class="block px-3 py-2 rounded text-red-500 hover:bg-gray-800">🚪 Sair</a>
+    </nav>
+  </aside>
 
-    <!-- Right Controls -->
-    <div class="flex items-center space-x-6 relative">
-      <!-- Notificações -->
+  <!-- HEADER / TOPBAR -->
+  <header class="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-40">
+    <div class="flex items-center gap-4">
+      <button id="open-sidebar" class="text-white text-2xl">☰</button>
+      <h1 class="text-2xl font-bold text-blue-400">DIGIVEND</h1>
+    </div>
+
+    <div class="flex items-center gap-4">
+      <!-- Notificações (sino) -->
       <div class="relative">
-        <button id="notification-button" class="relative">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-white hover:text-blue-400 transition" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M15 17h5l-1.405-1.405C18.21 14.79 18 13.9 18 13V9a6 6 0 10-12 0v4c0 .9-.21 1.79-.595 2.595L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+        <button id="bellBtn" class="p-1 rounded hover:bg-gray-800" title="Notificações">
+          <!-- sino com centro transparente e borda branca (stroke white) -->
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341" />
+            <path d="M9 17v1a3 3 0 006 0v-1" />
           </svg>
-          <span id="notification-count"
-            class="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5 hidden">0</span>
+          <span id="bellCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-[11px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </button>
 
-        <!-- Painel de notificações -->
-        <div id="notification-panel"
-          class="hidden absolute right-0 mt-3 w-80 max-h-96 overflow-y-auto bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-3 z-50">
-          <h3 class="text-blue-400 text-lg font-semibold mb-2">Notificações</h3>
-          <ul id="notification-list" class="space-y-2"></ul>
+        <!-- dropdown do sino (tamanho controlado) -->
+        <div id="bellDropdown" class="hidden absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-2 z-50">
+          <div class="px-3 py-2 border-b border-gray-700 text-blue-300 font-semibold">Notificações</div>
+          <div id="bellItems" class="p-2 space-y-2"></div>
+          <div class="px-3 py-2 border-t border-gray-700 text-xs text-gray-400">Clique para abrir a notificação</div>
         </div>
       </div>
 
       <!-- Perfil -->
-      <button id="profile-button"
-        class="bg-blue-600 hover:bg-blue-700 p-2 rounded-full transition text-white font-bold">👤</button>
+      <div class="relative">
+        <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">V</button>
+
+        <!-- menu perfil -->
+        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-44 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
+          <a href="index.html" class="block px-4 py-2 hover:bg-gray-700">Marketplace</a>
+          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
+          <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+        </div>
+      </div>
     </div>
   </header>
 
-  <!-- Sidebar -->
-  <aside id="sidebar"
-    class="fixed top-0 left-0 h-full w-64 bg-gray-900 border-r border-gray-800 transform -translate-x-full transition-transform duration-300 ease-in-out z-40">
-    <div class="p-4 border-b border-gray-800 flex justify-between items-center">
-      <h2 class="text-xl font-bold text-blue-400">Menu</h2>
-      <button id="close-sidebar" class="text-gray-400 hover:text-white text-2xl font-bold">×</button>
-    </div>
-    <nav class="p-4 space-y-3">
-      <a href="#" class="block hover:bg-gray-800 p-2 rounded">🏠 Dashboard</a>
-      <a href="#" class="block hover:bg-gray-800 p-2 rounded">📦 Meus Produtos</a>
-      <a href="#" class="block hover:bg-gray-800 p-2 rounded">💰 Saques</a>
-      <a href="#" class="block hover:bg-gray-800 p-2 rounded">👥 Afiliados</a>
-      <a href="#" class="block hover:bg-gray-800 p-2 rounded">⚙️ Configurações</a>
-      <a href="index.html" class="block hover:bg-gray-800 p-2 rounded text-red-500">🚪 Sair</a>
-    </nav>
-  </aside>
-
-  <!-- Saudação -->
+  <!-- MAIN -->
   <main class="flex-1 p-8">
-    <h2 class="text-3xl font-bold text-blue-400 mb-6">👋 Bem-vindo ao seu Dashboard, Vendedor!</h2>
+    <h2 id="welcome" class="text-3xl font-bold text-blue-400 mb-6 text-left">👋 Bem-vindo ao seu Dashboard, Vendedor!</h2>
 
-    <!-- Cards principais -->
+    <!-- CARDS 2x2 -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <!-- Card 1 -->
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
-        <h3 class="text-lg font-semibold text-gray-300">Total de Vendas</h3>
-        <p class="text-3xl font-bold text-white mt-2">124</p>
+        <h3 class="text-sm text-blue-300 font-medium">Total de Vendas</h3>
+        <p class="text-3xl font-bold mt-2">124</p>
       </div>
 
-      <!-- Card 2 -->
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
-        <h3 class="text-lg font-semibold text-gray-300">Afiliados</h3>
-        <p class="text-3xl font-bold text-white mt-2">32</p>
+        <h3 class="text-sm text-blue-300 font-medium">Afiliados</h3>
+        <p class="text-3xl font-bold mt-2">32</p>
       </div>
 
-      <!-- Card 3 -->
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
-        <h3 class="text-lg font-semibold text-gray-300">Produtos</h3>
-        <p class="text-3xl font-bold text-white mt-2">15</p>
+        <h3 class="text-sm text-blue-300 font-medium">Produtos</h3>
+        <p class="text-3xl font-bold mt-2">15</p>
       </div>
 
-      <!-- Card 4 -->
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
-        <h3 class="text-lg font-semibold text-gray-300">Saques Pendentes</h3>
-        <p class="text-3xl font-bold text-white mt-2">3</p>
+        <h3 class="text-sm text-blue-300 font-medium">Saques</h3>
+        <p class="text-3xl font-bold mt-2">3</p>
       </div>
     </div>
 
-    <!-- Gráfico -->
+    <!-- GRÁFICO -->
     <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md mb-8">
       <h3 class="text-lg font-semibold text-gray-300 mb-4">Estatísticas de Vendas</h3>
-      <canvas id="salesChart" height="120"></canvas>
+      <canvas id="vendasChart" height="110"></canvas>
     </div>
 
-    <!-- Notificações recentes -->
+    <!-- Últimas atividades -->
     <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md">
-      <h3 class="text-lg font-semibold text-gray-300 mb-3">Últimas Atualizações</h3>
-      <ul id="updates-list" class="space-y-3 text-sm text-gray-300">
-        <li class="border-l-4 border-blue-500 pl-3">💸 Você recebeu um pagamento de 500 MZN</li>
-        <li class="border-l-4 border-blue-500 pl-3">📦 Novo produto aprovado: “Curso de Marketing”</li>
-        <li class="border-l-4 border-blue-500 pl-3">🧾 Saque solicitado - aguardando confirmação</li>
-      </ul>
+      <h3 class="text-lg font-semibold text-gray-300 mb-3">Últimas Atividades</h3>
+      <div id="activities" class="space-y-3 text-gray-300 text-sm">
+        <div class="p-3 rounded-lg bg-gray-850">✅ Venda concluída: "Curso de Marketing Digital"</div>
+        <div class="p-3 rounded-lg bg-gray-850">💳 Saque processado com sucesso.</div>
+        <div class="p-3 rounded-lg bg-gray-850">🤝 Novo afiliado vinculado à sua conta.</div>
+      </div>
     </div>
   </main>
 
-  <!-- Chatbot -->
-  <button id="chatbot-btn"
-    class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg w-14 h-14 flex items-center justify-center text-2xl transition">
-    💬
-  </button>
+  <!-- CHATBOT (botão) -->
+  <button id="chatBtn" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30 z-40">💬</button>
 
+  <!-- SCRIPTS -->
   <script>
-    // Sidebar
-    const sidebar = document.getElementById("sidebar");
-    document.getElementById("menu-toggle").onclick = () => sidebar.classList.remove("-translate-x-full");
-    document.getElementById("close-sidebar").onclick = () => sidebar.classList.add("-translate-x-full");
+  /* -------------------------
+     Notificações (localStorage)
+     chave: digivend_notificacoes_vendedor
+     ------------------------- */
+  const NOTIF_KEY = "digivend_notificacoes_vendedor";
 
-    // Notificações
-    const notificationButton = document.getElementById("notification-button");
-    const notificationPanel = document.getElementById("notification-panel");
-    const notificationCount = document.getElementById("notification-count");
-    const notificationList = document.getElementById("notification-list");
-
-    const notifications = [
-      { id: 1, sender: "Admin DIGIVEND", time: "10:32", date: "27/10/2025", subject: "Bem-vindo!", message: "Olá! Seja bem-vindo ao seu Dashboard de vendedor." },
-      { id: 2, sender: "Suporte", time: "09:45", date: "26/10/2025", subject: "Saque aprovado", message: "Seu saque de 500 MZN foi processado com sucesso." }
-    ];
-
-    function renderNotifications() {
-      notificationList.innerHTML = "";
-      notifications.forEach(n => {
-        const li = document.createElement("li");
-        li.className = "bg-gray-700 hover:bg-gray-600 rounded-lg p-3 cursor-pointer border-l-4 border-blue-500";
-        li.innerHTML = `<p class='text-sm font-semibold text-white'>${n.subject}</p>
-          <p class='text-xs text-gray-300'>De: ${n.sender} — ${n.date} às ${n.time}</p>`;
-        li.onclick = () => openNotification(n);
-        notificationList.appendChild(li);
-      });
-      notificationCount.textContent = notifications.length;
-      notificationCount.classList.toggle("hidden", notifications.length === 0);
+  function seedNotifs() {
+    if (!localStorage.getItem(NOTIF_KEY)) {
+      const demo = [
+        { id: 1, name: "DIGIVEND (Admin)", sender: "admin@digivend", datetime: new Date().toISOString(), subject: "Promoção especial", message: "Ative sua campanha de promoção com 10% de destaque.", read: false },
+        { id: 2, name: "Suporte DIGIVEND", sender: "suporte@digivend", datetime: new Date(Date.now() - 3600*1000).toISOString(), subject: "Saque processado", message: "Seu saque de MT1,500 foi processado.", read: false }
+      ];
+      localStorage.setItem(NOTIF_KEY, JSON.stringify(demo));
     }
+  }
+  seedNotifs();
 
-    function openNotification(n) {
-      const modal = document.createElement("div");
-      modal.className = "fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50";
-      modal.innerHTML = `
-        <div class="bg-gray-900 text-white p-6 rounded-xl w-96 shadow-2xl relative">
-          <button class="absolute top-2 right-3 text-gray-400 hover:text-white text-xl font-bold" id="close-notif">×</button>
-          <h2 class="text-xl text-blue-400 font-bold mb-2">${n.subject}</h2>
-          <p class="text-sm text-gray-400 mb-1">De: ${n.sender}</p>
-          <p class="text-xs text-gray-500 mb-3">${n.date} às ${n.time}</p>
-          <p class="text-gray-200 leading-relaxed">${n.message}</p>
-        </div>`;
-      document.body.appendChild(modal);
-      document.getElementById("close-notif").onclick = () => {
-        modal.remove();
-        notifications.splice(notifications.indexOf(n), 1);
-        renderNotifications();
+  function getNotifs() { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; }
+  function saveNotifs(arr){ localStorage.setItem(NOTIF_KEY, JSON.stringify(arr)); updateBellCount(); }
+
+  // DOM refs
+  const bellBtn = document.getElementById("bellBtn");
+  const bellDropdown = document.getElementById("bellDropdown");
+  const bellItems = document.getElementById("bellItems");
+  const bellCount = document.getElementById("bellCount");
+  const bellCountAlt = document.getElementById("notification-count"); // for other markup compatibility
+
+  function updateBellCount(){
+    const nots = getNotifs();
+    const unread = nots.filter(n => !n.read).length;
+    if (bellCount) bellCount.textContent = unread;
+    if (bellCountAlt) {
+      bellCountAlt.textContent = unread;
+      bellCountAlt.classList.toggle("hidden", unread === 0);
+    }
+  }
+
+  function renderBellItems(){
+    const nots = getNotifs().sort((a,b)=> new Date(b.datetime) - new Date(a.datetime));
+    bellItems.innerHTML = "";
+    if (nots.length === 0) {
+      bellItems.innerHTML = '<div class="p-3 text-gray-400">Sem notificações</div>';
+      return;
+    }
+    nots.forEach(n => {
+      const item = document.createElement("div");
+      // destaque para não-lidas
+      item.className = "p-3 rounded-md flex justify-between items-start cursor-pointer " + (n.read ? "bg-gray-850" : "bg-gray-800 border-l-4 border-blue-500 shadow-md");
+      item.innerHTML = `
+        <div>
+          <div class="text-sm font-semibold text-white">${n.subject}</div>
+          <div class="text-xs text-gray-400 mt-1">${n.name} • ${formatShort(n.datetime)}</div>
+        </div>
+        <div class="text-gray-400 text-xs pl-2">›</div>
+      `;
+      item.onclick = () => {
+        // abrir notificacoes.html?id=ID
+        window.location.href = `notificacoes.html?id=${n.id}`;
       };
-    }
+      bellItems.appendChild(item);
+    });
+  }
 
-    notificationButton.onclick = (e) => {
+  function formatShort(iso){
+    const d = new Date(iso);
+    return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
+  }
+
+  // bell toggle behavior (small dropdown)
+  const bellButton = document.getElementById("bellBtn") || document.getElementById("notification-button");
+  const bellDropdownElem = document.getElementById("bellDropdown") || document.getElementById("notification-panel");
+  if (bellButton) {
+    bellButton.addEventListener("click", (e) => {
       e.stopPropagation();
-      notificationPanel.classList.toggle("hidden");
-    };
-
-    document.addEventListener("click", (e) => {
-      if (!notificationPanel.contains(e.target) && !notificationButton.contains(e.target)) {
-        notificationPanel.classList.add("hidden");
-      }
+      // re-render before open
+      renderBellItems();
+      bellDropdownElem.classList.toggle("hidden");
+      updateBellCount();
     });
+  }
 
-    renderNotifications();
+  // close bell when click outside
+  window.addEventListener("click", (e) => {
+    if (bellDropdownElem && !bellDropdownElem.contains(e.target) && !bellButton.contains(e.target)) {
+      bellDropdownElem.classList.add("hidden");
+    }
+    // profile menu close handled below
+    profileMenu.classList.add("hidden");
+  });
 
-    // Gráfico
-    const ctx = document.getElementById('salesChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'],
-        datasets: [{
-          label: 'Vendas Semanais',
-          data: [4, 6, 3, 8, 5, 2, 7],
-          backgroundColor: 'rgba(255,255,255,0.9)',
-          borderRadius: 6,
-        }]
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { ticks: { color: '#bbb' }, grid: { color: 'transparent' } },
-          y: { ticks: { color: '#bbb' }, grid: { color: '#333' } }
-        }
-      }
-    });
+  // profile menu open/close
+  const profileBtn = document.getElementById("profileBtn");
+  const profileMenu = document.getElementById("profileMenu");
+  profileBtn.addEventListener("click", (e) => { e.stopPropagation(); profileMenu.classList.toggle("hidden"); });
+
+  // sidebar open/close and menu items close
+  const sidebar = document.getElementById("sidebar");
+  document.getElementById("open-sidebar").addEventListener("click", ()=> sidebar.classList.remove("-translate-x-full"));
+  document.getElementById("close-sidebar").addEventListener("click", ()=> sidebar.classList.add("-translate-x-full"));
+  // menu items close sidebar when clicked
+  document.querySelectorAll(".menu-item").forEach(el => el.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
+
+  // chart
+  const ctx = document.getElementById("vendasChart").getContext("2d");
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
+      datasets: [{ label: 'Vendas', data:[4,6,3,8,5,2,7], backgroundColor: 'rgba(255,255,255,0.95)', borderRadius:6 }]
+    },
+    options: { plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:'#bbb' } }, y:{ ticks:{ color:'#bbb' } } } }
+  });
+
+  // helper logout
+  function logout(){ localStorage.removeItem("usuarioLogado"); window.location.href = "login.html"; }
+  window.logout = logout; // export so profile button can call it
+
+  // init
+  updateBellCount();
+  renderBellItems();
+
+  // expose utilities (so notificacoes.html can call)
+  window.getNotifications = getNotifs;
+  window.saveNotifications = saveNotifs;
+  window.formatShort = formatShort;
   </script>
+
+  <!-- ESTILOS -->
+  <style>
+    .bg-gray-850 { background: #0f1724; border-radius:8px; }
+  </style>
 </body>
 </html>
 

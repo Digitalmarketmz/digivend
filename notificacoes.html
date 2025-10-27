@@ -9,132 +9,124 @@
 <body class="bg-gray-950 text-white min-h-screen">
 
   <main class="max-w-3xl mx-auto p-6">
-    <h1 class="text-2xl font-bold text-blue-400 mb-4">📬 Notificações</h1>
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-blue-400">📬 Notificações</h1>
+      <a href="dashboard_vendedor.html" class="text-blue-300 hover:underline">⬅ Voltar ao Dashboard</a>
+    </div>
 
     <div id="list" class="space-y-3 mb-8"></div>
 
+    <!-- area onde abrimos o detalhe da notificação -->
     <div id="openArea"></div>
-
-    <a href="dashboard_vendedor.html" class="text-blue-400 hover:underline block mt-8">⬅ Voltar ao Dashboard</a>
   </main>
 
 <script>
-  // mesma chave usada no dashboard
   const NOTIF_KEY = "digivend_notificacoes_vendedor";
 
-  function getNotificacoes() {
-    return JSON.parse(localStorage.getItem(NOTIF_KEY)) || [];
-  }
-  function saveNotificacoes(arr) {
-    localStorage.setItem(NOTIF_KEY, JSON.stringify(arr));
-  }
+  function getNotifs(){ return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; }
+  function saveNotifs(arr){ localStorage.setItem(NOTIF_KEY, JSON.stringify(arr)); }
 
-  const params = new URLSearchParams(window.location.search);
+  // parse ?id=
+  const params = new URLSearchParams(location.search);
   const openId = params.get("id") ? parseInt(params.get("id")) : null;
 
   const list = document.getElementById("list");
   const openArea = document.getElementById("openArea");
 
-  function renderList() {
-    const nots = getNotificacoes().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime));
+  function renderList(){
+    const nots = getNotifs().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime));
     list.innerHTML = "";
     if (nots.length === 0) {
-      list.innerHTML = "<p class='text-gray-400'>Nenhuma notificação.</p>";
+      list.innerHTML = '<p class="text-gray-400">Nenhuma notificação.</p>';
       return;
     }
-    nots.forEach(n => {
+    nots.forEach(n=>{
       const row = document.createElement("div");
-      row.className = "p-3 rounded-lg flex justify-between items-center " + (n.read ? "bg-gray-850" : "bg-gray-800 border-l-4 border-blue-600 shadow-md");
+      row.className = "p-3 rounded-lg flex justify-between items-center " + (n.read ? "bg-gray-850" : "bg-gray-800 border-l-4 border-blue-500 shadow-md");
       row.innerHTML = `
         <div>
-          <div class="font-semibold">${n.name} <span class="text-sm text-gray-400">• ${new Date(n.datetime).toLocaleString()}</span></div>
-          <div class="text-sm text-gray-300 mt-1">${n.subject}</div>
+          <div class="font-semibold">${escapeHtml(n.name)} <span class="text-xs text-gray-400">• ${new Date(n.datetime).toLocaleString()}</span></div>
+          <div class="text-sm text-gray-300 mt-1">${escapeHtml(n.subject)}</div>
         </div>
         <div class="flex gap-2 items-center">
-          <button class="text-gray-300 text-sm" data-open="${n.id}">Abrir</button>
-          <button class="text-gray-300 text-sm" data-close="${n.id}">✕</button>
-        </div>
-      `;
+          <button class="text-sm text-blue-300" data-open="${n.id}">Abrir</button>
+          <button class="text-sm text-gray-300" data-delete="${n.id}">✕</button>
+        </div>`;
       list.appendChild(row);
     });
 
-    // eventos abrir/fechar
-    list.querySelectorAll("[data-open]").forEach(b=>{
-      b.addEventListener("click", ()=> {
-        const id = parseInt(b.getAttribute("data-open"));
-        openNotificacao(id);
-      });
-    });
-    list.querySelectorAll("[data-close]").forEach(b=>{
-      b.addEventListener("click", ()=> {
-        const id = parseInt(b.getAttribute("data-close"));
-        marcarComoLida(id, true); // remover
-      });
-    });
+    // attach events
+    list.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", ()=> openNotificacao(parseInt(b.getAttribute("data-open"))) ));
+    list.querySelectorAll("[data-delete]").forEach(b => b.addEventListener("click", ()=> {
+      const id = parseInt(b.getAttribute("data-delete"));
+      // remove notification (mark read/remove)
+      removeNotificacao(id);
+    }));
   }
 
-  function openNotificacao(id) {
-    const nots = getNotificacoes();
-    const n = nots.find(x=>x.id===id);
+  function openNotificacao(id){
+    const nots = getNotifs();
+    const n = nots.find(x => x.id === id);
     if (!n) return;
-    // render modal-like card no centro da página (no openArea)
+    // render detalhe no centro (card)
     openArea.innerHTML = `
-      <div id="openCard" class="bg-gray-900 p-6 rounded-xl shadow-2xl border-l-4 border-blue-600">
+      <div class="bg-gray-900 p-6 rounded-xl shadow-2xl border-l-4 border-blue-500">
         <div class="flex justify-between items-start">
           <div>
-            <div class="text-sm text-blue-300 font-semibold">${n.name}</div>
+            <div class="text-sm text-blue-300 font-semibold">${escapeHtml(n.name)}</div>
             <div class="text-xs text-gray-400">${new Date(n.datetime).toLocaleString()}</div>
-            <div class="text-lg font-bold mt-3">${n.subject}</div>
+            <div class="text-xl font-bold mt-3">${escapeHtml(n.subject)}</div>
           </div>
           <div>
-            <button id="closeOpen" class="text-gray-300 text-xl">✕</button>
+            <button id="closeDetail" class="text-gray-300 text-xl">✕</button>
           </div>
         </div>
-        <div class="mt-4 text-gray-200">${escapeHtml(n.message)}</div>
+        <div class="mt-4 text-gray-200 leading-relaxed">${escapeHtml(n.message).replace(/\n/g,'<br/>')}</div>
       </div>
     `;
-    // ao abrir, vamos abrir a notificação: marcar como lida e atualizar badge
-    marcarComoLida(id, false); // marcar lida (sem remover da lista imediatamente)
-    // evento fechar
-    document.getElementById("closeOpen").addEventListener("click", ()=> {
-      // ao fechar: tirar brilho (se quiser remover do correio, removemos do array)
-      marcarComoLida(id, true); // remover da lista
-      // apagar aula visual
-      document.getElementById("openCard").remove();
+    // mark as read (but keep in list) so it loses glow; when user closes we will remove it from list (per spec)
+    markAsRead(id);
+
+    // close handler -> remove from list (so disappears from bell)
+    document.getElementById("closeDetail").addEventListener("click", ()=>{
+      removeNotificacao(id);
+      // remove visually
+      const el = document.getElementById("openArea");
+      el.innerHTML = "";
       renderList();
-      // atualizar badge no dashboard (elas lerão do mesmo localStorage)
-      // quando usuário voltar ao dashboard, badge refletirá mudanças
     });
+    // scroll to detail
+    openArea.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  function marcarComoLida(id, remover=false) {
-    let nots = getNotificacoes();
-    if (remover) {
-      nots = nots.filter(n=> n.id !== id);
-    } else {
-      nots = nots.map(n => n.id===id ? {...n, read:true} : n);
-    }
-    saveNotificacoes(nots);
+  function markAsRead(id) {
+    const nots = getNotifs().map(n => n.id===id ? {...n, read:true} : n );
+    saveNotifs(nots);
+  }
+
+  function removeNotificacao(id){
+    const nots = getNotifs().filter(n => n.id !== id);
+    saveNotifs(nots);
     renderList();
+    // update bell count on dashboard (dashboard reads same localStorage on load)
   }
 
-  // escape básico para evitar html injection
-  function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML.replace(/\n/g, '<br/>');
+  function escapeHtml(s){
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
   }
 
   renderList();
 
-  // Se veio ?id=NN abrir diretamente
+  // se veio ?id=NN abrir automaticamente
   if (openId) {
-    setTimeout(()=> openNotificacao(openId), 250);
+    setTimeout(()=> openNotificacao(openId), 200);
   }
 </script>
 
 <style>
-  .bg-gray-850 { background: #0f1724; border-radius:8px; padding:0.75rem; }
+.bg-gray-850 { background:#0f1724; border-radius:8px; }
 </style>
 </body>
 </html>
