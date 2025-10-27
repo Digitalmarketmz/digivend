@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>DIGIVEND — Dashboard Vendedor</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DIGIVEND — Dashboard Vendedor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-950 text-white min-h-screen font-sans">
 
@@ -18,10 +18,11 @@
 
     <nav class="p-4 space-y-2">
       <a href="dashboard_vendedor.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">🏠 Dashboard</a>
-      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">📦 Meus Produtos</a>
-      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">💰 Saques</a>
-      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">👥 Afiliados</a>
-      <a href="#" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">⚙️ Configurações</a>
+      <a href="meus_produtos.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">📦 Meus Produtos</a>
+      <a href="vendas.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">💰 Vendas</a>
+      <a href="saques.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">💸 Saques</a>
+      <a href="afiliados.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">👥 Afiliados</a>
+      <a href="configuracoes.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">⚙️ Configurações</a>
       <a href="index.html" class="block px-3 py-2 rounded text-red-500 hover:bg-gray-800">🚪 Sair</a>
     </nav>
   </aside>
@@ -34,34 +35,35 @@
     </div>
 
     <div class="flex items-center gap-4">
-      <!-- Notificações (sino) -->
+      <!-- Notificações (sino com borda branca e centro transparente) -->
       <div class="relative">
         <button id="bellBtn" class="p-1 rounded hover:bg-gray-800" title="Notificações">
-          <!-- sino com centro transparente e borda branca (stroke white) -->
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341" />
-            <path d="M9 17v1a3 3 0 006 0v-1" />
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v4c0 .538-.214 1.055-.595 1.436L4 17h5"/>
+            <path d="M9 17a3 3 0 006 0"/>
           </svg>
           <span id="bellCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-[11px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
         </button>
 
-        <!-- dropdown do sino (tamanho controlado) -->
+        <!-- dropdown do sino: largura fixa, max-height e scroll -->
         <div id="bellDropdown" class="hidden absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-2 z-50">
-          <div class="px-3 py-2 border-b border-gray-700 text-blue-300 font-semibold">Notificações</div>
+          <div class="px-3 py-2 border-b border-gray-700 text-blue-300 font-semibold flex justify-between items-center">
+            <span>Notificações</span>
+            <button id="markAllRead" class="text-xs text-gray-300 hover:text-white">Marcar todas lidas</button>
+          </div>
           <div id="bellItems" class="p-2 space-y-2"></div>
-          <div class="px-3 py-2 border-t border-gray-700 text-xs text-gray-400">Clique para abrir a notificação</div>
+          <div class="px-3 py-2 border-t border-gray-700 text-xs text-gray-400">Clique em uma notificação para abrir</div>
         </div>
       </div>
 
-      <!-- Perfil -->
+      <!-- Perfil (menu) -->
       <div class="relative">
         <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">V</button>
 
-        <!-- menu perfil -->
         <div id="profileMenu" class="hidden absolute right-0 mt-2 w-44 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
           <a href="index.html" class="block px-4 py-2 hover:bg-gray-700">Marketplace</a>
-          <a href="#" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
-          <button onclick="logout()" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+          <a href="perfil.html" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
+          <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
         </div>
       </div>
     </div>
@@ -75,32 +77,32 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
         <h3 class="text-sm text-blue-300 font-medium">Total de Vendas</h3>
-        <p class="text-3xl font-bold mt-2">124</p>
+        <p id="totalVendas" class="text-3xl font-bold mt-2">124</p>
       </div>
 
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
         <h3 class="text-sm text-blue-300 font-medium">Afiliados</h3>
-        <p class="text-3xl font-bold mt-2">32</p>
+        <p id="totalAfiliados" class="text-3xl font-bold mt-2">32</p>
       </div>
 
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
         <h3 class="text-sm text-blue-300 font-medium">Produtos</h3>
-        <p class="text-3xl font-bold mt-2">15</p>
+        <p id="totalProdutos" class="text-3xl font-bold mt-2">15</p>
       </div>
 
       <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md text-center">
         <h3 class="text-sm text-blue-300 font-medium">Saques</h3>
-        <p class="text-3xl font-bold mt-2">3</p>
+        <p id="totalSaques" class="text-3xl font-bold mt-2">3</p>
       </div>
     </div>
 
     <!-- GRÁFICO -->
     <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md mb-8">
       <h3 class="text-lg font-semibold text-gray-300 mb-4">Estatísticas de Vendas</h3>
-      <canvas id="vendasChart" height="110"></canvas>
+      <canvas id="vendasChart" height="120"></canvas>
     </div>
 
-    <!-- Últimas atividades -->
+    <!-- Últimas atividades (separadas das notificações) -->
     <div class="bg-gray-900 p-6 rounded-xl border-l-4 border-blue-500 shadow-md">
       <h3 class="text-lg font-semibold text-gray-300 mb-3">Últimas Atividades</h3>
       <div id="activities" class="space-y-3 text-gray-300 text-sm">
@@ -111,139 +113,240 @@
     </div>
   </main>
 
-  <!-- CHATBOT (botão) -->
-  <button id="chatBtn" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30 z-40">💬</button>
+  <!-- CHATBOT (painel + botão) -->
+  <button id="chatBtn" class="fixed bottom-6 left-6 bg-blue-600 hover:bg-blue-700 w-14 h-14 rounded-full text-2xl shadow-lg border-2 border-white/30 z-50">💬</button>
+
+  <div id="chatPanel" class="hidden fixed bottom-24 left-6 w-80 bg-gray-800 border border-gray-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col z-50">
+    <div class="bg-gray-900 text-blue-400 font-semibold p-3 border-b border-gray-700 flex justify-between items-center">
+      <span>Suporte DIGIVEND</span>
+      <button id="closeChat" class="text-gray-400 hover:text-red-500">✕</button>
+    </div>
+
+    <div id="chatMessages" class="flex-1 p-3 overflow-y-auto space-y-3 text-sm max-h-72">
+      <div class="bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]">👋 Olá! Eu sou o assistente automático. Como posso ajudar?</div>
+    </div>
+
+    <div class="flex border-t border-gray-700">
+      <input id="chatInput" type="text" placeholder="Digite sua mensagem..." class="flex-1 p-2 bg-gray-900 text-gray-200 outline-none text-sm" />
+      <button id="chatSend" class="px-4 text-blue-400 font-bold hover:text-blue-300">➤</button>
+    </div>
+  </div>
 
   <!-- SCRIPTS -->
   <script>
-  /* -------------------------
-     Notificações (localStorage)
-     chave: digivend_notificacoes_vendedor
-     ------------------------- */
+  /**********************
+   * Notificações - localStorage
+   **********************/
   const NOTIF_KEY = "digivend_notificacoes_vendedor";
 
-  function seedNotifs() {
-    if (!localStorage.getItem(NOTIF_KEY)) {
+  function seedNotifsIfNeeded(){
+    if (!localStorage.getItem(NOTIF_KEY)){
       const demo = [
-        { id: 1, name: "DIGIVEND (Admin)", sender: "admin@digivend", datetime: new Date().toISOString(), subject: "Promoção especial", message: "Ative sua campanha de promoção com 10% de destaque.", read: false },
-        { id: 2, name: "Suporte DIGIVEND", sender: "suporte@digivend", datetime: new Date(Date.now() - 3600*1000).toISOString(), subject: "Saque processado", message: "Seu saque de MT1,500 foi processado.", read: false }
+        { id: 1, name: "DIGIVEND (Admin)", sender: "admin@digivend", datetime: new Date().toISOString(), subject: "Promoção especial", message: "Ative a campanha: 10% para afiliados.", read:false },
+        { id: 2, name: "Suporte DIGIVEND", sender: "suporte@digivend", datetime: new Date(Date.now() - 3600*1000).toISOString(), subject: "Saque processado", message: "Seu saque de MT1,500 foi processado.", read:false }
       ];
       localStorage.setItem(NOTIF_KEY, JSON.stringify(demo));
     }
   }
-  seedNotifs();
+  seedNotifsIfNeeded();
 
-  function getNotifs() { return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; }
-  function saveNotifs(arr){ localStorage.setItem(NOTIF_KEY, JSON.stringify(arr)); updateBellCount(); }
+  function getNotifs(){ return JSON.parse(localStorage.getItem(NOTIF_KEY)) || []; }
+  function saveNotifs(arr){ localStorage.setItem(NOTIF_KEY, JSON.stringify(arr)); }
 
   // DOM refs
   const bellBtn = document.getElementById("bellBtn");
   const bellDropdown = document.getElementById("bellDropdown");
   const bellItems = document.getElementById("bellItems");
   const bellCount = document.getElementById("bellCount");
-  const bellCountAlt = document.getElementById("notification-count"); // for other markup compatibility
+  const markAllReadBtn = document.getElementById("markAllRead");
 
   function updateBellCount(){
-    const nots = getNotifs();
-    const unread = nots.filter(n => !n.read).length;
-    if (bellCount) bellCount.textContent = unread;
-    if (bellCountAlt) {
-      bellCountAlt.textContent = unread;
-      bellCountAlt.classList.toggle("hidden", unread === 0);
-    }
+    const unread = getNotifs().filter(n=>!n.read).length;
+    bellCount.textContent = unread;
+    bellCount.classList.toggle("hidden", unread === 0);
   }
 
   function renderBellItems(){
-    const nots = getNotifs().sort((a,b)=> new Date(b.datetime) - new Date(a.datetime));
+    const list = getNotifs().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime));
     bellItems.innerHTML = "";
-    if (nots.length === 0) {
+    if (list.length === 0){
       bellItems.innerHTML = '<div class="p-3 text-gray-400">Sem notificações</div>';
       return;
     }
-    nots.forEach(n => {
+    list.forEach(n=>{
       const item = document.createElement("div");
-      // destaque para não-lidas
       item.className = "p-3 rounded-md flex justify-between items-start cursor-pointer " + (n.read ? "bg-gray-850" : "bg-gray-800 border-l-4 border-blue-500 shadow-md");
       item.innerHTML = `
         <div>
-          <div class="text-sm font-semibold text-white">${n.subject}</div>
-          <div class="text-xs text-gray-400 mt-1">${n.name} • ${formatShort(n.datetime)}</div>
+          <div class="text-sm font-semibold text-white">${escapeHtml(n.subject)}</div>
+          <div class="text-xs text-gray-400 mt-1">${escapeHtml(n.name)} • ${formatShort(n.datetime)}</div>
         </div>
         <div class="text-gray-400 text-xs pl-2">›</div>
       `;
-      item.onclick = () => {
-        // abrir notificacoes.html?id=ID
-        window.location.href = `notificacoes.html?id=${n.id}`;
-      };
+      item.onclick = ()=> window.location.href = `notificacoes.html?id=${n.id}`;
       bellItems.appendChild(item);
     });
   }
+
+  markAllReadBtn?.addEventListener("click", ()=>{
+    const arr = getNotifs().map(n => ({...n, read:true}));
+    saveNotifs(arr);
+    renderBellItems();
+    updateBellCount();
+  });
+
+  bellBtn.addEventListener("click", (e)=>{
+    e.stopPropagation();
+    renderBellItems();
+    bellDropdown.classList.toggle("hidden");
+    updateBellCount();
+  });
+
+  window.addEventListener("click", (e)=>{
+    if (!bellDropdown.contains(e.target) && !bellBtn.contains(e.target)){
+      bellDropdown.classList.add("hidden");
+    }
+    // profile menu closed elsewhere
+    profileMenu.classList.add("hidden");
+  });
 
   function formatShort(iso){
     const d = new Date(iso);
     return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}`;
   }
+  function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
 
-  // bell toggle behavior (small dropdown)
-  const bellButton = document.getElementById("bellBtn") || document.getElementById("notification-button");
-  const bellDropdownElem = document.getElementById("bellDropdown") || document.getElementById("notification-panel");
-  if (bellButton) {
-    bellButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      // re-render before open
-      renderBellItems();
-      bellDropdownElem.classList.toggle("hidden");
-      updateBellCount();
-    });
-  }
+  // Inicializa contagem
+  updateBellCount();
 
-  // close bell when click outside
-  window.addEventListener("click", (e) => {
-    if (bellDropdownElem && !bellDropdownElem.contains(e.target) && !bellButton.contains(e.target)) {
-      bellDropdownElem.classList.add("hidden");
-    }
-    // profile menu close handled below
-    profileMenu.classList.add("hidden");
-  });
-
-  // profile menu open/close
-  const profileBtn = document.getElementById("profileBtn");
-  const profileMenu = document.getElementById("profileMenu");
-  profileBtn.addEventListener("click", (e) => { e.stopPropagation(); profileMenu.classList.toggle("hidden"); });
-
-  // sidebar open/close and menu items close
+  /**********************
+   * Sidebar & Profile
+   **********************/
   const sidebar = document.getElementById("sidebar");
   document.getElementById("open-sidebar").addEventListener("click", ()=> sidebar.classList.remove("-translate-x-full"));
   document.getElementById("close-sidebar").addEventListener("click", ()=> sidebar.classList.add("-translate-x-full"));
-  // menu items close sidebar when clicked
-  document.querySelectorAll(".menu-item").forEach(el => el.addEventListener("click", () => sidebar.classList.add("-translate-x-full")));
+  // close sidebar when clicking menu items
+  document.querySelectorAll(".menu-item").forEach(el => el.addEventListener("click", ()=> sidebar.classList.add("-translate-x-full")));
 
-  // chart
+  // profile menu
+  const profileBtn = document.getElementById("profileBtn");
+  const profileMenu = document.getElementById("profileMenu");
+  const logoutBtn = document.getElementById("logoutBtn");
+  profileBtn.addEventListener("click", (e)=> { e.stopPropagation(); profileMenu.classList.toggle("hidden"); });
+  logoutBtn.addEventListener("click", ()=> { localStorage.removeItem("usuarioAtual"); window.location.href="login.html"; });
+
+  /**********************
+   * Chart (white bars)
+   **********************/
   const ctx = document.getElementById("vendasChart").getContext("2d");
   new Chart(ctx, {
-    type: "bar",
+    type: 'bar',
     data: {
       labels: ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'],
-      datasets: [{ label: 'Vendas', data:[4,6,3,8,5,2,7], backgroundColor: 'rgba(255,255,255,0.95)', borderRadius:6 }]
+      datasets: [{ label:'Vendas', data:[4,6,3,8,5,2,7], backgroundColor:'rgba(255,255,255,0.95)', borderRadius:6 }]
     },
     options: { plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ color:'#bbb' } }, y:{ ticks:{ color:'#bbb' } } } }
   });
 
-  // helper logout
-  function logout(){ localStorage.removeItem("usuarioLogado"); window.location.href = "login.html"; }
-  window.logout = logout; // export so profile button can call it
+  /**********************
+   * Chatbot (local simulation, feedback, limit)
+   **********************/
+  const chatBtn = document.getElementById("chatBtn");
+  const chatPanel = document.getElementById("chatPanel");
+  const closeChat = document.getElementById("closeChat");
+  const chatMessages = document.getElementById("chatMessages");
+  const chatInput = document.getElementById("chatInput");
+  const chatSend = document.getElementById("chatSend");
 
-  // init
-  updateBellCount();
-  renderBellItems();
+  const FAQ = [
+    { q: /pagamento|pagar|receber|mpesa|emola/i, a: "Recebe via Emola, M-Pesa, Cartão ou PayPal. Configure em Configurações → Pagamentos." },
+    { q: /saque|sacar|retirar/i, a: "Os saques são processados em até 48h úteis. Verifique o histórico em Saques." },
+    { q: /afiliad/i, a: "Afiliados podem ser convidados pelo link do produto. Consulte a seção Afiliados para gerenciar comissões." },
+    { q: /cadastro|conta/i, a: "Cada email só pode ter uma conta; escolha vendedor ou comprador no cadastro." }
+  ];
+  const CHAT_LIMIT = 50;
+  const USAGE_KEY = "digivend_chat_usage";
+  const HELPFUL_KEY = "digivend_chat_helpful";
 
-  // expose utilities (so notificacoes.html can call)
-  window.getNotifications = getNotifs;
-  window.saveNotifications = saveNotifs;
+  function getUsage(){ return parseInt(localStorage.getItem(USAGE_KEY)||"0"); }
+  function setUsage(v){ localStorage.setItem(USAGE_KEY,String(v)); }
+  function incUsage(){ setUsage(getUsage()+1); }
+
+  chatBtn.addEventListener("click", ()=> chatPanel.classList.toggle("hidden"));
+  closeChat.addEventListener("click", ()=> chatPanel.classList.add("hidden"));
+  chatSend.addEventListener("click", sendChatMessage);
+  chatInput.addEventListener("keypress", e => { if (e.key==='Enter') sendChatMessage(); });
+
+  function appendChat(text, who){
+    const el = document.createElement("div");
+    if (who==="user") el.className = "bg-blue-600 text-white p-2 rounded-xl self-end max-w-[80%]";
+    else el.className = "bg-gray-700 text-gray-100 p-2 rounded-xl self-start max-w-[80%]";
+    el.textContent = text;
+    chatMessages.appendChild(el);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function appendFeedback(){
+    const box = document.createElement("div");
+    box.className = "flex gap-2";
+    const yes = document.createElement("button"); yes.className="px-3 py-1 bg-green-600 rounded text-white text-sm"; yes.textContent="👍 Útil";
+    const no = document.createElement("button"); no.className="px-3 py-1 bg-red-600 rounded text-white text-sm"; no.textContent="👎 Não ajudou";
+    yes.onclick = () => { localStorage.setItem(HELPFUL_KEY, String((parseInt(localStorage.getItem(HELPFUL_KEY)||"0")+1))); appendChat("Obrigado! Avaliação registrada.", "bot"); box.remove(); };
+    no.onclick = () => { appendChat("Lamento. Deseja que eu abra um ticket para suporte? (escreva 'abrir ticket')", "bot"); box.remove(); };
+    box.appendChild(yes); box.appendChild(no); chatMessages.appendChild(box); chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function sendChatMessage(){
+    const txt = (chatInput.value||"").trim();
+    if (!txt) return;
+    chatInput.value = "";
+    appendChat(txt,"user");
+
+    // usage limit
+    if (getUsage() >= CHAT_LIMIT){
+      appendChat("Limite de respostas automáticas atingido. Contacte: WhatsApp +258 8XX XXX XXX ou suporte@digivend.mz", "bot");
+      appendFeedback();
+      return;
+    }
+
+    // match FAQ
+    const match = FAQ.find(f => f.q.test(txt));
+    setTimeout(()=>{
+      if (match){
+        appendChat(match.a,"bot");
+        incUsage();
+        appendFeedback();
+      } else if (/abrir ticket|suporte|contactar/i.test(txt)){
+        appendChat("Ticket criado. Um atendente do suporte entrará em contato via email em até 24h.", "bot");
+        incUsage();
+        appendFeedback();
+      } else {
+        appendChat("Desculpe, não encontrei resposta automática. Deseja abrir um ticket? (sim/não)", "bot");
+        incUsage();
+      }
+    }, 450 + Math.random()*300);
+  }
+
+  /**********************
+   * Utilities & init
+   **********************/
+  // Expose helper for notificacoes.html to use same storage helpers
+  window.getNotifs = getNotifs;
+  window.saveNotifs = saveNotifs;
   window.formatShort = formatShort;
+  window.updateBellCount = updateBellCount;
+
+  // ensure profile menu closes clicking outside
+  window.addEventListener("click", e => {
+    if (!profileBtn.contains(e.target) && !profileMenu.contains(e.target)) profileMenu.classList.add("hidden");
+  });
+
+  // init render
+  renderBellItems();
+  updateBellCount();
   </script>
 
-  <!-- ESTILOS -->
+  <!-- STYLES -->
   <style>
     .bg-gray-850 { background: #0f1724; border-radius:8px; }
   </style>
