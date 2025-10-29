@@ -1,188 +1,41 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>DIGIVEND — Meus Produtos</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esqueci minha senha - DIGIVEND</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-950 text-white min-h-screen font-sans">
+<body class="bg-gray-50 flex flex-col min-h-screen justify-center items-center px-4">
 
-  <!-- SIDEBAR -->
-  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-900 transform -translate-x-full transition-transform duration-300 z-50">
-    <div class="flex items-center justify-between px-4 py-4 border-b border-gray-800">
-      <h2 class="text-xl font-bold text-blue-400">DIGIVEND</h2>
-      <button id="close-sidebar" class="text-gray-400 hover:text-white text-2xl font-bold">×</button>
-    </div>
+  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">Recuperar Senha</h1>
 
-    <nav class="p-4 space-y-2">
-      <a href="dashboard_vendedor.html" class="block px-3 py-2 rounded hover:bg-gray-800">🏠 Dashboard</a>
-      <a href="meus_produtos.html" class="block px-3 py-2 rounded bg-gray-800 text-blue-400">📦 Meus Produtos</a>
-      <a href="vendas.html" class="block px-3 py-2 rounded hover:bg-gray-800">💰 Vendas</a>
-      <a href="saques.html" class="block px-3 py-2 rounded hover:bg-gray-800">💸 Saques</a>
-      <a href="afiliados.html" class="block px-3 py-2 rounded hover:bg-gray-800">👥 Afiliados</a>
-      <a href="configuracoes.html" class="block px-3 py-2 rounded hover:bg-gray-800">⚙️ Configurações</a>
-      <a href="index.html" class="block px-3 py-2 rounded text-red-500 hover:bg-gray-800">🚪 Sair</a>
-    </nav>
-  </aside>
+    <p class="text-gray-600 text-center mb-6">
+      Digite o e-mail da sua conta DIGIVEND. Enviaremos um link para redefinir a senha.
+    </p>
 
-  <!-- HEADER -->
-  <header class="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-40">
-    <div class="flex items-center gap-4">
-      <button id="open-sidebar" class="text-white text-2xl">☰</button>
-      <h1 class="text-2xl font-bold text-blue-400">Meus Produtos</h1>
-    </div>
+    <form onsubmit="recuperarSenha(event)">
+      <label class="block text-gray-700 mb-2 font-medium">E-mail cadastrado</label>
+      <input type="email" id="emailRecuperacao" required
+             class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
 
-    <div class="flex items-center gap-4">
-      <!-- Notificações -->
-      <div class="relative">
-        <button id="bellBtn" class="p-1 rounded hover:bg-gray-800">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6">
-            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v4c0 .538-.214 1.055-.595 1.436L4 17h5"/>
-            <path d="M9 17a3 3 0 006 0"/>
-          </svg>
-          <span id="bellCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-[11px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
-        </button>
-      </div>
+      <button type="submit"
+              class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+        Enviar Link de Redefinição
+      </button>
+    </form>
 
-      <!-- Perfil -->
-      <div class="relative">
-        <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">V</button>
-        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-44 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
-          <a href="index.html" class="block px-4 py-2 hover:bg-gray-700">Marketplace</a>
-          <a href="perfil.html" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
-          <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
-        </div>
-      </div>
-    </div>
-  </header>
-
-  <!-- MAIN -->
-  <main class="p-8">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-semibold text-blue-400">📦 Seus Produtos</h2>
-      <button id="addProductBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg shadow-lg text-sm font-medium">+ Adicionar Produto</button>
-    </div>
-
-    <!-- Lista de produtos -->
-    <div id="productList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-  </main>
-
-  <!-- Modal de adicionar produto -->
-  <div id="productModal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-    <div class="bg-gray-900 p-6 rounded-2xl border border-blue-600 w-96">
-      <h3 class="text-xl font-semibold mb-4 text-blue-400">Adicionar Produto</h3>
-      <div class="space-y-3">
-        <input id="prodName" type="text" placeholder="Nome do Produto" class="w-full p-2 bg-gray-800 rounded outline-none text-sm">
-        <input id="prodPrice" type="number" placeholder="Preço (MZN)" class="w-full p-2 bg-gray-800 rounded outline-none text-sm">
-        <input id="prodCategory" type="text" placeholder="Categoria" class="w-full p-2 bg-gray-800 rounded outline-none text-sm">
-        <textarea id="prodDesc" placeholder="Descrição" class="w-full p-2 bg-gray-800 rounded outline-none text-sm h-20"></textarea>
-      </div>
-      <div class="flex justify-end mt-4 gap-2">
-        <button id="cancelAdd" class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600">Cancelar</button>
-        <button id="saveAdd" class="px-3 py-1 bg-blue-600 rounded hover:bg-blue-700">Salvar</button>
-      </div>
-    </div>
+    <p class="text-sm text-center mt-4">
+      <a href="login.html" class="text-blue-600 hover:underline">Voltar ao Login</a>
+    </p>
   </div>
 
-  <script>
-  // Sidebar
-  const sidebar = document.getElementById("sidebar");
-  document.getElementById("open-sidebar").addEventListener("click", ()=> sidebar.classList.remove("-translate-x-full"));
-  document.getElementById("close-sidebar").addEventListener("click", ()=> sidebar.classList.add("-translate-x-full"));
-  document.querySelectorAll("nav a").forEach(a=> a.addEventListener("click", ()=> sidebar.classList.add("-translate-x-full")));
+  <footer class="text-gray-500 text-sm text-center mt-6">
+    © 2025 DIGIVEND. Todos os direitos reservados.
+  </footer>
 
-  // Perfil
-  const profileBtn = document.getElementById("profileBtn");
-  const profileMenu = document.getElementById("profileMenu");
-  profileBtn.onclick = (e)=> { e.stopPropagation(); profileMenu.classList.toggle("hidden"); };
-  window.onclick = ()=> profileMenu.classList.add("hidden");
-  document.getElementById("logoutBtn").onclick = ()=> { localStorage.removeItem("usuarioAtual"); location.href="login.html"; };
-
-  // Notificações simples (contagem fake)
-  const bellCount = document.getElementById("bellCount");
-  const notifications = JSON.parse(localStorage.getItem("digivend_notificacoes_vendedor") || "[]");
-  const unread = notifications.filter(n=>!n.read).length;
-  if(unread>0){ bellCount.textContent=unread; bellCount.classList.remove("hidden"); }
-
-  // Produtos
-  const LIST_KEY = "digivend_produtos";
-  function getProducts(){ return JSON.parse(localStorage.getItem(LIST_KEY) || "[]"); }
-  function saveProducts(arr){ localStorage.setItem(LIST_KEY, JSON.stringify(arr)); renderProducts(); }
-
-  function renderProducts(){
-    const list = getProducts();
-    const area = document.getElementById("productList");
-    area.innerHTML = "";
-    if(list.length===0){ area.innerHTML = '<p class="text-gray-400">Nenhum produto cadastrado ainda.</p>'; return; }
-
-    list.forEach((p,i)=>{
-      const card = document.createElement("div");
-      card.className = "bg-gray-900 p-5 rounded-2xl border-l-4 border-blue-500 shadow-lg flex flex-col justify-between";
-      card.innerHTML = `
-        <div>
-          <h3 class="text-lg font-semibold text-blue-300">${p.nome}</h3>
-          <p class="text-gray-400 text-sm mt-1">${p.categoria}</p>
-          <p class="text-gray-300 mt-2">${p.descricao}</p>
-        </div>
-        <div class="flex justify-between items-center mt-4">
-          <span class="text-blue-400 font-bold">${p.preco} MZN</span>
-          <div class="flex gap-2">
-            <button onclick="editProduct(${i})" class="text-sm bg-blue-600 px-2 py-1 rounded hover:bg-blue-700">Editar</button>
-            <button onclick="deleteProduct(${i})" class="text-sm bg-red-600 px-2 py-1 rounded hover:bg-red-700">Excluir</button>
-          </div>
-        </div>`;
-      area.appendChild(card);
-    });
-  }
-
-  function editProduct(i){
-    const p = getProducts()[i];
-    document.getElementById("prodName").value = p.nome;
-    document.getElementById("prodPrice").value = p.preco;
-    document.getElementById("prodCategory").value = p.categoria;
-    document.getElementById("prodDesc").value = p.descricao;
-    showModal(true,i);
-  }
-
-  function deleteProduct(i){
-    if(confirm("Excluir este produto?")){
-      const arr = getProducts();
-      arr.splice(i,1);
-      saveProducts(arr);
-    }
-  }
-
-  // Modal
-  const modal = document.getElementById("productModal");
-  const addBtn = document.getElementById("addProductBtn");
-  const cancelBtn = document.getElementById("cancelAdd");
-  const saveBtn = document.getElementById("saveAdd");
-  let editingIndex = null;
-
-  addBtn.onclick = ()=> showModal(false);
-  cancelBtn.onclick = ()=> modal.classList.add("hidden");
-  saveBtn.onclick = ()=>{
-    const nome = prodName.value.trim();
-    const preco = parseFloat(prodPrice.value);
-    const categoria = prodCategory.value.trim();
-    const descricao = prodDesc.value.trim();
-    if(!nome || !preco || !categoria){ alert("Preencha todos os campos."); return; }
-
-    const arr = getProducts();
-    if(editingIndex!=null) arr[editingIndex] = {nome,preco,categoria,descricao};
-    else arr.push({nome,preco,categoria,descricao});
-    saveProducts(arr);
-    modal.classList.add("hidden");
-  };
-
-  function showModal(edit=false, idx=null){
-    editingIndex = edit ? idx : null;
-    modal.classList.remove("hidden");
-  }
-
-  renderProducts();
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>
 
