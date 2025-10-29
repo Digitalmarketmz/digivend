@@ -1,41 +1,779 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Esqueci minha senha - DIGIVEND</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DIGIVEND — Meus Produtos</title>
+<script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-50 flex flex-col min-h-screen justify-center items-center px-4">
+<body class="bg-gray-950 text-white min-h-screen font-sans">
 
-  <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-    <h1 class="text-2xl font-bold text-center text-blue-600 mb-6">Recuperar Senha</h1>
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-gray-900 transform -translate-x-full transition-transform duration-300 z-50">
+    <div class="flex items-center justify-between px-4 py-4 border-b border-gray-800">
+      <h2 class="text-xl font-bold text-blue-400">DIGIVEND</h2>
+      <button id="close-sidebar" class="text-gray-400 hover:text-white text-2xl font-bold">×</button>
+    </div>
 
-    <p class="text-gray-600 text-center mb-6">
-      Digite o e-mail da sua conta DIGIVEND. Enviaremos um link para redefinir a senha.
-    </p>
+    <nav class="p-4 space-y-2">
+      <a href="dashboard_vendedor.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">🏠 Dashboard</a>
+      <a href="meus_produtos.html" class="menu-item block px-3 py-2 rounded bg-gray-800 text-blue-400">📦 Meus Produtos</a>
+      <a href="vendas.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">💰 Vendas</a>
+      <a href="saques.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">💸 Saques</a>
+      <a href="afiliados.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">👥 Afiliados</a>
+      <a href="configuracoes.html" class="menu-item block px-3 py-2 rounded hover:bg-gray-800">⚙️ Configurações</a>
+      <a href="index.html" class="block px-3 py-2 rounded text-red-500 hover:bg-gray-800">🚪 Sair</a>
+    </nav>
+  </aside>
 
-    <form onsubmit="recuperarSenha(event)">
-      <label class="block text-gray-700 mb-2 font-medium">E-mail cadastrado</label>
-      <input type="email" id="emailRecuperacao" required
-             class="w-full border border-gray-300 rounded-lg px-4 py-2 mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+  <!-- HEADER -->
+  <header class="flex items-center justify-between px-6 py-4 bg-gray-900 shadow-md sticky top-0 z-40">
+    <div class="flex items-center gap-4">
+      <button id="open-sidebar" class="text-white text-2xl">☰</button>
+      <h1 class="text-2xl font-bold text-blue-400">Meus Produtos</h1>
+    </div>
 
-      <button type="submit"
-              class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-        Enviar Link de Redefinição
-      </button>
-    </form>
+    <div class="flex items-center gap-4">
+      <!-- Notificações -->
+      <div class="relative">
+        <button id="bellBtn" class="p-1 rounded hover:bg-gray-800">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6">
+            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v4c0 .538-.214 1.055-.595 1.436L4 17h5"/>
+            <path d="M9 17a3 3 0 006 0"/>
+          </svg>
+          <span id="bellCount" class="absolute -top-1 -right-1 bg-red-600 text-white text-[11px] rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+        </button>
 
-    <p class="text-sm text-center mt-4">
-      <a href="login.html" class="text-blue-600 hover:underline">Voltar ao Login</a>
-    </p>
+        <!-- dropdown (small) -->
+        <div id="bellDropdown" class="hidden absolute right-0 mt-2 w-80 max-h-96 overflow-y-auto bg-gray-800 border border-gray-700 rounded-xl shadow-lg p-2 z-50">
+          <div class="px-3 py-2 border-b border-gray-700 text-blue-300 font-semibold flex justify-between items-center">
+            <span>Notificações</span>
+            <button id="markAllRead" class="text-xs text-gray-300 hover:text-white">Marcar todas lidas</button>
+          </div>
+          <div id="bellItems" class="p-2 space-y-2"></div>
+          <div class="px-3 py-2 border-t border-gray-700 text-xs text-gray-400">Clique em uma notificação para abrir</div>
+        </div>
+      </div>
+
+      <!-- Perfil -->
+      <div class="relative">
+        <button id="profileBtn" class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center font-bold">V</button>
+        <div id="profileMenu" class="hidden absolute right-0 mt-2 w-44 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
+          <a href="index.html" class="block px-4 py-2 hover:bg-gray-700">Marketplace</a>
+          <a href="perfil.html" class="block px-4 py-2 hover:bg-gray-700">Perfil</a>
+          <button id="logoutBtn" class="w-full text-left px-4 py-2 text-red-500 hover:bg-gray-700">Sair</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PAGE INTRO + SEARCH + FILTER + CREATE BUTTON -->
+  <main class="p-8">
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h2 class="text-3xl font-bold text-blue-400">Gerencie seus produtos</h2>
+        <p class="text-gray-400 mt-1">Adicione, edite ou remova produtos — mantenha sua loja atualizada.</p>
+      </div>
+
+      <!-- Search + filter -->
+      <div class="flex items-center gap-3">
+        <div class="relative">
+          <input id="searchInput" type="search" placeholder="Pesquisar produtos..." class="w-72 p-2 rounded-lg bg-gray-800 placeholder-gray-400 outline-none text-sm" />
+          <button id="filterBtn" class="absolute right-1 top-1/2 -translate-y-1/2 bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 text-sm">Filtrar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-start gap-6 mb-4">
+      <!-- Create button on the left below search -->
+      <div>
+        <button id="createProductBtn" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg shadow-lg text-sm font-medium flex items-center gap-2">
+          ➕ Criar Produto
+        </button>
+      </div>
+
+      <!-- Category quick filter (optional visible) -->
+      <div class="flex gap-2 flex-wrap items-center">
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Todos">Todos</button>
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Empreender">Empreender</button>
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Negócios">Negócios</button>
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Saúde">Saúde</button>
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Fitness">Fitness</button>
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Educação">Educação</button>
+        <button class="category-filter px-3 py-1 bg-gray-800 rounded text-sm" data-cat="Outros">Outros</button>
+      </div>
+    </div>
+
+    <!-- Products grid (3 per row) -->
+    <section id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></section>
+  </main>
+
+  <!-- MODAL: 3-step product creation -->
+  <div id="productModal" class="hidden fixed inset-0 bg-black/70 flex items-start justify-center pt-20 z-50">
+    <div class="bg-gray-900 w-[980px] max-w-full rounded-2xl border border-blue-600 shadow-lg overflow-hidden">
+      <!-- header / steps -->
+      <div class="flex items-center justify-between p-4 border-b border-gray-800">
+        <div class="flex items-center gap-4">
+          <h3 class="text-xl font-semibold text-blue-300" id="modalTitle">Criar Produto</h3>
+          <div class="text-sm text-gray-400" id="stepIndicator">Etapa 1 de 3</div>
+        </div>
+        <div>
+          <button id="modalClose" class="text-gray-300 hover:text-white text-2xl">✕</button>
+        </div>
+      </div>
+
+      <div class="p-6 grid grid-cols-2 gap-6">
+        <!-- LEFT: form area -->
+        <div class="col-span-2 lg:col-span-1">
+          <!-- Step 1 -->
+          <form id="step1" class="space-y-4">
+            <div>
+              <label class="block text-sm text-gray-300">Imagem do produto (obrigatório)</label>
+              <input id="inputImage" type="file" accept="image/*" class="mt-2 w-full text-sm text-gray-300"/>
+              <div id="previewImage" class="mt-2"></div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-300">Nome do Produto *</label>
+              <input id="inputName" type="text" placeholder="escreva o nome aqui" class="mt-2 w-full p-2 bg-gray-800 rounded text-sm" />
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+              <div>
+                <label class="block text-sm text-gray-300">Preço (MZN)</label>
+                <input id="inputPrice" type="number" min="0" placeholder="99" class="mt-2 w-full p-2 bg-gray-800 rounded text-sm" />
+              </div>
+              <div>
+                <label class="block text-sm text-gray-300">Desconto %</label>
+                <input id="inputDiscount" type="number" min="0" max="100" placeholder="35" class="mt-2 w-full p-2 bg-gray-800 rounded text-sm"/>
+              </div>
+              <div>
+                <label class="block text-sm text-gray-300">Cupom</label>
+                <input id="inputCoupon" type="text" placeholder="CUPOMZ" class="mt-2 w-full p-2 bg-gray-800 rounded text-sm"/>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-300">Preço final</label>
+              <div id="finalPrice" class="mt-2 text-lg font-bold text-white">0 MZN</div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-300">Descrição (mín 150 caracteres)</label>
+              <textarea id="inputDesc" rows="5" placeholder="escreva algo aqui..." class="mt-2 w-full p-2 bg-gray-800 rounded text-sm"></textarea>
+              <div class="text-xs text-gray-400 mt-1">Caracteres: <span id="descCount">0</span>/150</div>
+            </div>
+
+            <div class="flex gap-2 flex-wrap">
+              <div>
+                <div class="text-sm text-gray-300 mb-1">Categoria</div>
+                <select id="inputCategory" class="p-2 bg-gray-800 rounded text-sm w-40">
+                  <option>Empreender</option>
+                  <option>Negócios</option>
+                  <option>Saúde</option>
+                  <option>Fitness</option>
+                  <option>Educação</option>
+                  <option>Outros</option>
+                </select>
+              </div>
+
+              <div>
+                <div class="text-sm text-gray-300 mb-1">Tipo de produto</div>
+                <select id="inputType" class="p-2 bg-gray-800 rounded text-sm w-40">
+                  <option>Ebook</option>
+                  <option>Curso Online</option>
+                  <option>Aplicativo</option>
+                </select>
+              </div>
+
+              <div class="flex items-center gap-2">
+                <input id="allowAff" type="checkbox" />
+                <label class="text-sm text-gray-300">Permitir Afiliados</label>
+              </div>
+            </div>
+
+            <!-- afiliados form (hidden until allowAff checked) -->
+            <div id="affSection" class="hidden bg-gray-850 p-3 rounded mt-3">
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <label class="text-sm text-gray-300">Comissão %</label>
+                  <input id="affCommission" type="number" min="0" max="100" value="10" class="mt-2 w-full p-2 bg-gray-800 rounded text-sm"/>
+                </div>
+                <div>
+                  <label class="text-sm text-gray-300">Valor afiliado</label>
+                  <div id="affValue" class="mt-2 p-2 bg-gray-900 rounded text-sm">0 MZN</div>
+                </div>
+                <div>
+                  <label class="text-sm text-gray-300">Link do afiliado</label>
+                  <input id="affLink" type="text" placeholder="https://..." class="mt-2 w-full p-2 bg-gray-800 rounded text-sm"/>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <!-- Step 2 (upload file / or link) -->
+          <form id="step2" class="space-y-4 hidden">
+            <div>
+              <label class="block text-sm text-gray-300">Se for Ebook: faça upload do arquivo (PDF)</label>
+              <input id="inputFile" type="file" accept=".pdf" class="mt-2 w-full text-sm" />
+              <div class="text-xs text-gray-400 mt-1">Tamanho mínimo: 3MB, máximo: 18MB. PDF obrigatório para Ebook.</div>
+            </div>
+
+            <div>
+              <label class="block text-sm text-gray-300">Se for Curso Online ou Aplicativo: cole o link</label>
+              <input id="inputLink" type="text" placeholder="https://link-para-curso-ou-app" class="mt-2 w-full p-2 bg-gray-800 rounded text-sm"/>
+            </div>
+
+            <div id="filePreview" class="text-sm text-gray-300"></div>
+          </form>
+
+          <!-- Step 3 (verification) -->
+          <div id="step3" class="hidden space-y-3">
+            <h4 class="text-md font-semibold text-blue-300">Verificação</h4>
+            <div id="verifyList" class="space-y-2 text-sm"></div>
+            <div class="text-xs text-gray-400">Se algum item estiver faltando, clique em "Voltar" e complete a etapa indicada.</div>
+          </div>
+
+          <!-- navigation -->
+          <div class="flex justify-between mt-6">
+            <div>
+              <button id="prevBtn" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 hidden">Voltar</button>
+            </div>
+            <div class="flex gap-2">
+              <button id="nextBtn" class="px-4 py-2 bg-blue-600 rounded hover:bg-blue-700">Avançar</button>
+              <button id="finishBtn" class="px-4 py-2 bg-green-600 rounded hover:bg-green-700 hidden">Finalizar</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: preview + help -->
+        <div class="col-span-2 lg:col-span-1 border-l border-gray-800 pl-6">
+          <div class="text-sm text-gray-400 mb-4">Visualização do produto</div>
+          <div class="bg-gray-900 p-4 rounded-lg border-l-4 border-blue-500">
+            <div id="cardPreview" class="space-y-3">
+              <div id="cardImagePreview" class="h-40 bg-gray-800 rounded flex items-center justify-center text-gray-500">Sem imagem</div>
+              <div>
+                <div id="cardNamePreview" class="text-lg font-bold">Nome do produto</div>
+                <div id="cardDescPreview" class="text-sm text-gray-400 line-clamp-3">Descrição breve...</div>
+                <div id="cardPricePreview" class="text-blue-300 font-semibold mt-2">0 MZN</div>
+                <div id="cardStatusPreview" class="text-xs text-yellow-300 mt-1">Pendente</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 text-sm text-gray-400">
+            <p><strong>Pontos:</strong></p>
+            <ul class="list-disc ml-5">
+              <li>Etapa 1 — informações e imagem</li>
+              <li>Etapa 2 — arquivo (PDF) ou link</li>
+              <li>Etapa 3 — verificação e finalizar</li>
+            </ul>
+          </div>
+        </div>
+      </div> <!-- end modal grid -->
+    </div>
   </div>
 
-  <footer class="text-gray-500 text-sm text-center mt-6">
-    © 2025 DIGIVEND. Todos os direitos reservados.
-  </footer>
+  <!-- SUCCESS overlay -->
+  <div id="successOverlay" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-60">
+    <div class="bg-gray-900 p-8 rounded-2xl border border-blue-600 w-96 text-center relative">
+      <button id="successClose" class="absolute right-4 top-3 text-gray-300 text-xl">✕</button>
+      <div class="text-4xl">📦✅️</div>
+      <h3 class="text-xl font-bold text-blue-300 mt-3">Produto criado com sucesso</h3>
+      <p class="text-gray-300 mt-3 text-sm leading-relaxed">
+        O tempo de espera para que a revisão do produto seja totalmente feita pelo suporte DIGIVEND é de 30 minutos no mínimo.
+        Caso o seu produto seja aprovado, o status do seu produto passará de <strong>Pendente</strong> para <strong>Ativo</strong>.
+        Se for rejeitado, o status mudará para <strong>Rejeitado</strong>. Para mais informações, contacte o suporte.
+      </p>
+    </div>
+  </div>
 
-  <script src="script.js"></script>
+<script>
+/* -------------------------
+ Data model (localStorage)
+ key: digivend_produtos
+ key notifications: digivend_notificacoes_vendedor (re-used)
+------------------------- */
+const PROD_KEY = "digivend_produtos";
+function getProducts(){ return JSON.parse(localStorage.getItem(PROD_KEY) || "[]"); }
+function saveProducts(arr){ localStorage.setItem(PROD_KEY, JSON.stringify(arr)); renderProductGrid(); }
+
+/* Sidebar & header */
+const sidebar = document.getElementById("sidebar");
+document.getElementById("open-sidebar").addEventListener("click", ()=> sidebar.classList.remove("-translate-x-full"));
+document.getElementById("close-sidebar").addEventListener("click", ()=> sidebar.classList.add("-translate-x-full"));
+document.querySelectorAll(".menu-item").forEach(el => el.addEventListener("click", ()=> sidebar.classList.add("-translate-x-full")));
+const profileBtn = document.getElementById("profileBtn");
+const profileMenu = document.getElementById("profileMenu");
+profileBtn.addEventListener("click", (e)=> { e.stopPropagation(); profileMenu.classList.toggle("hidden"); });
+document.getElementById("logoutBtn").addEventListener("click", ()=> { localStorage.removeItem("usuarioAtual"); location.href="login.html"; });
+window.addEventListener("click", ()=> profileMenu.classList.add("hidden"));
+
+/* Notifications re-use (basic) */
+const NOTIF_KEY = "digivend_notificacoes_vendedor";
+function initNotifsDemo(){ if(!localStorage.getItem(NOTIF_KEY)) localStorage.setItem(NOTIF_KEY, JSON.stringify([])); }
+initNotifsDemo();
+const bellBtn = document.getElementById("bellBtn");
+const bellDropdown = document.getElementById("bellDropdown");
+const bellItems = document.getElementById("bellItems");
+const bellCountEl = document.getElementById("bellCount");
+function getNotifs(){ return JSON.parse(localStorage.getItem(NOTIF_KEY) || "[]"); }
+function saveNotifs(not){ localStorage.setItem(NOTIF_KEY, JSON.stringify(not)); updateBell(); }
+function updateBell(){
+  const unread = getNotifs().filter(n=>!n.read).length;
+  bellCountEl.textContent = unread;
+  bellCountEl.classList.toggle("hidden", unread === 0);
+}
+function renderBell(){ const ns = getNotifs().slice().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime)); bellItems.innerHTML=""; if(ns.length===0){ bellItems.innerHTML='<div class="p-3 text-gray-400">Sem notificações</div>'; return; } ns.forEach(n=>{ const div=document.createElement('div'); div.className=`p-3 rounded-md flex justify-between items-start cursor-pointer ${n.read? 'bg-gray-850' : 'bg-gray-800 border-l-4 border-blue-500 shadow-md'}`; div.innerHTML = `<div><div class="text-sm font-semibold text-white">${n.subject}</div><div class="text-xs text-gray-400 mt-1">${n.name} • ${new Date(n.datetime).toLocaleString()}</div></div><div class="text-gray-400 text-xs pl-2">›</div>`; div.onclick=()=> window.location.href = `notificacoes.html?id=${n.id}`; bellItems.appendChild(div); }); }
+bellBtn.addEventListener("click", e=>{ e.stopPropagation(); renderBell(); bellDropdown.classList.toggle("hidden"); updateBell();});
+window.addEventListener("click", e=>{ if(!bellDropdown.contains(e.target) && !bellBtn.contains(e.target)){ bellDropdown.classList.add("hidden"); }});
+
+/* Product grid rendering */
+const productGrid = document.getElementById("productGrid");
+function renderProductGrid(filterText='', filterCat='Todos'){
+  const prods = getProducts();
+  const filtered = prods.filter(p=>{
+    const matchesText = filterText.trim()==='' ? true : (p.nome.toLowerCase().includes(filterText.toLowerCase()) || p.descricao.toLowerCase().includes(filterText.toLowerCase()));
+    const matchesCat = filterCat==='Todos' ? true : (p.categoria === filterCat);
+    return matchesText && matchesCat;
+  });
+  productGrid.innerHTML = '';
+  if(filtered.length===0){
+    productGrid.innerHTML = '<div class="col-span-full text-gray-400">Nenhum produto encontrado.</div>';
+    return;
+  }
+
+  filtered.forEach((p, idx) => {
+    const card = document.createElement('div');
+    card.className = 'bg-gray-900 rounded-2xl p-0 overflow-hidden shadow-lg flex flex-col';
+    card.innerHTML = `
+      <div class="h-44 bg-cover bg-center" style="background-image: url('${p.imageData || ''}'); background-color: #0b1220;"></div>
+      <div class="p-4 flex-1 flex flex-col">
+        <div class="flex justify-between items-start">
+          <div>
+            <h3 class="text-lg font-semibold text-blue-300">${escapeHtml(p.nome)}</h3>
+            <p class="text-xs text-gray-400 mt-1 line-clamp-2">${escapeHtml(p.descricao)}</p>
+          </div>
+          <div class="text-right">
+            <div class="text-blue-300 font-bold">${p.preco} MZN</div>
+            <div class="text-xs mt-1 ${p.status==='Pendente' ? 'text-yellow-300' : p.status==='Ativo' ? 'text-green-400' : 'text-gray-400'}">${p.status}</div>
+          </div>
+        </div>
+      </div>
+      <div class="p-3 flex items-center gap-2 border-t border-gray-800 bg-gray-900">
+        <button class="copy-btn px-3 py-1 bg-gray-800 rounded text-sm" data-id="${p.id}">📋 Copiar link</button>
+        <button class="edit-btn px-3 py-1 bg-blue-600 rounded text-sm text-white" data-id="${p.id}">✏️ Editar</button>
+        <button class="del-btn px-3 py-1 bg-red-600 rounded text-sm" data-id="${p.id}">🗑️ Remover</button>
+      </div>
+    `;
+    productGrid.appendChild(card);
+  });
+
+  // attach listeners
+  document.querySelectorAll('.copy-btn').forEach(b => b.addEventListener('click', (e)=>{
+    const id = e.currentTarget.getAttribute('data-id');
+    const url = `${location.origin}${location.pathname.replace(/[^\/]*$/, '')}produto.html?id=${id}`;
+    navigator.clipboard?.writeText(url).then(()=> alert('Link copiado: ' + url)).catch(()=> prompt('Copie o link:', url));
+  }));
+  document.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', (e)=>{
+    const id = e.currentTarget.getAttribute('data-id');
+    if(confirm('Remover este produto?')){ removeProductById(id); }
+  }));
+  document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', (e)=>{
+    const id = e.currentTarget.getAttribute('data-id');
+    openEditorById(id);
+  }));
+}
+
+/* util escape */
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+
+/* Remove product */
+function removeProductById(id){
+  const arr = getProducts().filter(p=> String(p.id)!==String(id));
+  saveProducts(arr);
+  renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
+}
+
+/* EDIT flow */
+let editingId = null;
+function openEditorById(id){
+  const p = getProducts().find(x=> String(x.id)===String(id));
+  if(!p) return;
+  editingId = p.id;
+  // populate modal fields and open modal at step1
+  showModal();
+  // image preview handled by setting imageData directly
+  setImagePreview(p.imageData);
+  inputName.value = p.nome;
+  inputPrice.value = p.preco;
+  inputDiscount.value = p.desconto || 0;
+  inputCoupon.value = p.coupon || '';
+  computeFinalPrice();
+  inputDesc.value = p.descricao;
+  descUpdate();
+  inputCategory.value = p.categoria || 'Outros';
+  inputType.value = p.tipo || 'Ebook';
+  if(p.allowAff){
+    allowAff.checked = true;
+    affSection.classList.remove('hidden');
+    affCommission.value = p.affCommission || 0;
+    affLink.value = p.affLink || '';
+    computeAffValue();
+  } else {
+    allowAff.checked = false;
+    affSection.classList.add('hidden');
+  }
+  // file/link populate
+  if(p.fileData){
+    // mark file present
+    filePreview.textContent = `${p.fileName} (${Math.round((p.fileSize||0)/1024)} KB)`;
+    currentFileData = { fileData: p.fileData, fileName: p.fileName, fileSize: p.fileSize, fileType: p.fileType };
+  } else if(p.fileLink){
+    inputLink.value = p.fileLink;
+    filePreview.textContent = `Link definido`;
+    currentFileData = null;
+  } else { filePreview.textContent=''; currentFileData = null; }
+
+  // go to step1
+  goToStep(1);
+}
+
+/* Create product modal logic */
+const modal = document.getElementById('productModal');
+const createBtn = document.getElementById('createProductBtn');
+const modalClose = document.getElementById('modalClose');
+const step1 = document.getElementById('step1');
+const step2 = document.getElementById('step2');
+const step3 = document.getElementById('step3');
+const stepIndicator = document.getElementById('stepIndicator');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const finishBtn = document.getElementById('finishBtn');
+
+/* form elements */
+const inputImage = document.getElementById('inputImage');
+const previewImage = document.getElementById('previewImage');
+const cardImagePreview = document.getElementById('cardImagePreview');
+const inputName = document.getElementById('inputName');
+const inputPrice = document.getElementById('inputPrice');
+const inputDiscount = document.getElementById('inputDiscount');
+const inputCoupon = document.getElementById('inputCoupon');
+const finalPriceEl = document.getElementById('finalPrice');
+const inputDesc = document.getElementById('inputDesc');
+const descCount = document.getElementById('descCount');
+const inputCategory = document.getElementById('inputCategory');
+const inputType = document.getElementById('inputType');
+const allowAff = document.getElementById('allowAff');
+const affSection = document.getElementById('affSection');
+const affCommission = document.getElementById('affCommission');
+const affValue = document.getElementById('affValue');
+const affLink = document.getElementById('affLink');
+
+/* step2 elements */
+const inputFile = document.getElementById('inputFile');
+const inputLink = document.getElementById('inputLink');
+const filePreview = document.getElementById('filePreview');
+
+/* preview */
+const cardNamePreview = document.getElementById('cardNamePreview');
+const cardDescPreview = document.getElementById('cardDescPreview');
+const cardPricePreview = document.getElementById('cardPricePreview');
+const cardStatusPreview = document.getElementById('cardStatusPreview');
+
+/* success overlay */
+const successOverlay = document.getElementById('successOverlay');
+const successClose = document.getElementById('successClose');
+
+let currentStep = 1;
+let currentImageData = null; // base64 image
+let currentFileData = null; // {fileData, fileName, fileSize, fileType}
+let currentCategoryFilter = 'Todos';
+
+function showModal(){ modal.classList.remove('hidden'); editingId = null; resetModal(); goToStep(1); }
+function hideModal(){ modal.classList.add('hidden'); }
+
+createBtn.addEventListener('click', showModal);
+modalClose.addEventListener('click', hideModal);
+
+/* reset modal fields */
+function resetModal(){
+  currentImageData = null; currentFileData = null; editingId = null;
+  inputImage.value=''; previewImage.innerHTML=''; cardImagePreview.innerHTML='Sem imagem';
+  inputName.value=''; inputPrice.value=''; inputDiscount.value='0'; inputCoupon.value=''; finalPriceEl.textContent='0 MZN';
+  inputDesc.value=''; descCount.textContent='0';
+  inputCategory.value='Empreender'; inputType.value='Ebook'; allowAff.checked=false; affSection.classList.add('hidden');
+  affCommission.value = 10; affValue.textContent='0 MZN'; affLink.value='';
+  inputFile.value=''; inputLink.value=''; filePreview.textContent='';
+  // step visibility
+  step1.classList.remove('hidden'); step2.classList.add('hidden'); step3.classList.add('hidden');
+  prevBtn.classList.add('hidden'); nextBtn.classList.remove('hidden'); finishBtn.classList.add('hidden');
+  document.getElementById('modalTitle').textContent = 'Criar Produto';
+  document.getElementById('stepIndicator').textContent = 'Etapa 1 de 3';
+}
+
+/* Step navigation */
+function goToStep(n){
+  currentStep = n;
+  step1.classList.toggle('hidden', n!==1);
+  step2.classList.toggle('hidden', n!==2);
+  step3.classList.toggle('hidden', n!==3);
+  prevBtn.classList.toggle('hidden', n===1);
+  nextBtn.classList.toggle('hidden', n===3);
+  finishBtn.classList.toggle('hidden', n!==3);
+  document.getElementById('stepIndicator').textContent = `Etapa ${n} de 3`;
+  renderPreview();
+  if(n===3) runVerification();
+}
+
+/* Prev / Next handlers */
+prevBtn.addEventListener('click', ()=> goToStep(Math.max(1, currentStep-1)));
+nextBtn.addEventListener('click', ()=>{
+  if(currentStep===1){
+    // validate step1 required fields: image & name & desc>=150
+    const name = inputName.value.trim();
+    const descLen = inputDesc.value.trim().length;
+    if(!currentImageData){ alert('Por favor carregue a imagem do produto.'); return; }
+    if(!name){ alert('Por favor preencha o nome do produto.'); return; }
+    if(descLen < 150){ alert('A descrição deve ter pelo menos 150 caracteres.'); return; }
+    // ok
+    goToStep(2);
+  } else if(currentStep===2){
+    // validate step2: if type Ebook -> file required (pdf) and size; if Curso/App -> link required
+    const tipo = inputType.value;
+    if(tipo === 'Ebook'){
+      if(!currentFileData || !currentFileData.fileData){ alert('Por favor faça upload do PDF do Ebook (3MB - 18MB).'); return; }
+    } else {
+      if(!inputLink.value.trim()){ alert('Por favor cole o link do curso ou aplicativo.'); return; }
+    }
+    goToStep(3);
+  }
+});
+
+/* Finish */
+finishBtn.addEventListener('click', ()=>{
+  // final verification run again
+  const ver = runVerification();
+  if(!ver.ok){ alert('A verificação falhou. Preencha os itens indicados.'); return; }
+
+  // create product object
+  const id = editingId || Date.now();
+  const nome = inputName.value.trim();
+  const preco = Number(inputPrice.value) || 0;
+  const desconto = Number(inputDiscount.value)||0;
+  const coupon = inputCoupon.value.trim()||'';
+  const finalPrice = computeFinalPriceValue();
+  const descricao = inputDesc.value.trim();
+  const categoria = inputCategory.value;
+  const tipo = inputType.value;
+  const allowAffBool = allowAff.checked;
+  const affComm = allowAffBool ? Number(affCommission.value)||0 : 0;
+  const affVal = allowAffBool ? ((finalPrice * affComm)/100) : 0;
+  const affL = affLink.value.trim()||'';
+  const status = 'Pendente';
+  const createdAt = new Date().toISOString();
+
+  const product = {
+    id, nome, preco, desconto, coupon, finalPrice, descricao, categoria, tipo,
+    allowAff: allowAffBool, affCommission: affComm, affValue: affVal, affLink: affL,
+    imageData: currentImageData, fileData: currentFileData?.fileData || null,
+    fileName: currentFileData?.fileName || null, fileSize: currentFileData?.fileSize || null,
+    fileType: currentFileData?.fileType || null,
+    fileLink: inputLink.value.trim() || null,
+    status, createdAt
+  };
+
+  // if editing, replace
+  const arr = getProducts();
+  if(editingId){
+    const idx = arr.findIndex(x=> String(x.id)===String(editingId));
+    if(idx>=0){ arr[idx] = product; } else { arr.push(product); }
+  } else {
+    arr.push(product);
+  }
+  saveProducts(arr);
+
+  // success overlay
+  successOverlay.classList.remove('hidden');
+  // auto-close modal
+  hideModal();
+
+  // auto close overlay after small delay and ensure product is shown
+  setTimeout(()=>{
+    successOverlay.classList.add('hidden');
+    // scroll to grid and re-render (already saved)
+    renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
+  }, 3500);
+});
+
+/* Description counter & preview */
+inputDesc.addEventListener('input', descUpdate);
+function descUpdate(){
+  descCount.textContent = inputDesc.value.length;
+  cardDescPreview.textContent = inputDesc.value.slice(0,200);
+}
+
+/* Image upload preview (FileReader -> base64) */
+inputImage.addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = ()=> {
+    currentImageData = reader.result;
+    setImagePreview(currentImageData);
+    renderPreview();
+  };
+  reader.readAsDataURL(f);
+});
+function setImagePreview(dataUrl){
+  if(!dataUrl){ previewImage.innerHTML=''; cardImagePreview.innerHTML='Sem imagem'; return; }
+  previewImage.innerHTML = `<img src="${dataUrl}" class="w-32 h-20 object-cover rounded-md" />`;
+  cardImagePreview.innerHTML = `<img src="${dataUrl}" class="w-full h-full object-cover" />`;
+}
+
+/* final price computation */
+inputPrice.addEventListener('input', computeFinalPrice);
+inputDiscount.addEventListener('input', computeFinalPrice);
+function computeFinalPrice(){
+  finalPriceEl.textContent = computeFinalPriceValue() + ' MZN';
+  cardPricePreview.textContent = computeFinalPriceValue() + ' MZN';
+  computeAffValue();
+}
+function computeFinalPriceValue(){
+  const p = Number(inputPrice.value) || 0;
+  const d = Number(inputDiscount.value) || 0;
+  const fp = +(p * (1 - d/100)).toFixed(2);
+  return fp;
+}
+
+/* affiliates */
+allowAff.addEventListener('change', ()=>{
+  if(allowAff.checked) affSection.classList.remove('hidden'); else affSection.classList.add('hidden');
+  computeAffValue();
+});
+affCommission.addEventListener('input', computeAffValue);
+function computeAffValue(){
+  const fp = computeFinalPriceValue();
+  const comm = Number(affCommission.value) || 0;
+  const val = Math.round((fp * comm)/100);
+  affValue.textContent = `${val} MZN`;
+}
+
+/* Step2 file upload: check size (3MB - 18MB) and store base64 */
+inputFile.addEventListener('change', (e)=>{
+  const f = e.target.files[0];
+  if(!f){ filePreview.textContent = ''; currentFileData = null; return; }
+  const min = 3 * 1024 * 1024;
+  const max = 18 * 1024 * 1024;
+  if(f.size < min){ alert('Arquivo muito pequeno. Mínimo: 3MB.'); inputFile.value=''; return; }
+  if(f.size > max){ alert('Arquivo muito grande. Máximo: 18MB.'); inputFile.value=''; return; }
+
+  const reader = new FileReader();
+  reader.onload = ()=> {
+    currentFileData = { fileData: reader.result, fileName: f.name, fileSize: f.size, fileType: f.type };
+    filePreview.textContent = `${f.name} (${Math.round(f.size/1024)} KB)`;
+  };
+  reader.readAsDataURL(f);
+});
+
+/* If inputLink changes, clear file */
+inputLink.addEventListener('input', ()=>{
+  if(inputLink.value.trim() !== ''){ inputFile.value=''; if(currentFileData) currentFileData=null; filePreview.textContent='Usando link'; }
+});
+
+/* verification step */
+function runVerification(){
+  const checks = [];
+  const name = inputName.value.trim();
+  checks.push({ key:'name', ok: !!name, msg: 'Nome preenchido' });
+  checks.push({ key:'image', ok: !!currentImageData, msg: 'Imagem enviada' });
+  const tipo = inputType.value;
+  if(tipo === 'Ebook'){
+    checks.push({ key:'file', ok: !!(currentFileData && currentFileData.fileData), msg: 'Arquivo PDF enviado' });
+  } else {
+    checks.push({ key:'link', ok: !!inputLink.value.trim(), msg: 'Link fornecido' });
+  }
+  checks.push({ key:'desc', ok: (inputDesc.value.trim().length >= 150), msg: 'Descrição >= 150 caracteres' });
+
+  // render verify list
+  const verifyList = document.getElementById('verifyList');
+  verifyList.innerHTML = '';
+  let okAll = true;
+  checks.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = `p-3 rounded ${c.ok ? 'bg-gray-850' : 'bg-gray-800 border-l-4 border-blue-500 shadow-md'}`;
+    div.innerHTML = `<div class="flex justify-between items-center"><div>${c.msg}</div><div class="text-sm ${c.ok ? 'text-green-400' : 'text-yellow-300'}">${c.ok ? 'OK' : 'Pendente'}</div></div>`;
+    verifyList.appendChild(div);
+    if(!c.ok) okAll = false;
+  });
+  return { ok: okAll, checks };
+}
+
+/* preview render helper */
+function renderPreview(){
+  cardNamePreview.textContent = inputName.value || 'Nome do produto';
+  cardDescPreview.textContent = inputDesc.value ? inputDesc.value.slice(0,200) : 'Descrição breve...';
+  cardPricePreview.textContent = computeFinalPriceValue() + ' MZN';
+  cardStatusPreview.textContent = 'Pendente';
+}
+
+/* category quick filters */
+document.querySelectorAll('.category-filter').forEach(btn=>{
+  btn.addEventListener('click', (e)=>{
+    document.querySelectorAll('.category-filter').forEach(b=>b.classList.remove('bg-blue-600','text-white'));
+    btn.classList.add('bg-blue-600','text-white');
+    currentCategoryFilter = btn.getAttribute('data-cat');
+    renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
+  });
+});
+
+/* search */
+document.getElementById('searchInput').addEventListener('input', (e)=>{
+  renderProductGrid(e.target.value, currentCategoryFilter);
+});
+
+/* open modal for new product */
+createProductBtn = document.getElementById('createProductBtn');
+
+/* expose some globals used above */
+const filePreviewEl = filePreview;
+
+/* open editor by id function is above (openEditorById) */
+
+/* remove product helper available above removeProductById */
+
+function openEditorById(id){
+  // defined earlier; but ensure it's accessible (already declared)
+}
+
+/* on load: render products */
+renderProductGrid('', 'Todos');
+
+/* Close success overlay button */
+successClose.addEventListener('click', ()=> successOverlay.classList.add('hidden'));
+
+/* ensure modal navigation buttons show/hide properly when opening */
+document.addEventListener('click', (e)=>{
+  if(e.target.id === 'createProductBtn') showModal();
+});
+
+/* expose functions used by edit handlers */
+window.openEditorById = openEditorById;
+
+/* Edit support: when edit ID is set, finish will replace existing product via editingId variable handled earlier */
+
+/* Initialize bell count */
+updateBell();
+renderBell();
+
+</script>
+
+<style>
+  /* small helpers */
+  .bg-gray-850 { background: #0f1724; border-radius:8px; }
+  /* tailwind plugin line-clamp not available here, simple truncation fallback */
+  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+</style>
 </body>
 </html>
 
