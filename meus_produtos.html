@@ -104,7 +104,6 @@
   <!-- MODAL: 3-step product creation (modal internal scroll) -->
   <div id="productModal" class="hidden fixed inset-0 bg-black/70 flex items-start justify-center pt-16 z-50">
     <div class="bg-gray-900 w-[960px] max-w-full rounded-2xl border border-blue-600 shadow-lg overflow-hidden">
-      <!-- header / steps -->
       <div class="flex items-center justify-between p-4 border-b border-gray-800">
         <div class="flex items-center gap-4">
           <h3 class="text-xl font-semibold text-blue-300" id="modalTitle">Criar Produto</h3>
@@ -115,11 +114,8 @@
         </div>
       </div>
 
-      <!-- modal body: left form + right preview; body scrolls vertically -->
       <div class="p-4 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <!-- left: scrollable form area -->
         <div class="max-h-[70vh] overflow-y-auto pr-2 space-y-4">
-          <!-- STEP 1 -->
           <div id="step1">
             <label class="block text-sm text-gray-300">Imagem do produto (Obrigatório)</label>
             <input id="inputImage" type="file" accept="image/*" class="mt-2 w-full text-sm text-gray-300"/>
@@ -200,7 +196,6 @@
             </div>
           </div>
 
-          <!-- STEP 2 -->
           <div id="step2" class="hidden">
             <label class="block text-sm text-gray-300">Upload do arquivo (PDF) — Ebook (3MB - 18MB)</label>
             <input id="inputFile" type="file" accept=".pdf" class="mt-2 w-full text-sm" />
@@ -214,14 +209,12 @@
             <div id="filePreview" class="text-sm text-gray-300 mt-2"></div>
           </div>
 
-          <!-- STEP 3 (Verification) -->
           <div id="step3" class="hidden">
             <h4 class="text-md font-semibold text-blue-300">Verificação</h4>
             <div id="verifyList" class="mt-2 space-y-2 text-sm"></div>
             <div class="text-xs text-gray-400 mt-2">Se tiver pendências, volte à etapa indicada e corrija.</div>
           </div>
 
-          <!-- navigation -->
           <div class="flex justify-between items-center mt-4 sticky bottom-0 bg-gray-900 pt-4">
             <button id="prevBtn" class="px-3 py-2 bg-gray-700 rounded hover:bg-gray-600 hidden">Voltar</button>
             <div class="flex gap-2">
@@ -271,396 +264,379 @@
   </div>
 
 <script>
-/* ===========================
-   LocalStorage keys & helpers
-   =========================== */
-const PROD_KEY = 'digivend_produtos';
-const NOTIF_KEY = 'digivend_notificacoes_vendedor';
+/* Encapsular tudo em DOMContentLoaded para garantir seleção correta dos elementos */
+document.addEventListener('DOMContentLoaded', () => {
+  /* ========== Helpers e storage ========== */
+  const PROD_KEY = 'digivend_produtos';
+  const NOTIF_KEY = 'digivend_notificacoes_vendedor';
+  const getProducts = () => JSON.parse(localStorage.getItem(PROD_KEY) || '[]');
+  const saveProducts = arr => { localStorage.setItem(PROD_KEY, JSON.stringify(arr)); renderProductGrid(); };
+  const getNotifs = () => JSON.parse(localStorage.getItem(NOTIF_KEY) || '[]');
+  const saveNotifs = arr => localStorage.setItem(NOTIF_KEY, JSON.stringify(arr));
 
-function getProducts(){ return JSON.parse(localStorage.getItem(PROD_KEY) || "[]"); }
-function saveProducts(arr){ localStorage.setItem(PROD_KEY, JSON.stringify(arr)); renderProductGrid(); }
-function getNotifs(){ return JSON.parse(localStorage.getItem(NOTIF_KEY) || "[]"); }
-function saveNotifs(arr){ localStorage.setItem(NOTIF_KEY, JSON.stringify(arr)); }
+  /* ========== Sidebar / Header ========== */
+  const sidebar = document.getElementById('sidebar');
+  const openSidebar = document.getElementById('open-sidebar');
+  const closeSidebar = document.getElementById('close-sidebar');
+  openSidebar.addEventListener('click', () => sidebar.classList.remove('-translate-x-full'));
+  closeSidebar.addEventListener('click', () => sidebar.classList.add('-translate-x-full'));
+  document.querySelectorAll('.menu-item').forEach(el => el.addEventListener('click', () => sidebar.classList.add('-translate-x-full')));
 
-/* ---------------------------
-   Sidebar / Header interactions
-   --------------------------- */
-const sidebar = document.getElementById('sidebar');
-document.getElementById('open-sidebar').addEventListener('click', ()=> sidebar.classList.remove('-translate-x-full'));
-document.getElementById('close-sidebar').addEventListener('click', ()=> sidebar.classList.add('-translate-x-full'));
-document.querySelectorAll('.menu-item').forEach(el => el.addEventListener('click', ()=> sidebar.classList.add('-translate-x-full')));
+  /* Profile menu */
+  const profileBtn = document.getElementById('profileBtn');
+  const profileMenu = document.getElementById('profileMenu');
+  profileBtn.addEventListener('click', (e) => { e.stopPropagation(); profileMenu.classList.toggle('hidden'); });
+  window.addEventListener('click', () => profileMenu.classList.add('hidden'));
+  document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('usuarioAtual'); location.href = 'login.html'; });
 
-const profileBtn = document.getElementById('profileBtn');
-const profileMenu = document.getElementById('profileMenu');
-profileBtn.addEventListener('click', e => { e.stopPropagation(); profileMenu.classList.toggle('hidden'); });
-window.addEventListener('click', ()=> profileMenu.classList.add('hidden'));
-document.getElementById('logoutBtn').addEventListener('click', ()=> { localStorage.removeItem('usuarioAtual'); location.href='login.html'; });
+  /* ========== Notifications (bell) ========== */
+  const bellBtn = document.getElementById('bellBtn');
+  const bellDropdown = document.getElementById('bellDropdown');
+  const bellItems = document.getElementById('bellItems');
+  const bellCountEl = document.getElementById('bellCount');
 
-/* ---------------------------
-   Bell (notifications) render
-   --------------------------- */
-const bellBtn = document.getElementById('bellBtn');
-const bellDropdown = document.getElementById('bellDropdown');
-const bellItems = document.getElementById('bellItems');
-const bellCountEl = document.getElementById('bellCount');
+  function updateBell() {
+    const unread = getNotifs().filter(n => !n.read).length;
+    bellCountEl.textContent = unread;
+    bellCountEl.classList.toggle('hidden', unread === 0);
+  }
+  function renderBell() {
+    const arr = getNotifs().slice().sort((a,b)=> new Date(b.datetime) - new Date(a.datetime));
+    bellItems.innerHTML = '';
+    if (!arr.length) { bellItems.innerHTML = '<div class="p-3 text-gray-400">Sem notificações</div>'; return; }
+    arr.forEach(n => {
+      const div = document.createElement('div');
+      div.className = `p-3 rounded-md flex justify-between items-start cursor-pointer ${n.read ? 'bg-gray-850' : 'bg-gray-800 border-l-4 border-blue-500 shadow-md'}`;
+      div.innerHTML = `<div><div class="text-sm font-semibold text-white">${n.subject}</div><div class="text-xs text-gray-400 mt-1">${n.name} • ${new Date(n.datetime).toLocaleString()}</div></div><div class="text-gray-400 text-xs pl-2">›</div>`;
+      div.addEventListener('click', () => window.location.href = `notificacoes.html?id=${n.id}`);
+      bellItems.appendChild(div);
+    });
+  }
+  bellBtn.addEventListener('click', (e) => { e.stopPropagation(); renderBell(); bellDropdown.classList.toggle('hidden'); updateBell(); });
 
-function updateBell(){
-  const unread = getNotifs().filter(n=>!n.read).length;
-  bellCountEl.textContent = unread;
-  bellCountEl.classList.toggle('hidden', unread === 0);
-}
-function renderBell(){
-  const arr = getNotifs().slice().sort((a,b)=> new Date(b.datetime)-new Date(a.datetime));
-  bellItems.innerHTML = '';
-  if(arr.length===0){ bellItems.innerHTML = '<div class="p-3 text-gray-400">Sem notificações</div>'; return; }
-  arr.forEach(n=>{
-    const div = document.createElement('div');
-    div.className = `p-3 rounded-md flex justify-between items-start cursor-pointer ${n.read? 'bg-gray-850' : 'bg-gray-800 border-l-4 border-blue-500 shadow-md'}`;
-    div.innerHTML = `<div><div class="text-sm font-semibold text-white">${n.subject}</div><div class="text-xs text-gray-400 mt-1">${n.name} • ${new Date(n.datetime).toLocaleString()}</div></div><div class="text-gray-400 text-xs pl-2">›</div>`;
-    div.onclick = ()=> window.location.href = `notificacoes.html?id=${n.id}`;
-    bellItems.appendChild(div);
+  /* close bell when click outside */
+  window.addEventListener('click', (e) => {
+    if (!bellDropdown.contains(e.target) && !bellBtn.contains(e.target)) bellDropdown.classList.add('hidden');
   });
-}
-bellBtn.addEventListener('click', e=> { e.stopPropagation(); renderBell(); bellDropdown.classList.toggle('hidden'); updateBell(); });
-window.addEventListener('click', e=> { if(!bellDropdown.contains(e.target) && !bellBtn.contains(e.target)) bellDropdown.classList.add('hidden'); });
 
-/* ---------------------------
-   Grid rendering (3 per row)
-   --------------------------- */
-const productGrid = document.getElementById('productGrid');
+  /* ========== Grid rendering ========== */
+  const productGrid = document.getElementById('productGrid');
+  function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 
-function renderProductGrid(searchText='', category='Todos'){
-  const arr = getProducts();
-  const filtered = arr.filter(p=>{
-    const t = searchText.trim().toLowerCase();
-    const matchesText = !t ? true : ( (p.nome||'').toLowerCase().includes(t) || (p.descricao||'').toLowerCase().includes(t) );
-    const matchesCat = category === 'Todos' ? true : (p.categoria === category);
-    return matchesText && matchesCat;
-  });
-  productGrid.innerHTML = '';
-  if(filtered.length === 0){ productGrid.innerHTML = '<div class="col-span-full text-gray-400">Nenhum produto encontrado.</div>'; return; }
+  function renderProductGrid(searchText = '', category = 'Todos') {
+    const arr = getProducts();
+    const filtered = arr.filter(p => {
+      const t = (searchText||'').trim().toLowerCase();
+      const matchesText = !t ? true : ((p.nome||'').toLowerCase().includes(t) || (p.descricao||'').toLowerCase().includes(t));
+      const matchesCat = category === 'Todos' ? true : (p.categoria === category);
+      return matchesText && matchesCat;
+    });
 
-  filtered.forEach(p=>{
-    const card = document.createElement('div');
-    card.className = 'bg-gray-900 rounded-2xl overflow-hidden shadow-lg flex flex-col';
-    card.innerHTML = `
-      <div class="h-44 bg-cover bg-center" style="background-image: url('${p.imageData || ''}'); background-color:#0b1220"></div>
-      <div class="p-4 flex-1 flex flex-col">
-        <div class="flex justify-between">
-          <div>
-            <h3 class="text-lg font-semibold text-blue-300">${escapeHtml(p.nome)}</h3>
-            <p class="text-xs text-gray-400 mt-1 line-clamp-2">${escapeHtml(p.descricao)}</p>
-          </div>
-          <div class="text-right">
-            <div class="text-blue-300 font-bold">${p.finalPrice} MZN</div>
-            <div class="text-xs mt-1 ${p.status==='Pendente' ? 'text-yellow-300' : p.status==='Ativo' ? 'text-green-400' : 'text-gray-400'}">${p.status}</div>
+    productGrid.innerHTML = '';
+    if (!filtered.length) {
+      productGrid.innerHTML = '<div class="col-span-full text-gray-400">Nenhum produto encontrado.</div>';
+      return;
+    }
+
+    filtered.forEach(p => {
+      const card = document.createElement('div');
+      card.className = 'bg-gray-900 rounded-2xl overflow-hidden shadow-lg flex flex-col';
+      card.innerHTML = `
+        <div class="h-44 bg-cover bg-center" style="background-image: url('${p.imageData || ''}'); background-color:#0b1220"></div>
+        <div class="p-4 flex-1 flex flex-col">
+          <div class="flex justify-between">
+            <div>
+              <h3 class="text-lg font-semibold text-blue-300">${escapeHtml(p.nome)}</h3>
+              <p class="text-xs text-gray-400 mt-1 line-clamp-2">${escapeHtml(p.descricao)}</p>
+            </div>
+            <div class="text-right">
+              <div class="text-blue-300 font-bold">${p.finalPrice} MZN</div>
+              <div class="text-xs mt-1 ${p.status==='Pendente' ? 'text-yellow-300' : p.status==='Ativo' ? 'text-green-400' : 'text-gray-400'}">${p.status}</div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="p-3 flex items-center gap-2 border-t border-gray-800 bg-gray-900">
-        <button class="copy-btn px-3 py-1 bg-gray-800 rounded text-sm" data-id="${p.id}">📋 Copiar link</button>
-        <button class="edit-btn px-3 py-1 bg-blue-600 rounded text-sm text-white" data-id="${p.id}">✏️ Editar</button>
-        <button class="del-btn px-3 py-1 bg-red-600 rounded text-sm" data-id="${p.id}">🗑️ Remover</button>
-      </div>
-    `;
-    productGrid.appendChild(card);
-  });
+        <div class="p-3 flex items-center gap-2 border-t border-gray-800 bg-gray-900">
+          <button class="copy-btn px-3 py-1 bg-gray-800 rounded text-sm" data-id="${p.id}">📋 Copiar link</button>
+          <button class="edit-btn px-3 py-1 bg-blue-600 rounded text-sm text-white" data-id="${p.id}">✏️ Editar</button>
+          <button class="del-btn px-3 py-1 bg-red-600 rounded text-sm" data-id="${p.id}">🗑️ Remover</button>
+        </div>
+      `;
+      productGrid.appendChild(card);
+    });
 
-  // listeners
-  document.querySelectorAll('.copy-btn').forEach(b => b.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.id;
-    const url = `${location.origin}${location.pathname.replace(/[^\/]*$/,'')}produto.html?id=${id}`;
-    navigator.clipboard?.writeText(url).then(()=> alert('Link copiado')).catch(()=> prompt('Copie o link:', url));
-  }));
-  document.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.id;
-    if(confirm('Remover este produto?')){ removeProductById(id); }
-  }));
-  document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', e=>{
-    const id = e.currentTarget.dataset.id;
-    openEditorById(id);
-  }));
-}
-
-/* Helpers */
-function escapeHtml(s){ const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
-function removeProductById(id){ const arr = getProducts().filter(p => String(p.id) !== String(id)); saveProducts(arr); renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter); }
-
-/* ---------------------------
-   Category dropdown logic
-   --------------------------- */
-const filterToggle = document.getElementById('filterToggle');
-const catDropdown = document.getElementById('catDropdown');
-const catButtons = document.querySelectorAll('.catOpt');
-let currentCategoryFilter = 'Todos';
-filterToggle.addEventListener('click', (e)=> { e.stopPropagation(); catDropdown.classList.toggle('hidden'); });
-catButtons.forEach(b => b.addEventListener('click', ()=>{
-  currentCategoryFilter = b.dataset.cat;
-  catDropdown.classList.add('hidden');
-  renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
-}));
-window.addEventListener('click', ()=> catDropdown.classList.add('hidden'));
-
-/* ---------------------------
-   Create/Edit modal logic (3 steps)
-   --------------------------- */
-const productModal = document.getElementById('productModal');
-const createBtn = document.getElementById('createProductBtn');
-const modalClose = document.getElementById('modalClose');
-const step1 = document.getElementById('step1');
-const step2 = document.getElementById('step2');
-const step3 = document.getElementById('step3');
-const stepIndicator = document.getElementById('stepIndicator');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const finishBtn = document.getElementById('finishBtn');
-// form elems
-const inputImage = document.getElementById('inputImage');
-const previewImage = document.getElementById('cardImagePreview');
-const inputName = document.getElementById('inputName');
-const inputPrice = document.getElementById('inputPrice');
-const inputDiscount = document.getElementById('inputDiscount');
-const inputCoupon = document.getElementById('inputCoupon');
-const finalPriceEl = document.getElementById('finalPrice');
-const inputDesc = document.getElementById('inputDesc');
-const descCount = document.getElementById('descCount');
-const inputCategory = document.getElementById('inputCategory');
-const inputType = document.getElementById('inputType');
-const allowAff = document.getElementById('allowAff');
-const affSection = document.getElementById('affSection');
-const affCommission = document.getElementById('affCommission');
-const affValue = document.getElementById('affValue');
-const affLink = document.getElementById('affLink');
-const inputFile = document.getElementById('inputFile');
-const inputLink = document.getElementById('inputLink');
-const filePreview = document.getElementById('filePreview');
-const verifyList = document.getElementById('verifyList');
-
-let currentStep = 1;
-let currentImageData = null;
-let currentFileData = null;
-let editingId = null;
-
-function showModal(){ productModal.classList.remove('hidden'); resetModal(); goToStep(1); }
-function hideModal(){ productModal.classList.add('hidden'); }
-
-createBtn.addEventListener('click', showModal);
-modalClose.addEventListener('click', hideModal);
-
-/* reset modal */
-function resetModal(){
-  currentImageData = null; currentFileData = null; editingId = null;
-  inputImage.value=''; previewImage.innerHTML = 'Sem imagem';
-  inputName.value=''; inputPrice.value=''; inputDiscount.value='0'; inputCoupon.value=''; finalPriceEl.textContent='0 MZN';
-  inputDesc.value=''; descCount.textContent='0';
-  inputCategory.value='Empreender'; inputType.value='Ebook'; allowAff.checked=false; affSection.classList.add('hidden');
-  affCommission.value = 10; affValue.textContent='0 MZN'; affLink.value='';
-  inputFile.value=''; inputLink.value=''; filePreview.textContent='';
-  // visibility
-  step1.classList.remove('hidden'); step2.classList.add('hidden'); step3.classList.add('hidden');
-  prevBtn.classList.add('hidden'); nextBtn.classList.remove('hidden'); finishBtn.classList.add('hidden');
-  document.getElementById('modalTitle').textContent = 'Criar Produto';
-  document.getElementById('stepIndicator').textContent = 'Etapa 1 de 3';
-}
-
-/* step navigation */
-function goToStep(n){
-  currentStep = n;
-  step1.classList.toggle('hidden', n!==1);
-  step2.classList.toggle('hidden', n!==2);
-  step3.classList.toggle('hidden', n!==3);
-  prevBtn.classList.toggle('hidden', n===1);
-  nextBtn.classList.toggle('hidden', n===3);
-  finishBtn.classList.toggle('hidden', n!==3);
-  stepIndicator.textContent = `Etapa ${n} de 3`;
-  renderPreview();
-  if(n===3) runVerification();
-}
-
-prevBtn.addEventListener('click', ()=> goToStep(Math.max(1, currentStep-1)));
-nextBtn.addEventListener('click', ()=>{
-  if(currentStep === 1){
-    // validate step1: image required, name required, desc >=150
-    if(!currentImageData){ alert('Carregue a imagem do produto.'); return; }
-    if(!inputName.value.trim()){ alert('Preencha o nome.'); return; }
-    if(inputDesc.value.trim().length < 150){ alert('Descrição precisa ter pelo menos 150 caracteres.'); return; }
-    goToStep(2);
-  } else if(currentStep === 2){
-    const tipo = inputType.value;
-    if(tipo === 'Ebook'){
-      if(!(currentFileData && currentFileData.fileData)){ alert('Carregue o PDF do Ebook (3MB - 18MB).'); return; }
-    } else {
-      if(!inputLink.value.trim()){ alert('Cole o link do Curso ou Aplicativo.'); return; }
-    }
-    goToStep(3);
+    // attach listeners
+    document.querySelectorAll('.copy-btn').forEach(b => b.addEventListener('click', (e) => {
+      const id = e.currentTarget.dataset.id;
+      const url = `${location.origin}${location.pathname.replace(/[^\/]*$/,'')}produto.html?id=${id}`;
+      navigator.clipboard?.writeText(url).then(()=> alert('Link copiado')).catch(()=> prompt('Copie o link:', url));
+    }));
+    document.querySelectorAll('.del-btn').forEach(b => b.addEventListener('click', (e) => {
+      const id = e.currentTarget.dataset.id;
+      if (confirm('Remover este produto?')) removeProductById(id);
+    }));
+    document.querySelectorAll('.edit-btn').forEach(b => b.addEventListener('click', (e) => {
+      const id = e.currentTarget.dataset.id;
+      openEditorById(id);
+    }));
   }
-});
 
-/* finish (create product) */
-finishBtn.addEventListener('click', ()=>{
-  const ver = runVerification();
-  if(!ver.ok){ alert('Verificação falhou — corrija os itens pendentes.'); return; }
-
-  const id = editingId || String(Date.now());
-  const nome = inputName.value.trim();
-  const preco = Number(inputPrice.value) || 0;
-  const desconto = Number(inputDiscount.value) || 0;
-  const coupon = inputCoupon.value.trim();
-  const finalPrice = computeFinalPriceValue();
-  const descricao = inputDesc.value.trim();
-  const categoria = inputCategory.value;
-  const tipo = inputType.value;
-  const allowAffBool = allowAff.checked;
-  const affComm = allowAffBool ? Number(affCommission.value)||0 : 0;
-  const affVal = allowAffBool ? Math.round((finalPrice * affComm)/100) : 0;
-  const affL = affLink.value.trim() || '';
-  const status = 'Pendente';
-  const createdAt = new Date().toISOString();
-
-  const product = {
-    id, nome, preco, desconto, coupon, finalPrice, descricao, categoria, tipo,
-    allowAff: allowAffBool, affCommission: affComm, affValue: affVal, affLink: affL,
-    imageData: currentImageData, fileData: currentFileData?.fileData || null,
-    fileName: currentFileData?.fileName || null, fileSize: currentFileData?.fileSize || null,
-    fileType: currentFileData?.fileType || null, fileLink: inputLink.value.trim() || null,
-    status, createdAt
-  };
-
-  const arr = getProducts();
-  if(editingId){
-    const idx = arr.findIndex(x=> x.id === editingId);
-    if(idx >= 0) arr[idx] = product; else arr.push(product);
-  } else arr.push(product);
-
-  saveProducts(arr);
-  hideModal();
-  // show success overlay then auto hide
-  document.getElementById('successOverlay').classList.remove('hidden');
-  setTimeout(()=> {
-    document.getElementById('successOverlay').classList.add('hidden');
+  function removeProductById(id) {
+    const arr = getProducts().filter(p => String(p.id) !== String(id));
+    saveProducts(arr);
     renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
-  }, 3500);
-});
+  }
 
-/* description counter + preview */
-inputDesc.addEventListener('input', ()=>{
-  descCount.textContent = inputDesc.value.length;
-  document.getElementById('cardDescPreview').textContent = inputDesc.value.slice(0,200);
-});
+  /* ========== Category dropdown (toggle + actions) ========== */
+  const filterToggle = document.getElementById('filterToggle');
+  const catDropdown = document.getElementById('catDropdown');
+  const catButtons = Array.from(document.querySelectorAll('.catOpt'));
+  let currentCategoryFilter = 'Todos';
 
-/* image upload (FileReader -> base64) */
-inputImage.addEventListener('change', e=>{
-  const f = e.target.files[0];
-  if(!f) return;
-  const reader = new FileReader();
-  reader.onload = ()=> { currentImageData = reader.result; previewImage.innerHTML = `<img src="${currentImageData}" class="w-full h-full object-cover" />`; renderPreview(); };
-  reader.readAsDataURL(f);
-});
+  filterToggle.addEventListener('click', (e) => { e.stopPropagation(); catDropdown.classList.toggle('hidden'); });
+  catButtons.forEach(b => b.addEventListener('click', () => {
+    currentCategoryFilter = b.dataset.cat;
+    catDropdown.classList.add('hidden');
+    renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
+  }));
+  window.addEventListener('click', () => catDropdown.classList.add('hidden'));
 
-/* final price compute */
-inputPrice.addEventListener('input', computeFinalPrice);
-inputDiscount.addEventListener('input', computeFinalPrice);
-function computeFinalPrice(){ finalPriceEl.textContent = computeFinalPriceValue() + ' MZN'; document.getElementById('cardPricePreview').textContent = computeFinalPriceValue() + ' MZN'; computeAffValue(); }
-function computeFinalPriceValue(){ const p = Number(inputPrice.value) || 0; const d = Number(inputDiscount.value) || 0; return +(p * (1 - d/100)).toFixed(2); }
+  /* ========== Modal create/edit logic ========== */
+  const productModal = document.getElementById('productModal');
+  const createBtn = document.getElementById('createProductBtn');
+  const modalClose = document.getElementById('modalClose');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const step3 = document.getElementById('step3');
+  const stepIndicator = document.getElementById('stepIndicator');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const finishBtn = document.getElementById('finishBtn');
 
-/* affiliates */
-allowAff.addEventListener('change', ()=> { if(allowAff.checked) affSection.classList.remove('hidden'); else affSection.classList.add('hidden'); computeAffValue(); });
-affCommission.addEventListener('input', computeAffValue);
-function computeAffValue(){ const fp = computeFinalPriceValue(); const comm = Number(affCommission.value) || 0; affValue.textContent = Math.round((fp * comm)/100) + ' MZN'; }
+  const inputImage = document.getElementById('inputImage');
+  const cardImagePreview = document.getElementById('cardImagePreview');
+  const inputName = document.getElementById('inputName');
+  const inputPrice = document.getElementById('inputPrice');
+  const inputDiscount = document.getElementById('inputDiscount');
+  const inputCoupon = document.getElementById('inputCoupon');
+  const finalPriceEl = document.getElementById('finalPrice');
+  const inputDesc = document.getElementById('inputDesc');
+  const descCount = document.getElementById('descCount');
+  const inputCategory = document.getElementById('inputCategory');
+  const inputType = document.getElementById('inputType');
+  const allowAff = document.getElementById('allowAff');
+  const affSection = document.getElementById('affSection');
+  const affCommission = document.getElementById('affCommission');
+  const affValue = document.getElementById('affValue');
+  const affLink = document.getElementById('affLink');
+  const inputFile = document.getElementById('inputFile');
+  const inputLink = document.getElementById('inputLink');
+  const filePreview = document.getElementById('filePreview');
+  const verifyList = document.getElementById('verifyList');
 
-/* step2 file upload: PDF size check (3MB - 18MB) */
-inputFile.addEventListener('change', e=>{
-  const f = e.target.files[0];
-  if(!f){ filePreview.textContent=''; currentFileData=null; return; }
-  const min = 3*1024*1024, max = 18*1024*1024;
-  if(f.size < min){ alert('Arquivo muito pequeno (mín 3MB)'); inputFile.value=''; return; }
-  if(f.size > max){ alert('Arquivo muito grande (máx 18MB)'); inputFile.value=''; return; }
-  const reader = new FileReader();
-  reader.onload = ()=> { currentFileData = { fileData: reader.result, fileName: f.name, fileSize: f.size, fileType: f.type }; filePreview.textContent = `${f.name} (${Math.round(f.size/1024)} KB)`; };
-  reader.readAsDataURL(f);
-});
-inputLink.addEventListener('input', ()=> { if(inputLink.value.trim() !== ''){ inputFile.value=''; currentFileData = null; filePreview.textContent = 'Usando link'; } });
+  let currentStep = 1;
+  let currentImageData = null;
+  let currentFileData = null;
+  let editingId = null;
 
-/* verification */
-function runVerification(){
-  const checks = [];
-  const nameOk = !!inputName.value.trim();
-  const imgOk = !!currentImageData;
-  const descOk = inputDesc.value.trim().length >= 150;
-  checks.push({msg:'Nome preenchido', ok:nameOk});
-  checks.push({msg:'Imagem enviada', ok:imgOk});
-  if(inputType.value === 'Ebook') checks.push({msg:'Arquivo PDF enviado (3MB-18MB)', ok: !!(currentFileData && currentFileData.fileData)});
-  else checks.push({msg:'Link do curso/aplicativo fornecido', ok: !!inputLink.value.trim()});
-  checks.push({msg:'Descrição >=150 caracteres', ok:descOk});
-  verifyList.innerHTML = '';
-  let okAll = true;
-  checks.forEach(c=>{
-    const div = document.createElement('div');
-    div.className = `p-3 rounded ${c.ok ? 'bg-gray-850' : 'bg-gray-800 border-l-4 border-blue-500 shadow-md'}`;
-    div.innerHTML = `<div class="flex justify-between"><div>${c.msg}</div><div class="${c.ok? 'text-green-400' : 'text-yellow-300'}">${c.ok ? 'OK' : 'Pendente'}</div></div>`;
-    verifyList.appendChild(div);
-    if(!c.ok) okAll = false;
+  function showModal() { productModal.classList.remove('hidden'); resetModal(); goToStep(1); }
+  function hideModal() { productModal.classList.add('hidden'); }
+
+  createBtn.addEventListener('click', showModal);
+  modalClose.addEventListener('click', hideModal);
+
+  function resetModal() {
+    currentImageData = null; currentFileData = null; editingId = null;
+    inputImage.value = ''; cardImagePreview.innerHTML = 'Sem imagem';
+    inputName.value = ''; inputPrice.value = ''; inputDiscount.value = '0'; inputCoupon.value = ''; finalPriceEl.textContent = '0 MZN';
+    inputDesc.value = ''; descCount.textContent = '0';
+    inputCategory.value = 'Empreender'; inputType.value = 'Ebook'; allowAff.checked = false; affSection.classList.add('hidden');
+    affCommission.value = 10; affValue.textContent = '0 MZN'; affLink.value = '';
+    inputFile.value = ''; inputLink.value = ''; filePreview.textContent = '';
+    step1.classList.remove('hidden'); step2.classList.add('hidden'); step3.classList.add('hidden');
+    prevBtn.classList.add('hidden'); nextBtn.classList.remove('hidden'); finishBtn.classList.add('hidden');
+    document.getElementById('modalTitle').textContent = 'Criar Produto';
+    stepIndicator.textContent = 'Etapa 1 de 3';
+  }
+
+  function goToStep(n) {
+    currentStep = n;
+    step1.classList.toggle('hidden', n !== 1);
+    step2.classList.toggle('hidden', n !== 2);
+    step3.classList.toggle('hidden', n !== 3);
+    prevBtn.classList.toggle('hidden', n === 1);
+    nextBtn.classList.toggle('hidden', n === 3);
+    finishBtn.classList.toggle('hidden', n !== 3);
+    stepIndicator.textContent = `Etapa ${n} de 3`;
+    renderPreview();
+    if (n === 3) runVerification();
+  }
+
+  prevBtn.addEventListener('click', () => goToStep(Math.max(1, currentStep - 1)));
+  nextBtn.addEventListener('click', () => {
+    if (currentStep === 1) {
+      if (!currentImageData) { alert('Carregue a imagem do produto.'); return; }
+      if (!inputName.value.trim()) { alert('Preencha o nome.'); return; }
+      if (inputDesc.value.trim().length < 150) { alert('Descrição precisa ter pelo menos 150 caracteres.'); return; }
+      goToStep(2);
+    } else if (currentStep === 2) {
+      const tipo = inputType.value;
+      if (tipo === 'Ebook') {
+        if (!(currentFileData && currentFileData.fileData)) { alert('Carregue o PDF do Ebook (3MB - 18MB).'); return; }
+      } else {
+        if (!inputLink.value.trim()) { alert('Cole o link do Curso ou Aplicativo.'); return; }
+      }
+      goToStep(3);
+    }
   });
-  return { ok: okAll, checks };
-}
 
-/* preview render */
-function renderPreview(){
-  document.getElementById('cardNamePreview').textContent = inputName.value || 'Nome do produto';
-  document.getElementById('cardDescPreview').textContent = inputDesc.value ? inputDesc.value.slice(0,200) : 'Descrição breve...';
-  document.getElementById('cardPricePreview').textContent = computeFinalPriceValue() + ' MZN';
-  document.getElementById('cardStatusPreview').textContent = 'Pendente';
-}
+  finishBtn.addEventListener('click', () => {
+    const ver = runVerification();
+    if (!ver.ok) { alert('Verificação falhou — corrija os itens pendentes.'); return; }
 
-/* Editing */
-function openEditorById(id){
-  const p = getProducts().find(x=> String(x.id) === String(id));
-  if(!p) return;
-  editingId = p.id;
-  showModal();
-  // populate
-  if(p.imageData){ currentImageData = p.imageData; previewImage.innerHTML = `<img src="${currentImageData}" class="w-full h-full object-cover"/>`; }
-  inputName.value = p.nome; inputPrice.value = p.preco; inputDiscount.value = p.desconto || 0; inputCoupon.value = p.coupon || '';
-  inputDesc.value = p.descricao; descCount.textContent = inputDesc.value.length;
-  inputCategory.value = p.categoria || 'Outros'; inputType.value = p.tipo || 'Ebook';
-  if(p.allowAff){ allowAff.checked = true; affSection.classList.remove('hidden'); affCommission.value = p.affCommission || 0; affLink.value = p.affLink || ''; computeAffValue(); }
-  if(p.fileData){ currentFileData = { fileData: p.fileData, fileName: p.fileName, fileSize: p.fileSize, fileType: p.fileType }; filePreview.textContent = `${p.fileName}`; }
-  if(p.fileLink){ inputLink.value = p.fileLink; }
-  computeFinalPrice();
-  renderPreview();
-}
+    const id = editingId || String(Date.now());
+    const nome = inputName.value.trim();
+    const preco = Number(inputPrice.value) || 0;
+    const desconto = Number(inputDiscount.value) || 0;
+    const coupon = inputCoupon.value.trim();
+    const finalPrice = computeFinalPriceValue();
+    const descricao = inputDesc.value.trim();
+    const categoria = inputCategory.value;
+    const tipo = inputType.value;
+    const allowAffBool = allowAff.checked;
+    const affComm = allowAffBool ? Number(affCommission.value) || 0 : 0;
+    const affVal = allowAffBool ? Math.round((finalPrice * affComm) / 100) : 0;
+    const affL = affLink.value.trim() || '';
+    const status = 'Pendente';
+    const createdAt = new Date().toISOString();
 
-/* expose to global for buttons */
-window.openEditorById = openEditorById;
+    const product = {
+      id, nome, preco, desconto, coupon, finalPrice, descricao, categoria, tipo,
+      allowAff: allowAffBool, affCommission: affComm, affValue: affVal, affLink: affL,
+      imageData: currentImageData, fileData: currentFileData?.fileData || null,
+      fileName: currentFileData?.fileName || null, fileSize: currentFileData?.fileSize || null,
+      fileType: currentFileData?.fileType || null, fileLink: inputLink.value.trim() || null,
+      status, createdAt
+    };
 
-/* initial render & search */
-let currentCategoryFilter = 'Todos';
-document.getElementById('searchInput').addEventListener('input', e=> renderProductGrid(e.target.value, currentCategoryFilter));
+    const arr = getProducts();
+    if (editingId) {
+      const idx = arr.findIndex(x => x.id === editingId);
+      if (idx >= 0) arr[idx] = product; else arr.push(product);
+    } else arr.push(product);
 
-/* small create button */
-document.getElementById('createProductBtn').addEventListener('click', showModal);
+    saveProducts(arr);
+    hideModal();
+    document.getElementById('successOverlay').classList.remove('hidden');
+    setTimeout(() => {
+      document.getElementById('successOverlay').classList.add('hidden');
+      renderProductGrid(document.getElementById('searchInput').value, currentCategoryFilter);
+    }, 3500);
+  });
 
-/* attach category filter buttons (already added) */
-// done earlier via catButtons
+  /* description counter & preview */
+  inputDesc.addEventListener('input', () => {
+    descCount.textContent = inputDesc.value.length;
+    document.getElementById('cardDescPreview').textContent = inputDesc.value.slice(0, 200);
+  });
 
-/* edit/delete handlers are attached at render time */
+  /* image upload */
+  inputImage.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => { currentImageData = reader.result; cardImagePreview.innerHTML = `<img src="${currentImageData}" class="w-full h-full object-cover" />`; renderPreview(); };
+    reader.readAsDataURL(f);
+  });
 
-/* onload */
-renderProductGrid('', 'Todos');
-updateBell();
-renderBell();
+  /* price compute */
+  inputPrice.addEventListener('input', computeFinalPrice);
+  inputDiscount.addEventListener('input', computeFinalPrice);
+  function computeFinalPrice() { finalPriceEl.textContent = computeFinalPriceValue() + ' MZN'; document.getElementById('cardPricePreview').textContent = computeFinalPriceValue() + ' MZN'; computeAffValue(); }
+  function computeFinalPriceValue() { const p = Number(inputPrice.value) || 0; const d = Number(inputDiscount.value) || 0; return +(p * (1 - d / 100)).toFixed(2); }
 
-/* success overlay close */
-document.getElementById('successClose').addEventListener('click', ()=> document.getElementById('successOverlay').classList.add('hidden'));
+  /* affiliates */
+  allowAff.addEventListener('change', () => { if (allowAff.checked) affSection.classList.remove('hidden'); else affSection.classList.add('hidden'); computeAffValue(); });
+  affCommission.addEventListener('input', computeAffValue);
+  function computeAffValue() { const fp = computeFinalPriceValue(); const comm = Number(affCommission.value) || 0; affValue.textContent = Math.round((fp * comm) / 100) + ' MZN'; }
 
+  /* file upload step2 */
+  inputFile.addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (!f) { filePreview.textContent = ''; currentFileData = null; return; }
+    const min = 3 * 1024 * 1024, max = 18 * 1024 * 1024;
+    if (f.size < min) { alert('Arquivo muito pequeno (mín 3MB)'); inputFile.value = ''; return; }
+    if (f.size > max) { alert('Arquivo muito grande (máx 18MB)'); inputFile.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = () => { currentFileData = { fileData: reader.result, fileName: f.name, fileSize: f.size, fileType: f.type }; filePreview.textContent = `${f.name} (${Math.round(f.size / 1024)} KB)`; };
+    reader.readAsDataURL(f);
+  });
+  inputLink.addEventListener('input', () => { if (inputLink.value.trim() !== '') { inputFile.value = ''; currentFileData = null; filePreview.textContent = 'Usando link'; } });
+
+  function runVerification() {
+    const checks = [];
+    const nameOk = !!inputName.value.trim();
+    const imgOk = !!currentImageData;
+    const descOk = inputDesc.value.trim().length >= 150;
+    checks.push({ msg: 'Nome preenchido', ok: nameOk });
+    checks.push({ msg: 'Imagem enviada', ok: imgOk });
+    if (inputType.value === 'Ebook') checks.push({ msg: 'Arquivo PDF enviado (3MB-18MB)', ok: !!(currentFileData && currentFileData.fileData) });
+    else checks.push({ msg: 'Link do curso/aplicativo fornecido', ok: !!inputLink.value.trim() });
+    checks.push({ msg: 'Descrição >=150 caracteres', ok: descOk });
+    verifyList.innerHTML = '';
+    let okAll = true;
+    checks.forEach(c => {
+      const div = document.createElement('div');
+      div.className = `p-3 rounded ${c.ok ? 'bg-gray-850' : 'bg-gray-800 border-l-4 border-blue-500 shadow-md'}`;
+      div.innerHTML = `<div class="flex justify-between"><div>${c.msg}</div><div class="${c.ok ? 'text-green-400' : 'text-yellow-300'}">${c.ok ? 'OK' : 'Pendente'}</div></div>`;
+      verifyList.appendChild(div);
+      if (!c.ok) okAll = false;
+    });
+    return { ok: okAll, checks };
+  }
+
+  function renderPreview() {
+    document.getElementById('cardNamePreview').textContent = inputName.value || 'Nome do produto';
+    document.getElementById('cardDescPreview').textContent = inputDesc.value ? inputDesc.value.slice(0, 200) : 'Descrição breve...';
+    document.getElementById('cardPricePreview').textContent = computeFinalPriceValue() + ' MZN';
+    document.getElementById('cardStatusPreview').textContent = 'Pendente';
+  }
+
+  /* edit flow */
+  function openEditorById(id) {
+    const p = getProducts().find(x => String(x.id) === String(id));
+    if (!p) return;
+    editingId = p.id;
+    showModal();
+    if (p.imageData) { currentImageData = p.imageData; cardImagePreview.innerHTML = `<img src="${currentImageData}" class="w-full h-full object-cover"/>`; }
+    inputName.value = p.nome; inputPrice.value = p.preco; inputDiscount.value = p.desconto || 0; inputCoupon.value = p.coupon || '';
+    inputDesc.value = p.descricao; descCount.textContent = inputDesc.value.length;
+    inputCategory.value = p.categoria || 'Outros'; inputType.value = p.tipo || 'Ebook';
+    if (p.allowAff) { allowAff.checked = true; affSection.classList.remove('hidden'); affCommission.value = p.affCommission || 0; affLink.value = p.affLink || ''; computeAffValue(); }
+    if (p.fileData) { currentFileData = { fileData: p.fileData, fileName: p.fileName, fileSize: p.fileSize, fileType: p.fileType }; filePreview.textContent = `${p.fileName}`; }
+    if (p.fileLink) inputLink.value = p.fileLink;
+    computeFinalPrice();
+    renderPreview();
+  }
+  window.openEditorById = openEditorById;
+
+  /* search input */
+  document.getElementById('searchInput').addEventListener('input', (e) => renderProductGrid(e.target.value, currentCategoryFilter));
+
+  /* initial render */
+  renderProductGrid('', 'Todos');
+  updateBell();
+  renderBell();
+
+  /* success overlay close */
+  document.getElementById('successClose').addEventListener('click', () => document.getElementById('successOverlay').classList.add('hidden'));
+
+}); /* end DOMContentLoaded */
 </script>
 
 <style>
   .bg-gray-850 { background: #0f1724; border-radius:8px; }
   .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  /* prevent horizontal scroll */
-  html, body { overflow-x: hidden; }
+  html, body { overflow-x: hidden; } /* prevent horizontal scroll */
 </style>
 </body>
 </html>
-
