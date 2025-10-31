@@ -1,194 +1,334 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meus Produtos - DIGIVEND</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meus Produtos - DigiVend</title>
   <style>
     body {
       background-color: #000;
       color: #fff;
-      overflow-x: hidden;
       font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
     }
 
+    /* Sidebar */
     .sidebar {
-      transition: transform 0.3s ease-in-out;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 230px;
+      height: 100vh;
+      background: #111;
+      padding: 20px;
+      box-shadow: 2px 0 10px #007bff55;
     }
-
-    .card {
-      background-color: #111;
-      border-left: 4px solid #007bff;
-      border-radius: 12px;
-      padding: 16px;
-      box-shadow: 0 0 10px #007bff33;
-      transition: transform 0.3s ease;
-    }
-
-    .card:hover {
-      transform: scale(1.03);
-    }
-
-    .btn {
-      background-color: #007bff;
-      color: white;
-      padding: 8px 14px;
+    .sidebar a {
+      display: block;
+      color: #fff;
+      text-decoration: none;
+      margin: 15px 0;
+      padding: 10px;
       border-radius: 8px;
-      transition: background 0.3s ease;
+      transition: 0.3s;
+    }
+    .sidebar a:hover,
+    .sidebar a.active {
+      background: #007bff;
     }
 
-    .btn:hover {
-      background-color: #0056b3;
+    /* Topbar */
+    .topbar {
+      margin-left: 230px;
+      height: 70px;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      box-shadow: 0 2px 10px #007bff55;
+    }
+    .topbar-center img {
+      width: 100px;
+    }
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 20px;
+      margin-left: 20px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .icon-btn:hover {
+      color: #007bff;
     }
 
-    .status-pendente {
-      color: #fbbf24;
+    /* Barra de pesquisa */
+    .search-section {
+      margin-left: 230px;
+      padding: 20px 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
 
-    .status-ativo {
-      color: #22c55e;
+    .search-bar {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      max-width: 600px;
+      gap: 10px;
     }
 
-    .status-inativo {
-      color: #ef4444;
+    .search-bar input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      background: #222;
+      color: white;
+      font-size: 14px;
     }
 
-    .hidden {
-      display: none;
+    .filter-btn {
+      background: #007bff;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #fff;
+      transition: 0.3s;
+    }
+
+    .filter-btn:hover {
+      background: #0056b3;
+    }
+
+    /* Botão Criar */
+    .create-section {
+      margin-left: 230px;
+      padding: 10px 30px;
+    }
+    .create-btn {
+      background: #007bff;
+      border: none;
+      padding: 8px 20px;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .create-btn:hover {
+      background: #0056b3;
+    }
+
+    /* Produtos */
+    .produtos-container {
+      margin-left: 230px;
+      padding: 20px 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .produto-card {
+      background: #111;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #007bff55;
+      padding: 15px;
+      text-align: center;
+      transition: 0.3s;
+    }
+    .produto-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px #007bffaa;
+    }
+    .produto-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .status {
+      font-weight: bold;
+    }
+    .status.ativo {
+      color: #00ff88;
+    }
+    .status.pendente {
+      color: #ffbb00;
+    }
+    .status.inativo {
+      color: #ff4444;
+    }
+
+    .card-buttons {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+    .card-buttons button {
+      background: #007bff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: white;
+      font-size: 13px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .card-buttons button:hover {
+      background: #0056b3;
+    }
+
+    /* Chatbot */
+    .chatbot {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+    }
+    .chat-btn {
+      background: #007bff;
+      border: none;
+      border-radius: 50%;
+      width: 55px;
+      height: 55px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #fff;
+      box-shadow: 0 0 10px #007bff99;
     }
   </style>
 </head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2 style="color:#007bff; text-align:center;">DIGIVEND</h2>
+    <a href="dashboard_vendedor.html">🏠 Dashboard</a>
+    <a href="meus_produtos.html" class="active">📦 Meus Produtos</a>
+    <a href="marketplace.html">🛍️ Marketplace</a>
+    <a href="configuracoes.html">⚙️ Configurações</a>
+    <a href="logout.html">🚪 Sair</a>
+  </div>
 
-<body class="min-h-screen">
-
-  <!-- TOPO -->
-  <header class="flex justify-between items-center px-6 py-4 bg-[#111] border-b border-blue-600 sticky top-0 z-50">
-    <button id="sidebarToggle" class="text-blue-500 text-2xl">&#9776;</button>
-    <h1 class="text-2xl font-bold text-blue-500 text-center">DIGIVEND</h1>
-    <div class="flex items-center space-x-4">
-      <!-- SININHO -->
-      <div class="relative">
-        <button id="notiButton" class="text-2xl">🔔</button>
-        <span id="notiCount" class="absolute -top-1 -right-2 bg-blue-500 text-xs px-1 rounded-full">2</span>
-        <div id="notiPanel" class="hidden absolute right-0 mt-3 bg-[#111] border border-blue-600 rounded-lg w-64 shadow-lg">
-          <ul class="p-2 space-y-2">
-            <li class="p-2 bg-blue-950 rounded hover:bg-blue-900 cursor-pointer">Produto aprovado ✅</li>
-            <li class="p-2 bg-blue-950 rounded hover:bg-blue-900 cursor-pointer">Nova mensagem 💬</li>
-          </ul>
-        </div>
-      </div>
-
-      <!-- PERFIL -->
-      <div class="relative">
-        <button id="perfilButton" class="text-2xl">👤</button>
-        <div id="perfilMenu" class="hidden absolute right-0 mt-3 bg-[#111] border border-blue-600 rounded-lg w-48 shadow-lg">
-          <a href="marketplace.html" class="block px-4 py-2 hover:bg-blue-900">Marketplace</a>
-          <a href="perfil.html" class="block px-4 py-2 hover:bg-blue-900">Perfil</a>
-          <a href="index.html" class="block px-4 py-2 text-red-400 hover:bg-blue-900">Sair</a>
-        </div>
-      </div>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div></div>
+    <div class="topbar-center">
+      <img src="assets/logo.png" alt="Logo DigiVend" />
     </div>
-  </header>
-
-  <!-- SIDEBAR -->
-  <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full w-64 bg-[#111] border-r border-blue-600 p-4 transform -translate-x-full z-50">
-    <button id="closeSidebar" class="text-white text-xl mb-6 hover:text-blue-400">✖</button>
-    <nav class="flex flex-col space-y-3">
-      <a href="dashboard_vendedor.html" class="hover:text-blue-400">Dashboard</a>
-      <a href="meus_produtos.html" class="text-blue-400 font-semibold">Meus Produtos</a>
-      <a href="notificacoes.html" class="hover:text-blue-400">Notificações</a>
-      <a href="marketplace.html" class="hover:text-blue-400">Marketplace</a>
-      <a href="configuracoes.html" class="hover:text-blue-400">Configurações</a>
-    </nav>
-  </aside>
-
-  <!-- CONTEÚDO PRINCIPAL -->
-  <main class="p-6">
-    <h2 class="text-3xl text-blue-500 font-bold mb-6 text-center">📦 Meus Produtos</h2>
-
-    <!-- BARRA DE PESQUISA E FILTRO -->
-    <div class="flex flex-col md:flex-row md:justify-center md:items-center gap-3 mb-4">
-      <input id="searchInput" type="text" placeholder="Pesquisar produto..." class="w-full md:w-1/2 p-3 rounded-lg bg-[#111] border border-blue-600 focus:outline-none">
-      <button id="filtrarBtn" class="btn w-full md:w-auto">Filtrar Categoria</button>
+    <div class="topbar-right">
+      <button class="icon-btn">🔔</button>
+      <button class="icon-btn">👤</button>
     </div>
+  </div>
 
-    <!-- BOTÃO CRIAR PRODUTO -->
-    <div class="flex justify-start mb-6">
-      <button id="criarProdutoBtn" class="btn px-6 py-3">+ Criar Produto</button>
+  <!-- Barra de Pesquisa -->
+  <section class="search-section">
+    <div class="search-bar">
+      <input type="text" placeholder="Pesquisar produto..." />
+      <button class="filter-btn">Filtrar Categoria</button>
     </div>
+  </section>
 
-    <!-- GRID DE PRODUTOS -->
-    <div id="produtosContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Exemplo de produto -->
-      <div class="card">
-        <img src="https://via.placeholder.com/300x150" class="w-full h-28 object-cover rounded-lg mb-3" />
-        <h3 class="text-lg font-semibold">Ebook: Segredos do Sucesso</h3>
-        <p class="text-sm text-gray-300 mb-2">Descubra as estratégias para alcançar seus objetivos.</p>
-        <p class="font-semibold text-blue-400">Preço: 199 MZN</p>
-        <p>Status: <span class="status-ativo">Ativo</span></p>
+  <!-- Botão Criar -->
+  <section class="create-section">
+    <button class="create-btn" onclick="window.location.href='adicionar_produtos.html'">+ Criar</button>
+  </section>
 
-        <!-- BOTÕES -->
-        <div class="flex justify-between mt-3 text-sm">
-          <button class="bg-blue-600 px-3 py-2 rounded hover:bg-blue-700" onclick="copiarLink()">Copiar Link</button>
-          <button class="bg-yellow-500 px-3 py-2 rounded hover:bg-yellow-600" onclick="editarProduto('ativo')">Editar</button>
-          <button class="bg-red-600 px-3 py-2 rounded hover:bg-red-700" onclick="removerProduto()">Remover</button>
-        </div>
+  <!-- Cards de Produtos -->
+  <section class="produtos-container">
+    <div class="produto-card" data-status="pendente">
+      <img src="assets/produto1.jpg" alt="Produto">
+      <h3>Curso de Programação</h3>
+      <p>Status: <span class="status pendente">Pendente</span></p>
+      <div class="card-buttons">
+        <button>📋 Copiar</button>
+        <button disabled>✏️ Editar</button>
+        <button>🗑️ Apagar</button>
       </div>
     </div>
-  </main>
 
-  <!-- CHATBOT -->
-  <button id="chatbotBtn" class="fixed bottom-6 left-6 bg-blue-600 text-white p-3 rounded-full text-xl shadow-lg hover:bg-blue-700">💬</button>
+    <div class="produto-card" data-status="ativo">
+      <img src="assets/produto2.jpg" alt="Produto">
+      <h3>eBook de Marketing</h3>
+      <p>Status: <span class="status ativo">Ativo</span></p>
+      <div class="card-buttons">
+        <button>📋 Copiar</button>
+        <button>✏️ Editar</button>
+        <button>🗑️ Apagar</button>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    // Sidebar
-    const sidebar = document.getElementById("sidebar");
-    document.getElementById("sidebarToggle").onclick = () => sidebar.classList.remove("-translate-x-full");
-    document.getElementById("closeSidebar").onclick = () => sidebar.classList.add("-translate-x-full");
+  <!-- Chatbot -->
+  <div class="chatbot">
+    <button class="chat-btn">💬</button>
+  </div>
 
-    // Perfil menu
-    const perfilMenu = document.getElementById("perfilMenu");
-    document.getElementById("perfilButton").onclick = () => perfilMenu.classList.toggle("hidden");
+<script>
+  // --- BOTÕES DE PRODUTO ---
+  document.querySelectorAll('.produto-card').forEach(card => {
+    const status = card.getAttribute('data-status');
+    const editarBtn = card.querySelector('button:nth-child(2)');
 
-    // Sininho
-    const notiPanel = document.getElementById("notiPanel");
-    document.getElementById("notiButton").onclick = () => notiPanel.classList.toggle("hidden");
-
-    // Chatbot
-    document.getElementById("chatbotBtn").onclick = () => {
-      alert("💬 Chatbot DIGIVEND: suporte em breve!");
-    };
-
-    // Redirecionar criar produto
-    document.getElementById("criarProdutoBtn").onclick = () => {
-      window.location.href = "criar_produto.html";
-    };
-
-    // Filtro
-    document.getElementById("filtrarBtn").onclick = () => {
-      alert("🔍 Filtro de categorias em breve!");
-    };
-
-    // Funções dos botões
-    function copiarLink() {
-      navigator.clipboard.writeText("https://digivend.com/produto/exemplo");
-      alert("🔗 Link copiado!");
+    // Desativa o botão editar se status for pendente
+    if (status === 'pendente') {
+      editarBtn.disabled = true;
+      editarBtn.style.opacity = '0.6';
+      editarBtn.title = 'Só pode editar produtos ativos ou inativos.';
     }
 
-    function editarProduto(status) {
-      if (status === "pendente") {
-        alert("⚠️ Não é possível editar produtos pendentes!");
+    // Botão de copiar link
+    const copiarBtn = card.querySelector('button:nth-child(1)');
+    copiarBtn.addEventListener('click', () => {
+      const link = window.location.origin + '/produto/' + card.querySelector('h3').textContent.trim().replace(/\s+/g, '-').toLowerCase();
+      navigator.clipboard.writeText(link).then(() => {
+        alert('✅ Link copiado com sucesso:\n' + link);
+      });
+    });
+
+    // Botão de editar
+    editarBtn.addEventListener('click', () => {
+      if (status !== 'pendente') {
+        alert('🔧 Abrindo editor do produto...');
+        // Aqui você pode redirecionar ou abrir modal
+        window.location.href = 'editar_produto.html';
+      }
+    });
+
+    // Botão de apagar
+    const apagarBtn = card.querySelector('button:nth-child(3)');
+    apagarBtn.addEventListener('click', () => {
+      if (confirm('⚠️ Tem certeza que deseja apagar este produto?')) {
+        card.remove();
+        alert('🗑️ Produto apagado com sucesso.');
+      }
+    });
+  });
+
+  // --- BOTÃO FILTRAR CATEGORIA ---
+  document.querySelector('.filter-btn').addEventListener('click', () => {
+    const categoria = prompt('Digite o nome da categoria para filtrar:');
+    if (!categoria) return;
+
+    document.querySelectorAll('.produto-card').forEach(card => {
+      const nome = card.querySelector('h3').textContent.toLowerCase();
+      if (nome.includes(categoria.toLowerCase())) {
+        card.style.display = 'block';
       } else {
-        alert("✏️ Abrindo editor de produto...");
+        card.style.display = 'none';
       }
-    }
+    });
+  });
 
-    function removerProduto() {
-      if (confirm("Tem certeza que deseja remover este produto?")) {
-        alert("🗑️ Produto removido com sucesso!");
-      }
-    }
-  </script>
+  // --- CHATBOT SIMPLES ---
+  document.querySelector('.chat-btn').addEventListener('click', () => {
+    alert('🤖 Olá! Sou o assistente DigiVend.\nComo posso te ajudar hoje?');
+  });
+</script>
 </body>
 </html>
