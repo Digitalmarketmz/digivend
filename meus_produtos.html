@@ -2,269 +2,206 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Meus Produtos - DIGIVEND</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meus Produtos - DigiVend</title>
+  <link rel="stylesheet" href="style.css">
   <style>
-    * { box-sizing: border-box; }
     body {
       background-color: #000;
+      color: white;
       font-family: Arial, sans-serif;
-      color: #fff;
       margin: 0;
-      display: flex;
+      overflow-x: hidden;
     }
-
-    /* Sidebar */
-    .sidebar {
-      width: 220px;
+    header {
       background-color: #111;
-      height: 100vh;
-      padding-top: 20px;
-      position: fixed;
-      left: -240px;
-      top: 0;
-      transition: left 0.3s ease;
-    }
-    .sidebar.active { left: 0; }
-    .sidebar h2 {
-      color: #007bff;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .sidebar a {
-      display: block;
-      color: #ccc;
-      padding: 12px 20px;
-      text-decoration: none;
-      transition: background 0.3s;
-    }
-    .sidebar a:hover {
-      background-color: #007bff;
-      color: #fff;
-    }
-
-    /* Conteúdo principal */
-    .main {
-      flex-grow: 1;
-      margin-left: 0;
-      transition: margin-left 0.3s ease;
-      width: 100%;
-    }
-    .sidebar.active ~ .main { margin-left: 220px; }
-
-    /* Topbar */
-    .topbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background-color: #111;
       padding: 10px 20px;
-      box-shadow: 0 0 10px #007bff66;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      box-shadow: 0 0 10px #007bff44;
     }
-    .menu-btn, .perfil-btn {
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 22px;
+    .logo {
+      font-size: 20px;
+      color: #007bff;
+      font-weight: bold;
+    }
+    .icons {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .icon {
       cursor: pointer;
+      font-size: 22px;
     }
-    .perfil-btn:hover, .menu-btn:hover {
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 240px;
+      background-color: #111;
+      box-shadow: 2px 0 8px #007bff33;
+      transform: translateX(-100%);
+      transition: 0.3s;
+      z-index: 10;
+      padding: 20px;
+    }
+    .sidebar.active {
+      transform: translateX(0);
+    }
+    .sidebar h2 {
+      color: #007bff;
+      margin-bottom: 20px;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      margin: 15px 0;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .sidebar ul li:hover {
       color: #007bff;
     }
-    h1 { color: #007bff; text-align: center; }
-
-    /* Pesquisa e filtro */
-    .filtros {
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      color: #007bff;
+      font-size: 22px;
+    }
+    main {
+      padding: 30px;
+      text-align: center;
+    }
+    .search-bar {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 10px;
-      margin: 20px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
     }
-    .filtros input, .filtros select {
-      background-color: #111;
-      border: none;
-      color: white;
+    .search-bar input {
+      width: 50%;
+      min-width: 250px;
       padding: 10px;
       border-radius: 6px;
+      border: none;
+      background: #111;
+      color: white;
     }
-    .filtros button {
+    .search-bar button {
+      padding: 10px 16px;
       background-color: #007bff;
       border: none;
       color: white;
-      padding: 10px 16px;
       border-radius: 6px;
       cursor: pointer;
     }
-    .filtros button:hover { background-color: #0056b3; }
-
-    /* Cards */
-    .produtos-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 20px;
+    .search-bar button:hover {
+      background-color: #0056b3;
     }
-    .card {
+    .create-btn {
+      display: block;
+      margin: 10px auto 20px;
+      padding: 10px 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+    .create-btn:hover {
+      background-color: #0056b3;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+    .product-card {
       background-color: #111;
       border-radius: 10px;
       padding: 15px;
-      box-shadow: 0 0 10px #007bff44;
-      transition: transform 0.2s;
+      text-align: left;
+      box-shadow: 0 0 10px #007bff33;
     }
-    .card:hover { transform: translateY(-4px); }
-    .card h3 { color: #007bff; margin: 5px 0; }
-    .card p { color: #ccc; font-size: 14px; margin: 5px 0; }
-    .status {
-      background-color: #007bff44;
-      padding: 4px 8px;
-      border-radius: 6px;
-      display: inline-block;
-      font-size: 13px;
+    .product-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 10px;
     }
-    .botoes-card {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
+    .product-card h3 {
+      color: #007bff;
+      margin: 5px 0;
     }
-    .botoes-card button {
-      background-color: #007bff;
-      border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
+    .product-card p {
+      font-size: 14px;
+      color: #ccc;
     }
-    .botoes-card button:hover { background-color: #0056b3; }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
-    <h2>DIGIVEND</h2>
-    <a href="#">🏠 Dashboard</a>
-    <a href="#">💰 Vendas</a>
-    <a href="#">📦 Meus Produtos</a>
-    <a href="#">⚙️ Configurações</a>
-  </div>
-
-  <!-- Conteúdo principal -->
-  <div class="main">
-    <div class="topbar">
-      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-      <h2>Meus Produtos</h2>
-      <button class="perfil-btn" onclick="abrirPerfil()">👤</button>
+  <header>
+    <div class="icon" id="menu-btn">☰</div>
+    <div class="logo">DigiVend</div>
+    <div class="icons">
+      <div class="icon" id="notif-bell">🔔</div>
+      <div class="icon" id="profile-btn">👤</div>
     </div>
+  </header>
 
-    <div class="filtros">
-      <input type="text" id="pesquisa" placeholder="Pesquisar produto...">
-      <select id="categoriaFiltro">
-        <option value="">Todas as categorias</option>
-        <option value="curso">Curso</option>
-        <option value="ebook">eBook</option>
-        <option value="software">Software</option>
-        <option value="servico">Serviço</option>
-        <option value="outro">Outro</option>
-      </select>
-      <button onclick="filtrar()">Filtrar</button>
-      <button onclick="window.location.href='adicionar_produto.html'">+ Criar</button>
+  <aside class="sidebar" id="sidebar">
+    <span class="close-btn" id="close-sidebar">✖</span>
+    <h2>Menu</h2>
+    <ul>
+      <li onclick="location.href='dashboard.html'">Dashboard</li>
+      <li onclick="location.href='meus_produtos.html'">Meus Produtos</li>
+      <li onclick="location.href='notificacoes.html'">Notificações</li>
+      <li onclick="location.href='marketplace.html'">Marketplace / Loja</li>
+      <li onclick="location.href='configuracoes.html'">Configurações</li>
+      <li onclick="location.href='index.html'">Sair</li>
+    </ul>
+  </aside>
+
+  <main>
+    <div class="search-bar">
+      <input type="text" id="search" placeholder="Pesquisar produto...">
+      <button id="filter-btn">Filtrar Categoria</button>
     </div>
-
-    <div id="produtosContainer" class="produtos-container"></div>
-  </div>
+    <button class="create-btn" onclick="location.href='adicionar_produto.html'">+ Criar Produto</button>
+    
+    <div class="products" id="product-list">
+      <div class="product-card">
+        <img src="https://via.placeholder.com/300x200" alt="Produto">
+        <h3>Curso de Programação</h3>
+        <p>Preço: 299 MT</p>
+      </div>
+      <div class="product-card">
+        <img src="https://via.placeholder.com/300x200" alt="Produto">
+        <h3>Ebook de Marketing</h3>
+        <p>Preço: 149 MT</p>
+      </div>
+    </div>
+  </main>
 
   <script>
-    // Toggle sidebar
-    function toggleSidebar() {
-      document.getElementById("sidebar").classList.toggle("active");
-    }
-
-    // Simulação do perfil
-    function abrirPerfil() {
-      alert("Perfil do vendedor - funcionalidade em desenvolvimento 💡");
-    }
-
-    // Carregar produtos do localStorage
-    function carregarProdutos() {
-      const container = document.getElementById("produtosContainer");
-      const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-      container.innerHTML = "";
-
-      if (produtos.length === 0) {
-        container.innerHTML = "<p>Nenhum produto adicionado ainda.</p>";
-        return;
-      }
-
-      produtos.forEach((p, i) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <h3>${p.nome}</h3>
-          <p>${p.descricao ? p.descricao.substring(0, 80) + "..." : "Sem descrição."}</p>
-          <p><b>Preço:</b> ${p.preco} MT</p>
-          <p><b>Categoria:</b> ${p.categoria}</p>
-          <span class="status">${p.status}</span>
-          <div class="botoes-card">
-            <button onclick="editarProduto(${i})">Editar</button>
-            <button onclick="removerProduto(${i})">Remover</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // Filtro de pesquisa e categoria
-    function filtrar() {
-      const termo = document.getElementById("pesquisa").value.toLowerCase();
-      const categoria = document.getElementById("categoriaFiltro").value;
-      const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-      const container = document.getElementById("produtosContainer");
-      container.innerHTML = "";
-
-      const filtrados = produtos.filter(p =>
-        p.nome.toLowerCase().includes(termo) &&
-        (categoria === "" || p.categoria === categoria)
-      );
-
-      if (filtrados.length === 0) {
-        container.innerHTML = "<p>Nenhum produto encontrado.</p>";
-        return;
-      }
-
-      filtrados.forEach((p, i) => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <h3>${p.nome}</h3>
-          <p>${p.descricao ? p.descricao.substring(0, 80) + "..." : "Sem descrição."}</p>
-          <p><b>Preço:</b> ${p.preco} MT</p>
-          <p><b>Categoria:</b> ${p.categoria}</p>
-          <span class="status">${p.status}</span>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // Remover produto
-    function removerProduto(index) {
-      if (confirm("Deseja realmente remover este produto?")) {
-        const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-        produtos.splice(index, 1);
-        localStorage.setItem("produtos", JSON.stringify(produtos));
-        carregarProdutos();
-      }
-    }
-
-    // Editar (placeholder)
-    function editarProduto(index) {
-      alert("Edição de produto em desenvolvimento 💡");
-    }
-
-    carregarProdutos();
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.getElementById('menu-btn');
+    const closeSidebar = document.getElementById('close-sidebar');
+    menuBtn.onclick = () => sidebar.classList.add('active');
+    closeSidebar.onclick = () => sidebar.classList.remove('active');
   </script>
 </body>
 </html>
