@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Adicionar Produto - DIGIVEND</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #007bff;
+      text-align: center;
+    }
+    .form-container {
+      background-color: #111;
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #007bff88;
+      position: relative;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #007bff;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: none;
+      background-color: #222;
+      color: white;
+    }
+    textarea { resize: vertical; }
+    button {
+      background-color: #007bff;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      width: 48%;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover { background-color: #0056b3; }
+    .progress {
+      background-color: #222;
+      border-radius: 6px;
+      height: 10px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      background-color: #007bff;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .step { display: none; }
+    .step.active { display: block; }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background-color: #111;
+      padding: 30px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 0 20px #007bff;
+      max-width: 400px;
+    }
+    .close {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 22px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Adicionar Novo Produto</h1>
+
+  <div class="form-container">
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+    <!-- Etapa 1 -->
+    <div class="step active" id="step1">
+      <label>Nome do Produto:</label>
+      <input type="text" id="nome" required>
+
+      <label>Autor / Fabricante:</label>
+      <input type="text" id="autor" required>
+
+      <label>Preço (MT):</label>
+      <input type="number" id="preco" required>
+
+      <label>Categoria:</label>
+      <select id="categoria" required>
+        <option value="">Selecione...</option>
+        <option value="curso">Curso</option>
+        <option value="ebook">eBook</option>
+        <option value="software">Software</option>
+        <option value="servico">Serviço</option>
+        <option value="outro">Outro</option>
+      </select>
+
+      <div style="text-align:center;">
+        <button type="button" onclick="nextStep(1)">Avançar</button>
+      </div>
+    </div>
+
+    <!-- Etapa 2 -->
+    <div class="step" id="step2">
+      <label>Descrição:</label>
+      <textarea id="descricao" rows="4" minlength="150" required></textarea>
+
+      <label>Upload do Arquivo Digital ou Link:</label>
+      <input type="file" id="ficheiro">
+      <input type="url" id="link" placeholder="Ou insira um link do produto">
+
+      <div style="display:flex;justify-content:space-between;">
+        <button type="button" onclick="prevStep(2)">Voltar</button>
+        <button type="button" onclick="nextStep(2)">Avançar</button>
+      </div>
+    </div>
+
+    <!-- Etapa 3 -->
+    <div class="step" id="step3" style="text-align:center;">
+      <p>🔍 Verificando informações...</p>
+      <p id="verificacaoStatus"></p>
+    </div>
+  </div>
+
+  <!-- Modal de sucesso -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>📦✅ Produto criado com sucesso!</h2>
+      <p>O tempo de espera para que a revisão do produto seja totalmente feita pelo suporte DIGIVEND é de 30 minutos no mínimo.</p>
+      <p>Após aprovação, o status mudará de <b>Pendente</b> para <b>Ativo</b>.</p>
+    </div>
+  </div>
+
+  <script>
+    let currentStep = 1;
+
+    function updateProgress() {
+      document.getElementById('progressBar').style.width = (currentStep - 1) * 50 + '%';
+    }
+
+    function nextStep(step) {
+      if (step === 1 && !document.getElementById('nome').value) return alert("Preencha o nome do produto.");
+      document.getElementById(`step${step}`).classList.remove('active');
+      document.getElementById(`step${step+1}`).classList.add('active');
+      currentStep++;
+      updateProgress();
+
+      if (currentStep === 3) verificarDados();
+    }
+
+    function prevStep(step) {
+      document.getElementById(`step${step}`).classList.remove('active');
+      document.getElementById(`step${step-1}`).classList.add('active');
+      currentStep--;
+      updateProgress();
+    }
+
+    function verificarDados() {
+      const status = document.getElementById("verificacaoStatus");
+      const nome = document.getElementById("nome").value;
+      const descricao = document.getElementById("descricao").value;
+      const ficheiro = document.getElementById("ficheiro").value || document.getElementById("link").value;
+
+      let etapas = [
+        {campo: nome, texto: "Verificando nome..."},
+        {campo: descricao, texto: "Analisando descrição..."},
+        {campo: ficheiro, texto: "Validando arquivo/link..."}
+      ];
+
+      let i = 0;
+      function processar() {
+        if (i < etapas.length) {
+          status.textContent = etapas[i].texto;
+          setTimeout(() => {
+            if (!etapas[i].campo) {
+              alert("Falta preencher um campo obrigatório!");
+              prevStep(3);
+              return;
+            }
+            i++;
+            processar();
+          }, 3000);
+        } else {
+          salvarProduto();
+        }
+      }
+      processar();
+    }
+
+    function salvarProduto() {
+      const produto = {
+        nome: document.getElementById("nome").value,
+        autor: document.getElementById("autor").value,
+        preco: document.getElementById("preco").value,
+        categoria: document.getElementById("categoria").value,
+        descricao: document.getElementById("descricao").value,
+        status: "Pendente"
+      };
+
+      let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+      produtos.push(produto);
+      localStorage.setItem("produtos", JSON.stringify(produtos));
+
+      setTimeout(() => {
+        document.getElementById("successModal").style.display = "flex";
+        setTimeout(() => { window.location.href = "produtos.html"; }, 4000);
+      }, 1500);
+    }
+
+    function closeModal() {
+      document.getElementById("successModal").style.display = "none";
+    }
+  </script>
+</body>
+</html>

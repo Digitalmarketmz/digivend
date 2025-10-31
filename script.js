@@ -186,3 +186,151 @@ function criarNotificacao({name, sender, subject, message}) {
   if (typeof atualizarBadge === "function") atualizarBadge();
 }
 
+// === Funções globais ===
+
+// Salvar novo produto (vindo da página adicionar_produto.html)
+function salvarProduto(novoProduto) {
+  let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+  produtos.push(novoProduto);
+  localStorage.setItem("produtos", JSON.stringify(produtos));
+}
+
+// === Página adicionar_produto.html ===
+if (window.location.pathname.includes("adicionar_produto.html")) {
+  const form = document.querySelector("form");
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const nome = document.getElementById("nome").value.trim();
+    const autor = document.getElementById("autor").value.trim();
+    const preco = document.getElementById("preco").value.trim();
+    const categoria = document.getElementById("categoria").value;
+    const descricao = document.getElementById("descricao").value.trim();
+    const ficheiro = document.getElementById("ficheiro").files[0];
+
+    if (!nome || !autor || !preco || !categoria || !descricao || !ficheiro) {
+      alert("⚠️ Por favor, preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    // Converter imagem/arquivo em Base64
+    const reader = new FileReader();
+    reader.onload = function () {
+      const novoProduto = {
+        nome,
+        autor,
+        preco: parseFloat(preco).toFixed(2),
+        categoria,
+        descricao,
+        imagem: reader.result,
+        status: "Pendente",
+        dataCriacao: new Date().toLocaleString("pt-PT")
+      };
+
+      salvarProduto(novoProduto);
+
+      // Mostrar mensagem de sucesso
+      const mensagem = document.createElement("div");
+      mensagem.innerHTML = `
+        <div style="
+          position:fixed;
+          top:0;left:0;width:100%;height:100%;
+          background:rgba(0,0,0,0.8);
+          display:flex;align-items:center;justify-content:center;
+          z-index:9999;">
+          <div style="
+            background-color:#111;
+            padding:30px;
+            border-radius:10px;
+            text-align:center;
+            box-shadow:0 0 10px #007bff;">
+            <h1>📦✅</h1>
+            <h2>Produto criado com sucesso!</h2>
+            <p>O tempo de espera para que a revisão do produto seja totalmente feita pelo suporte DIGIVEND é de 30 minutos no mínimo.</p>
+            <p>Caso o seu produto seja aprovado, o status passará de <b>Pendente</b> para <b>Ativo</b>.</p>
+            <p>Se for rejeitado, mudará para <b>Rejeitado</b>.</p>
+            <p>Para mais informações, entre em contacto com o suporte.</p>
+            <button id="fecharMensagem" style="
+              margin-top:15px;
+              padding:10px 20px;
+              background-color:#007bff;
+              border:none;
+              border-radius:6px;
+              color:white;
+              cursor:pointer;">Fechar</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(mensagem);
+
+      document.getElementById("fecharMensagem").onclick = function () {
+        mensagem.remove();
+        window.location.href = "meus_produtos.html";
+      };
+
+      // Redireciona automaticamente após 5s
+      setTimeout(() => {
+        window.location.href = "meus_produtos.html";
+      }, 5000);
+    };
+
+    reader.readAsDataURL(ficheiro);
+  });
+}
+
+// === Página meus_produtos.html ===
+if (window.location.pathname.includes("meus_produtos.html")) {
+  function carregarProdutos() {
+    const container = document.getElementById("produtosContainer");
+    if (!container) return;
+    const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+    container.innerHTML = "";
+
+    if (produtos.length === 0) {
+      container.innerHTML = "<p>Nenhum produto adicionado ainda.</p>";
+      return;
+    }
+
+    produtos.forEach((p, i) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <img src="${p.imagem}" alt="${p.nome}" style="width:100%;border-radius:8px;object-fit:cover;height:150px;">
+        <h3>${p.nome}</h3>
+        <p>${p.descricao.substring(0, 100)}...</p>
+        <p><b>Preço:</b> ${p.preco} MT</p>
+        <p><b>Categoria:</b> ${p.categoria}</p>
+        <span class="status">${p.status}</span>
+        <div class="botoes-card">
+          <button onclick="copiarLink(${i})">Copiar Link</button>
+          <button onclick="editarProduto(${i})">Editar</button>
+          <button onclick="removerProduto(${i})">Remover</button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  window.copiarLink = function (index) {
+    const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+    const link = `https://digivend.com/produto/${encodeURIComponent(produtos[index].nome.replace(/\s+/g, '-').toLowerCase())}`;
+    navigator.clipboard.writeText(link);
+    alert("🔗 Link do produto copiado com sucesso!");
+  };
+
+  window.removerProduto = function (index) {
+    const produtos = JSON.parse(localStorage.getItem("produtos")) || [];
+    if (confirm("Deseja realmente remover este produto?")) {
+      produtos.splice(index, 1);
+      localStorage.setItem("produtos", JSON.stringify(produtos));
+      carregarProdutos();
+    }
+  };
+
+  window.editarProduto = function (index) {
+    alert("Função de edição ainda em desenvolvimento 💡");
+  };
+
+  carregarProdutos();
+}
