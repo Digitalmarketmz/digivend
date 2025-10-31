@@ -1,73 +1,98 @@
-cat > meus_produtos.html << 'EOF'
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meus Produtos - DIGIVEND</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background-color: #0a0a0a;
-      color: white;
+      background-color: #000;
+      color: #fff;
       overflow-x: hidden;
+      font-family: "Poppins", sans-serif;
     }
+
+    .sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+
     .card {
-      background: #111;
+      background-color: #111;
       border-left: 4px solid #007bff;
       border-radius: 12px;
       padding: 16px;
       box-shadow: 0 0 10px #007bff33;
       transition: transform 0.3s ease;
     }
+
     .card:hover {
-      transform: scale(1.02);
+      transform: scale(1.03);
     }
-    .btn-blue {
+
+    .btn {
       background-color: #007bff;
-      transition: 0.3s;
+      color: white;
+      padding: 8px 14px;
+      border-radius: 8px;
+      transition: background 0.3s ease;
     }
-    .btn-blue:hover {
+
+    .btn:hover {
       background-color: #0056b3;
+    }
+
+    .status-pendente {
+      color: #fbbf24;
+    }
+
+    .status-ativo {
+      color: #22c55e;
+    }
+
+    .status-inativo {
+      color: #ef4444;
+    }
+
+    .hidden {
+      display: none;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
 
-  <!-- TOPO IGUAL AO DASHBOARD -->
+<body class="min-h-screen">
+
+  <!-- TOPO -->
   <header class="flex justify-between items-center px-6 py-4 bg-[#111] border-b border-blue-600 sticky top-0 z-50">
-    <button id="sidebarToggle" class="text-blue-500 text-2xl font-bold">&#9776;</button>
+    <button id="sidebarToggle" class="text-blue-500 text-2xl">&#9776;</button>
     <h1 class="text-2xl font-bold text-blue-500 text-center">DIGIVEND</h1>
-
     <div class="flex items-center space-x-4">
-      <!-- SINO -->
+      <!-- SININHO -->
       <div class="relative">
-        <button id="notiButton" class="relative text-white hover:text-blue-400">
-          <span class="text-2xl">🔔</span>
-          <span id="notiCount" class="absolute -top-2 -right-2 bg-blue-500 text-xs px-1 rounded-full">2</span>
-        </button>
-        <div id="notiPanel" class="hidden absolute right-0 mt-2 w-64 bg-[#111] border border-blue-600 rounded-lg shadow-lg">
-          <ul id="notiList" class="p-2 space-y-1">
-            <li class="p-2 bg-blue-950 rounded cursor-pointer hover:bg-blue-900">Produto aprovado ✅</li>
-            <li class="p-2 bg-blue-950 rounded cursor-pointer hover:bg-blue-900">Saque confirmado 💵</li>
+        <button id="notiButton" class="text-2xl">🔔</button>
+        <span id="notiCount" class="absolute -top-1 -right-2 bg-blue-500 text-xs px-1 rounded-full">2</span>
+        <div id="notiPanel" class="hidden absolute right-0 mt-3 bg-[#111] border border-blue-600 rounded-lg w-64 shadow-lg">
+          <ul class="p-2 space-y-2">
+            <li class="p-2 bg-blue-950 rounded hover:bg-blue-900 cursor-pointer">Produto aprovado ✅</li>
+            <li class="p-2 bg-blue-950 rounded hover:bg-blue-900 cursor-pointer">Nova mensagem 💬</li>
           </ul>
         </div>
       </div>
 
       <!-- PERFIL -->
       <div class="relative">
-        <button id="perfilButton" class="text-white text-2xl hover:text-blue-400">👤</button>
-        <div id="perfilMenu" class="hidden absolute right-0 mt-2 w-48 bg-[#111] border border-blue-600 rounded-lg shadow-lg">
+        <button id="perfilButton" class="text-2xl">👤</button>
+        <div id="perfilMenu" class="hidden absolute right-0 mt-3 bg-[#111] border border-blue-600 rounded-lg w-48 shadow-lg">
           <a href="marketplace.html" class="block px-4 py-2 hover:bg-blue-900">Marketplace</a>
           <a href="perfil.html" class="block px-4 py-2 hover:bg-blue-900">Perfil</a>
-          <a href="index.html" class="block px-4 py-2 hover:bg-blue-900 text-red-400">Sair</a>
+          <a href="index.html" class="block px-4 py-2 text-red-400 hover:bg-blue-900">Sair</a>
         </div>
       </div>
     </div>
   </header>
 
   <!-- SIDEBAR -->
-  <aside id="sidebar" class="fixed top-0 left-0 h-full w-64 bg-[#111] border-r border-blue-600 p-4 transform -translate-x-full transition-transform duration-300 z-50">
+  <aside id="sidebar" class="sidebar fixed top-0 left-0 h-full w-64 bg-[#111] border-r border-blue-600 p-4 transform -translate-x-full z-50">
     <button id="closeSidebar" class="text-white text-xl mb-6 hover:text-blue-400">✖</button>
     <nav class="flex flex-col space-y-3">
       <a href="dashboard_vendedor.html" class="hover:text-blue-400">Dashboard</a>
@@ -79,32 +104,35 @@ cat > meus_produtos.html << 'EOF'
   </aside>
 
   <!-- CONTEÚDO PRINCIPAL -->
-  <main class="flex-1 p-6 mt-4">
-    <h2 class="text-3xl font-bold text-blue-500 mb-6 text-center">📦 Meus Produtos</h2>
+  <main class="p-6">
+    <h2 class="text-3xl text-blue-500 font-bold mb-6 text-center">📦 Meus Produtos</h2>
 
-    <!-- BARRA DE PESQUISA + FILTRO -->
+    <!-- BARRA DE PESQUISA E FILTRO -->
     <div class="flex flex-col md:flex-row md:justify-center md:items-center gap-3 mb-4">
-      <input type="text" placeholder="Pesquisar produto..." class="w-full md:w-1/2 p-3 rounded-lg bg-[#111] border border-blue-600 focus:outline-none">
-      <button class="btn-blue px-5 py-3 rounded-lg w-full md:w-auto">Filtrar Categoria</button>
+      <input id="searchInput" type="text" placeholder="Pesquisar produto..." class="w-full md:w-1/2 p-3 rounded-lg bg-[#111] border border-blue-600 focus:outline-none">
+      <button id="filtrarBtn" class="btn w-full md:w-auto">Filtrar Categoria</button>
     </div>
 
     <!-- BOTÃO CRIAR PRODUTO -->
     <div class="flex justify-start mb-6">
-      <button id="criarProdutoBtn" class="btn-blue px-6 py-3 rounded-lg">+ Criar Produto</button>
+      <button id="criarProdutoBtn" class="btn px-6 py-3">+ Criar Produto</button>
     </div>
 
-    <!-- LISTA DE PRODUTOS -->
+    <!-- GRID DE PRODUTOS -->
     <div id="produtosContainer" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Exemplo de produto -->
       <div class="card">
-        <img src="https://via.placeholder.com/300x160" class="w-full h-32 object-cover rounded-lg mb-3" />
-        <h3 class="text-lg font-semibold">Curso de Marketing Digital</h3>
-        <p class="text-sm text-gray-300 mb-2">Aprenda estratégias reais para crescer seu negócio online.</p>
-        <p class="font-semibold text-blue-400 mb-2">Preço: 499 MT</p>
-        <p class="text-sm mb-2"><span class="text-yellow-400">Status:</span> <span class="text-green-400">Ativo</span></p>
+        <img src="https://via.placeholder.com/300x150" class="w-full h-28 object-cover rounded-lg mb-3" />
+        <h3 class="text-lg font-semibold">Ebook: Segredos do Sucesso</h3>
+        <p class="text-sm text-gray-300 mb-2">Descubra as estratégias para alcançar seus objetivos.</p>
+        <p class="font-semibold text-blue-400">Preço: 199 MZN</p>
+        <p>Status: <span class="status-ativo">Ativo</span></p>
+
+        <!-- BOTÕES -->
         <div class="flex justify-between mt-3 text-sm">
-          <button class="bg-blue-600 px-3 py-2 rounded-lg hover:bg-blue-700">Copiar Link</button>
-          <button class="bg-yellow-500 px-3 py-2 rounded-lg hover:bg-yellow-600">Editar</button>
-          <button class="bg-red-600 px-3 py-2 rounded-lg hover:bg-red-700">Remover</button>
+          <button class="bg-blue-600 px-3 py-2 rounded hover:bg-blue-700" onclick="copiarLink()">Copiar Link</button>
+          <button class="bg-yellow-500 px-3 py-2 rounded hover:bg-yellow-600" onclick="editarProduto('ativo')">Editar</button>
+          <button class="bg-red-600 px-3 py-2 rounded hover:bg-red-700" onclick="removerProduto()">Remover</button>
         </div>
       </div>
     </div>
@@ -114,7 +142,7 @@ cat > meus_produtos.html << 'EOF'
   <button id="chatbotBtn" class="fixed bottom-6 left-6 bg-blue-600 text-white p-3 rounded-full text-xl shadow-lg hover:bg-blue-700">💬</button>
 
   <script>
-    // Sidebar toggle
+    // Sidebar
     const sidebar = document.getElementById("sidebar");
     document.getElementById("sidebarToggle").onclick = () => sidebar.classList.remove("-translate-x-full");
     document.getElementById("closeSidebar").onclick = () => sidebar.classList.add("-translate-x-full");
@@ -123,18 +151,44 @@ cat > meus_produtos.html << 'EOF'
     const perfilMenu = document.getElementById("perfilMenu");
     document.getElementById("perfilButton").onclick = () => perfilMenu.classList.toggle("hidden");
 
-    // Notificações toggle
+    // Sininho
     const notiPanel = document.getElementById("notiPanel");
     document.getElementById("notiButton").onclick = () => notiPanel.classList.toggle("hidden");
 
     // Chatbot
-    document.getElementById("chatbotBtn").onclick = () => alert("💬 Chatbot DIGIVEND: suporte em breve!");
+    document.getElementById("chatbotBtn").onclick = () => {
+      alert("💬 Chatbot DIGIVEND: suporte em breve!");
+    };
 
-    // Corrigir redirecionamento do botão Criar
-    document.getElementById("criarProdutoBtn").addEventListener("click", () => {
-      window.location.href = "adicionar_produto.html";
-    });
+    // Redirecionar criar produto
+    document.getElementById("criarProdutoBtn").onclick = () => {
+      window.location.href = "criar_produto.html";
+    };
+
+    // Filtro
+    document.getElementById("filtrarBtn").onclick = () => {
+      alert("🔍 Filtro de categorias em breve!");
+    };
+
+    // Funções dos botões
+    function copiarLink() {
+      navigator.clipboard.writeText("https://digivend.com/produto/exemplo");
+      alert("🔗 Link copiado!");
+    }
+
+    function editarProduto(status) {
+      if (status === "pendente") {
+        alert("⚠️ Não é possível editar produtos pendentes!");
+      } else {
+        alert("✏️ Abrindo editor de produto...");
+      }
+    }
+
+    function removerProduto() {
+      if (confirm("Tem certeza que deseja remover este produto?")) {
+        alert("🗑️ Produto removido com sucesso!");
+      }
+    }
   </script>
 </body>
 </html>
-EOF
