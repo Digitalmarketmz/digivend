@@ -2,416 +2,345 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meus Produtos - DigiVend</title>
   <style>
     body {
-      background-color: #000;
-      color: #fff;
-      font-family: "Poppins", sans-serif;
       margin: 0;
-      padding: 0;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
       overflow-x: hidden;
     }
 
-/* --- SIDEBAR --- */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: -250px; /* Começa fechada */
-  width: 250px;
-  height: 100%;
-  background-color: #111;
-  color: white;
-  transition: left 0.3s ease;
-  z-index: 999;
-  overflow-y: auto;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
-}
-
-.sidebar.open {
-  left: 0;
-}
-
-.sidebar .close-btn {
-  background: none;
-  border: none;
-  color: #007bff;
-  font-size: 22px;
-  padding: 15px;
-  cursor: pointer;
-  float: right;
-}
-
-.sidebar-logo {
-  text-align: center;
-  margin: 20px 0;
-  color: #007bff;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  margin: 20px 0;
-}
-
-.sidebar ul li {
-  margin: 10px 0;
-}
-
-.sidebar ul li a {
-  color: white;
-  text-decoration: none;
-  display: block;
-  padding: 12px 20px;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-
-.sidebar ul li a:hover,
-.sidebar ul li a.active {
-  background-color: #007bff33;
-}
-
-.open-btn {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  font-size: 22px;
-  border-radius: 6px;
-  cursor: pointer;
-  padding: 8px 12px;
-  z-index: 1000;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .sidebar {
-    width: 220px;
-  }
-  .open-btn {
-    top: 10px;
-    left: 10px;
-  }
-}
-</style>
-
-    /* Topbar */
-    .topbar {
-      margin-left: 230px;
-      height: 70px;
-      background: #111;
+    /* HEADER / TOPO */
+    header {
+      background-color: #111;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 30px;
-      box-shadow: 0 2px 10px #007bff55;
+      padding: 10px 20px;
+      border-bottom: 1px solid #007bff44;
+      position: sticky;
+      top: 0;
+      z-index: 998;
     }
-    .topbar-center img {
-      width: 100px;
-    }
-    .icon-btn {
-      background: none;
-      border: none;
-      color: #fff;
+
+    .logo {
       font-size: 20px;
-      margin-left: 20px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .icon-btn:hover {
       color: #007bff;
+      text-align: center;
+      flex: 1;
     }
 
-    /* Barra de pesquisa */
-    .search-section {
-      margin-left: 230px;
-      padding: 20px 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-
-    .search-bar {
+    .header-icons {
       display: flex;
       align-items: center;
-      width: 100%;
-      max-width: 600px;
+      gap: 15px;
+    }
+
+    .icon {
+      background: none;
+      border: none;
+      color: #007bff;
+      font-size: 22px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .notification-count {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: red;
+      color: white;
+      font-size: 11px;
+      border-radius: 50%;
+      padding: 2px 5px;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -250px;
+      width: 250px;
+      height: 100%;
+      background-color: #111;
+      color: white;
+      transition: left 0.3s ease;
+      z-index: 999;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.6);
+    }
+    .sidebar.open {
+      left: 0;
+    }
+    .sidebar .close-btn {
+      background: none;
+      border: none;
+      color: #007bff;
+      font-size: 22px;
+      padding: 15px;
+      cursor: pointer;
+      float: right;
+    }
+    .sidebar-logo {
+      text-align: center;
+      margin: 20px 0;
+      color: #007bff;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+    }
+    .sidebar ul li {
+      margin: 10px 0;
+    }
+    .sidebar ul li a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      padding: 12px 20px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .sidebar ul li a:hover,
+    .sidebar ul li a.active {
+      background-color: #007bff33;
+    }
+    .open-btn {
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      font-size: 22px;
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 8px 12px;
+      z-index: 1000;
+    }
+
+    /* PESQUISA E FILTRO */
+    .search-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 30px 0 10px;
       gap: 10px;
     }
 
-    .search-bar input {
-      flex: 1;
+    .search-container input {
+      width: 50%;
       padding: 10px;
+      border: none;
       border-radius: 6px;
-      border: none;
-      background: #222;
-      color: white;
-      font-size: 14px;
-    }
-
-    .filter-btn {
-      background: #007bff;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: #fff;
-      transition: 0.3s;
-    }
-
-    .filter-btn:hover {
-      background: #0056b3;
-    }
-
-    /* Botão Criar */
-    .create-section {
-      margin-left: 230px;
-      padding: 10px 30px;
-    }
-    .create-btn {
-      background: #007bff;
-      border: none;
-      padding: 8px 20px;
-      border-radius: 8px;
-      color: #fff;
-      font-size: 14px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .create-btn:hover {
-      background: #0056b3;
-    }
-
-    /* Produtos */
-    .produtos-container {
-      margin-left: 230px;
-      padding: 20px 30px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-    }
-
-    .produto-card {
       background: #111;
-      border-radius: 12px;
-      box-shadow: 0 0 10px #007bff55;
+      color: white;
+    }
+
+    .search-container button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    /* BOTÃO CRIAR */
+    .create-btn {
+      display: block;
+      margin: 10px auto 20px 25%;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      padding: 8px 18px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    /* PRODUTOS */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product-card {
+      background-color: #111;
+      border-radius: 10px;
+      box-shadow: 0 0 8px #007bff55;
       padding: 15px;
       text-align: center;
       transition: 0.3s;
     }
-    .produto-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 0 15px #007bffaa;
-    }
-    .produto-card img {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-    .status {
-      font-weight: bold;
-    }
-    .status.ativo {
-      color: #00ff88;
-    }
-    .status.pendente {
-      color: #ffbb00;
-    }
-    .status.inativo {
-      color: #ff4444;
+    .product-card:hover {
+      transform: scale(1.02);
     }
 
-    .card-buttons {
+    .product-card img {
+      width: 100%;
+      border-radius: 10px;
+      height: 160px;
+      object-fit: cover;
+    }
+
+    .product-card h3 {
+      margin: 10px 0 5px;
+      color: #007bff;
+    }
+
+    .product-card p {
+      font-size: 14px;
+      color: #ccc;
+    }
+
+    .status {
+      margin: 8px 0;
+      font-size: 13px;
+    }
+
+    .status.ativo { color: #28a745; }
+    .status.pendente { color: #ffc107; }
+    .status.inativo { color: #dc3545; }
+
+    .actions {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       margin-top: 10px;
     }
-    .card-buttons button {
+
+    .actions button {
       background: #007bff;
       border: none;
-      padding: 6px 10px;
-      border-radius: 6px;
       color: white;
+      border-radius: 6px;
+      padding: 6px 10px;
       font-size: 13px;
       cursor: pointer;
-      transition: 0.3s;
-    }
-    .card-buttons button:hover {
-      background: #0056b3;
+      flex: 1;
+      margin: 0 3px;
     }
 
-    /* Chatbot */
+    /* CHATBOT */
     .chatbot {
       position: fixed;
       bottom: 20px;
-      left: 20px;
-    }
-    .chat-btn {
-      background: #007bff;
+      right: 20px;
+      background-color: #007bff;
+      color: white;
       border: none;
       border-radius: 50%;
       width: 55px;
       height: 55px;
-      font-size: 22px;
+      font-size: 24px;
       cursor: pointer;
-      color: #fff;
-      box-shadow: 0 0 10px #007bff99;
+      box-shadow: 0 0 10px #007bff88;
+    }
+
+    @media (max-width: 768px) {
+      .search-container input {
+        width: 70%;
+      }
+      .create-btn {
+        margin: 10px auto;
+      }
     }
   </style>
 </head>
 <body>
-<!-- Sidebar -->
-<div id="sidebar" class="sidebar">
-  <button class="close-btn" onclick="toggleSidebar()">✖</button>
-  <div class="sidebar-content">
-    <h2 class="sidebar-logo">DigiVend</h2>
-    <ul>
-      <li><a href="dashboard_vendedor.html">📊 Dashboard</a></li>
-      <li><a href="meus_produtos.html" class="active">📦 Meus Produtos</a></li>
-      <li><a href="adicionar_produtos.html">➕ Adicionar Produto</a></li>
-      <li><a href="loja.html">🛒 Marketplace</a></li>
-      <li><a href="#">⚙️ Configurações</a></li>
-      <li><a href="#">🚪 Sair</a></li>
-    </ul>
-  </div>
-</div>
 
-<!-- Botão abrir sidebar -->
-<button id="openSidebar" class="open-btn" onclick="toggleSidebar()">☰</button>
+  <button id="openSidebar" class="open-btn" onclick="toggleSidebar()">☰</button>
 
-  <!-- Topbar -->
-  <div class="topbar">
-    <div></div>
-    <div class="topbar-center">
-      <img src="assets/logo.png" alt="Logo DigiVend" />
-    </div>
-    <div class="topbar-right">
-      <button class="icon-btn">🔔</button>
-      <button class="icon-btn">👤</button>
+  <!-- SIDEBAR -->
+  <div id="sidebar" class="sidebar">
+    <button class="close-btn" onclick="toggleSidebar()">✖</button>
+    <div class="sidebar-content">
+      <h2 class="sidebar-logo">DigiVend</h2>
+      <ul>
+        <li><a href="dashboard_vendedor.html">📊 Dashboard</a></li>
+        <li><a href="meus_produtos.html" class="active">📦 Meus Produtos</a></li>
+        <li><a href="adicionar_produtos.html">➕ Adicionar Produto</a></li>
+        <li><a href="loja.html">🛒 Marketplace</a></li>
+        <li><a href="#">⚙️ Configurações</a></li>
+        <li><a href="#">🚪 Sair</a></li>
+      </ul>
     </div>
   </div>
 
-  <!-- Barra de Pesquisa -->
-  <section class="search-section">
-    <div class="search-bar">
-      <input type="text" placeholder="Pesquisar produto..." />
-      <button class="filter-btn">Filtrar Categoria</button>
+  <!-- TOPO -->
+  <header>
+    <div class="logo">DigiVend</div>
+    <div class="header-icons">
+      <button class="icon" id="notifIcon">🔔<span class="notification-count">3</span></button>
+      <button class="icon" id="profileIcon">👤</button>
     </div>
-  </section>
+  </header>
 
-  <!-- Botão Criar -->
-  <section class="create-section">
-    <button class="create-btn" onclick="window.location.href='adicionar_produtos.html'">+ Criar</button>
-  </section>
+  <!-- PESQUISA E FILTRO -->
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="Pesquisar produto...">
+    <button id="filterBtn">Filtrar Categoria</button>
+  </div>
 
-  <!-- Cards de Produtos -->
-  <section class="produtos-container">
-    <div class="produto-card" data-status="pendente">
-      <img src="assets/produto1.jpg" alt="Produto">
-      <h3>Curso de Programação</h3>
-      <p>Status: <span class="status pendente">Pendente</span></p>
-      <div class="card-buttons">
-        <button>📋 Copiar</button>
-        <button disabled>✏️ Editar</button>
-        <button>🗑️ Apagar</button>
-      </div>
-    </div>
+  <!-- CRIAR -->
+  <button class="create-btn" onclick="window.location.href='adicionar_produtos.html'">+ Criar Produto</button>
 
-    <div class="produto-card" data-status="ativo">
-      <img src="assets/produto2.jpg" alt="Produto">
-      <h3>eBook de Marketing</h3>
-      <p>Status: <span class="status ativo">Ativo</span></p>
-      <div class="card-buttons">
-        <button>📋 Copiar</button>
-        <button>✏️ Editar</button>
-        <button>🗑️ Apagar</button>
+  <!-- LISTA DE PRODUTOS -->
+  <section class="products-grid" id="productsContainer">
+    <!-- Exemplo de produto -->
+    <div class="product-card">
+      <img src="https://via.placeholder.com/300x160" alt="Produto">
+      <h3>Curso de HTML</h3>
+      <p>Autor: João Silva</p>
+      <div class="status ativo">Ativo</div>
+      <div class="actions">
+        <button onclick="copyLink()">Copiar Link</button>
+        <button onclick="editProduct()">Editar</button>
+        <button onclick="deleteProduct()">Excluir</button>
       </div>
     </div>
   </section>
 
-  <!-- Chatbot -->
-  <div class="chatbot">
-    <button class="chat-btn">💬</button>
-  </div>
+  <!-- CHATBOT -->
+  <button class="chatbot">💬</button>
 
-<script>
-  // --- BOTÕES DE PRODUTO ---
-  document.querySelectorAll('.produto-card').forEach(card => {
-    const status = card.getAttribute('data-status');
-    const editarBtn = card.querySelector('button:nth-child(2)');
-
-    // Desativa o botão editar se status for pendente
-    if (status === 'pendente') {
-      editarBtn.disabled = true;
-      editarBtn.style.opacity = '0.6';
-      editarBtn.title = 'Só pode editar produtos ativos ou inativos.';
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
     }
 
-    // Botão de copiar link
-    const copiarBtn = card.querySelector('button:nth-child(1)');
-    copiarBtn.addEventListener('click', () => {
-      const link = window.location.origin + '/produto/' + card.querySelector('h3').textContent.trim().replace(/\s+/g, '-').toLowerCase();
-      navigator.clipboard.writeText(link).then(() => {
-        alert('✅ Link copiado com sucesso:\n' + link);
-      });
-    });
-
-    // Botão de editar
-    editarBtn.addEventListener('click', () => {
-      if (status !== 'pendente') {
-        alert('🔧 Abrindo editor do produto...');
-        // Aqui você pode redirecionar ou abrir modal
-        window.location.href = 'editar_produto.html';
+    // Fechar sidebar clicando fora
+    document.addEventListener('click', function (event) {
+      const sidebar = document.getElementById('sidebar');
+      const openBtn = document.getElementById('openSidebar');
+      if (!sidebar.contains(event.target) && !openBtn.contains(event.target)) {
+        sidebar.classList.remove('open');
       }
     });
 
-    // Botão de apagar
-    const apagarBtn = card.querySelector('button:nth-child(3)');
-    apagarBtn.addEventListener('click', () => {
-      if (confirm('⚠️ Tem certeza que deseja apagar este produto?')) {
-        card.remove();
-        alert('🗑️ Produto apagado com sucesso.');
-      }
-    });
-  });
-
-  // --- BOTÃO FILTRAR CATEGORIA ---
-  document.querySelector('.filter-btn').addEventListener('click', () => {
-    const categoria = prompt('Digite o nome da categoria para filtrar:');
-    if (!categoria) return;
-
-    document.querySelectorAll('.produto-card').forEach(card => {
-      const nome = card.querySelector('h3').textContent.toLowerCase();
-      if (nome.includes(categoria.toLowerCase())) {
-        card.style.display = 'block';
-      } else {
-        card.style.display = 'none';
-      }
-    });
-  });
-
-  // --- CHATBOT SIMPLES ---
-  document.querySelector('.chat-btn').addEventListener('click', () => {
-    alert('🤖 Olá! Sou o assistente DigiVend.\nComo posso te ajudar hoje?');
-  });
-
-  function toggleSidebar() {
-    const sidebar = document.getElementById('sidebar');
-    sidebar.classList.toggle('open');
-  }
-
-  // Fechar sidebar clicando fora dela (mobile UX)
-  document.addEventListener('click', function (event) {
-    const sidebar = document.getElementById('sidebar');
-    const openBtn = document.getElementById('openSidebar');
-    if (!sidebar.contains(event.target) && !openBtn.contains(event.target)) {
-      sidebar.classList.remove('open');
+    // Funções dos botões
+    function copyLink() {
+      navigator.clipboard.writeText("https://digivend.com/produto/123");
+      alert("Link copiado!");
     }
-  });
-</script>
+
+    function editProduct() {
+      alert("Abrindo editor de produto...");
+    }
+
+    function deleteProduct() {
+      if (confirm("Deseja realmente excluir este produto?")) {
+        alert("Produto excluído!");
+      }
+    }
+  </script>
 </body>
 </html>
