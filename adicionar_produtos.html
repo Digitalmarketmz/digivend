@@ -2,168 +2,318 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Adicionar Produto - DIGIVEND</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Criar Produto - DigiVend</title>
   <style>
-    body { background: #000; color: #fff; font-family: 'Poppins', sans-serif; }
-    .card { background: #111; box-shadow: 0 0 12px #007bff55; border-radius: 12px; padding: 24px; max-width: 500px; margin: 40px auto; }
-    .btn { background: #007bff; color: white; padding: 10px 18px; border-radius: 8px; cursor: pointer; width: 100%; }
-    .btn:hover { background: #0056b3; }
-    .progress { height: 8px; background: #333; border-radius: 4px; overflow: hidden; margin-bottom: 16px; }
-    .bar { height: 8px; background: #007bff; width: 33%; transition: width 0.4s; }
-    input, select, textarea { background: #222; border: none; color: #fff; border-radius: 6px; padding: 10px; width: 100%; margin-bottom: 16px; }
-    label { color: #007bff; font-weight: 600; }
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+    h1 {
+      color: #007bff;
+      text-align: center;
+    }
+    .form-container {
+      max-width: 550px;
+      margin: auto;
+      background: #111;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px #007bff55;
+      position: relative;
+    }
+    .progress {
+      height: 8px;
+      background-color: #333;
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .progress-bar {
+      height: 100%;
+      width: 33%;
+      background-color: #007bff;
+      transition: width 0.3s ease;
+    }
+    label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #007bff;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background-color: #222;
+      color: white;
+      margin-bottom: 12px;
+    }
+    textarea { resize: vertical; }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .hidden { display: none; }
+    .char-count {
+      font-size: 13px;
+      text-align: right;
+      color: #ccc;
+    }
+    .success-message {
+      text-align: center;
+      padding: 20px;
+      background-color: #0a0a0a;
+      border-radius: 12px;
+      box-shadow: 0 0 10px #007bff;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 400px;
+      display: none;
+    }
+    .close-msg {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      color: #007bff;
+      font-size: 22px;
+    }
+    .verificacao {
+      background: #111;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1 class="text-2xl font-bold text-center mb-4 text-blue-400">Adicionar Novo Produto</h1>
-    <div class="progress"><div id="progressBar" class="bar"></div></div>
+  <h1>Criar Novo Produto</h1>
 
-    <!-- Etapa 1 -->
-    <form id="formEtapa1">
-      <label>Foto do Produto</label>
+  <div class="form-container">
+
+    <div class="progress"><div class="progress-bar" id="progress-bar"></div></div>
+
+    <!-- ETAPA 1 -->
+    <form id="etapa1">
+      <label>Foto do Produto:</label>
       <input type="file" id="fotoProduto" accept="image/*" required>
 
-      <label>Nome do Produto</label>
+      <label>Nome do Produto:</label>
       <input type="text" id="nomeProduto" required>
 
-      <label>Preço (mínimo 99 MT)</label>
-      <input type="number" id="precoProduto" min="99" required>
+      <label>Preço (MT):</label>
+      <input type="number" id="preco" min="99" required>
 
-      <label>Desconto (%)</label>
-      <input type="number" id="descontoProduto" min="0" max="90">
+      <label>Desconto (%):</label>
+      <input type="number" id="desconto" min="0" max="90">
 
-      <label>Cupom</label>
-      <input type="text" id="cupomProduto" placeholder="Ex: CUPOMZ">
+      <label>Cupom de Desconto:</label>
+      <input type="text" id="cupom">
 
-      <label>Descrição</label>
-      <textarea id="descricaoProduto" rows="4" minlength="150" required></textarea>
-      <p class="text-sm text-gray-400" id="charCount">0/150 caracteres</p>
+      <label>Descrição:</label>
+      <textarea id="descricao" rows="4" minlength="150" required></textarea>
+      <div class="char-count" id="charCount">0 / 150</div>
 
-      <label>Categoria</label>
-      <select id="categoriaProduto" required>
+      <label>Categoria:</label>
+      <select id="categoria" required>
         <option value="">Selecione...</option>
-        <option value="Empreender">Empreender</option>
-        <option value="Negócios">Negócios</option>
-        <option value="Saúde">Saúde</option>
-        <option value="Educação">Educação</option>
-        <option value="Outros">Outros</option>
+        <option>Empreender</option>
+        <option>Negócios</option>
+        <option>Saúde</option>
+        <option>Fitness</option>
+        <option>Educação</option>
+        <option>Outros</option>
       </select>
 
-      <label>Tipo de Produto</label>
+      <label>Tipo de Produto:</label>
       <select id="tipoProduto" required>
         <option value="">Selecione...</option>
-        <option value="Ebook">Ebook</option>
-        <option value="Curso Online">Curso Online</option>
-        <option value="Aplicativo">Aplicativo</option>
+        <option value="ebook">Ebook</option>
+        <option value="curso">Curso Online</option>
+        <option value="app">Aplicativo</option>
       </select>
 
-      <div class="flex items-center mb-4">
-        <input type="checkbox" id="permitirAfiliados" class="mr-2">
-        <label for="permitirAfiliados">Permitir Afiliados</label>
+      <label>Permitir Afiliados?</label>
+      <select id="permitirAfiliados">
+        <option value="nao">Não</option>
+        <option value="sim">Sim</option>
+      </select>
+
+      <div id="afiliadosForm" class="hidden">
+        <label>Comissão (%):</label>
+        <input type="number" id="comissao" min="1" max="90">
+
+        <label>Valor a Receber (MT):</label>
+        <input type="number" id="valorReceber" disabled>
+
+        <label>Link do Produto (Afiliado):</label>
+        <input type="url" id="linkAfiliado">
       </div>
 
-      <div id="afiliadoForm" style="display:none;">
-        <label>Comissão (%)</label>
-        <input type="number" id="comissaoAfiliado" min="1" max="80">
-
-        <label>Valor a Receber (MT)</label>
-        <input type="text" id="valorAfiliado" readonly>
-
-        <label>Link do Produto (Afiliado)</label>
-        <input type="text" id="linkAfiliado" placeholder="https://...">
-      </div>
-
-      <button type="button" class="btn" id="btnEtapa1">Avançar</button>
+      <button type="button" id="avancar1">Avançar</button>
     </form>
 
-    <!-- Etapa 2 -->
-    <form id="formEtapa2" style="display:none;">
-      <label>Envie o Arquivo ou Link</label>
-      <div id="uploadArea"></div>
-      <button type="button" class="btn" id="btnEtapa2">Avançar</button>
+    <!-- ETAPA 2 -->
+    <form id="etapa2" class="hidden">
+      <label id="labelArquivo">Upload do Arquivo (PDF mínimo 3MB, máx 18MB)</label>
+      <input type="file" id="arquivoProduto" accept=".pdf">
+
+      <label id="labelLink" class="hidden">Link do Curso/App:</label>
+      <input type="url" id="linkProduto" class="hidden">
+
+      <button type="button" id="voltar2">Voltar</button>
+      <button type="button" id="avancar2">Avançar</button>
     </form>
 
-    <!-- Etapa 3 -->
-    <div id="etapa3" style="display:none;">
-      <p class="text-center text-blue-400 mb-4">🔍 Verificando informações...</p>
-      <div id="verificacao"></div>
-      <button type="button" class="btn hidden" id="btnFinalizar">Finalizar</button>
+    <!-- ETAPA 3 -->
+    <div id="etapa3" class="hidden verificacao">
+      <h3>Verificando Informações...</h3>
+      <p id="verificacaoStatus">Iniciando verificação...</p>
+      <button type="button" id="voltar3" class="hidden">Voltar</button>
+      <button type="button" id="finalizar" class="hidden">Finalizar</button>
     </div>
   </div>
 
+  <div class="success-message" id="successMsg">
+    <div class="close-msg" id="closeMsg">✖</div>
+    <h2>📦✅ Produto criado com sucesso!</h2>
+    <p>O tempo de revisão mínima é de 30 minutos.<br>
+    Caso seja aprovado, o status mudará de <b>Pendente</b> para <b>Ativo</b>.<br>
+    Caso rejeitado, o status mudará para <b>Rejeitado</b>.</p>
+  </div>
+
   <script>
-    const charCount = document.getElementById("charCount");
-    const descricao = document.getElementById("descricaoProduto");
-    descricao.addEventListener("input", () => {
-      charCount.textContent = `${descricao.value.length}/150 caracteres`;
+    const etapa1 = document.getElementById('etapa1');
+    const etapa2 = document.getElementById('etapa2');
+    const etapa3 = document.getElementById('etapa3');
+    const progress = document.getElementById('progress-bar');
+    const desc = document.getElementById('descricao');
+    const charCount = document.getElementById('charCount');
+    const afiliadosForm = document.getElementById('afiliadosForm');
+    const preco = document.getElementById('preco');
+    const desconto = document.getElementById('desconto');
+    const valorReceber = document.getElementById('valorReceber');
+    const comissao = document.getElementById('comissao');
+    const permitirAfiliados = document.getElementById('permitirAfiliados');
+    const tipoProduto = document.getElementById('tipoProduto');
+    const labelArquivo = document.getElementById('labelArquivo');
+    const labelLink = document.getElementById('labelLink');
+    const arquivoProduto = document.getElementById('arquivoProduto');
+    const linkProduto = document.getElementById('linkProduto');
+
+    desc.addEventListener('input', () => {
+      charCount.textContent = `${desc.value.length} / 150`;
     });
 
-    document.getElementById("permitirAfiliados").addEventListener("change", e => {
-      document.getElementById("afiliadoForm").style.display = e.target.checked ? "block" : "none";
+    permitirAfiliados.addEventListener('change', () => {
+      afiliadosForm.classList.toggle('hidden', permitirAfiliados.value !== 'sim');
     });
 
-    document.getElementById("comissaoAfiliado").addEventListener("input", () => {
-      const preco = parseFloat(document.getElementById("precoProduto").value || 0);
-      const comissao = parseFloat(document.getElementById("comissaoAfiliado").value || 0);
-      document.getElementById("valorAfiliado").value = ((preco * comissao) / 100).toFixed(2);
+    comissao.addEventListener('input', () => {
+      const precoValor = parseFloat(preco.value) || 0;
+      const comissaoValor = parseFloat(comissao.value) || 0;
+      valorReceber.value = ((precoValor * comissaoValor) / 100).toFixed(2);
     });
 
-    document.getElementById("btnEtapa1").onclick = () => {
-      document.getElementById("formEtapa1").style.display = "none";
-      document.getElementById("formEtapa2").style.display = "block";
-      document.getElementById("progressBar").style.width = "66%";
-      const tipo = document.getElementById("tipoProduto").value;
-      const uploadArea = document.getElementById("uploadArea");
-      uploadArea.innerHTML = tipo === "Ebook" 
-        ? '<input type="file" id="arquivoProduto" accept=".pdf" required>'
-        : '<input type="text" id="linkProduto" placeholder="Cole o link do produto" required>';
+    desconto.addEventListener('input', () => {
+      if (parseFloat(preco.value) < 199) {
+        desconto.value = '';
+        alert('Descontos só são permitidos para produtos a partir de 199 MT.');
+      }
+    });
+
+    document.getElementById('avancar1').onclick = () => {
+      if (!etapa1.checkValidity() || desc.value.length < 150) {
+        alert('Por favor, preencha todos os campos corretamente (mínimo 150 caracteres na descrição).');
+        return;
+      }
+      etapa1.classList.add('hidden');
+      etapa2.classList.remove('hidden');
+      progress.style.width = '66%';
+
+      if (tipoProduto.value === 'ebook') {
+        arquivoProduto.classList.remove('hidden');
+        labelArquivo.classList.remove('hidden');
+        linkProduto.classList.add('hidden');
+        labelLink.classList.add('hidden');
+      } else {
+        arquivoProduto.classList.add('hidden');
+        labelArquivo.classList.add('hidden');
+        linkProduto.classList.remove('hidden');
+        labelLink.classList.remove('hidden');
+      }
     };
 
-    document.getElementById("btnEtapa2").onclick = () => {
-      document.getElementById("formEtapa2").style.display = "none";
-      document.getElementById("etapa3").style.display = "block";
-      document.getElementById("progressBar").style.width = "100%";
-      verificar();
+    document.getElementById('voltar2').onclick = () => {
+      etapa2.classList.add('hidden');
+      etapa1.classList.remove('hidden');
+      progress.style.width = '33%';
     };
 
-    function verificar() {
-      const verificacao = document.getElementById("verificacao");
-      const etapas = ["Verificando nome...", "Analisando imagem...", "Confirmando arquivo..."];
-      let i = 0;
-      const intervalo = setInterval(() => {
-        if (i < etapas.length) {
-          verificacao.innerHTML += `<p>${etapas[i]}</p>`;
-          i++;
+    document.getElementById('avancar2').onclick = () => {
+      if (
+        (tipoProduto.value === 'ebook' && !arquivoProduto.files.length) ||
+        (tipoProduto.value !== 'ebook' && !linkProduto.value)
+      ) {
+        alert('Por favor, forneça o arquivo ou link do produto.');
+        return;
+      }
+      etapa2.classList.add('hidden');
+      etapa3.classList.remove('hidden');
+      progress.style.width = '100%';
+      iniciarVerificacao();
+    };
+
+    function iniciarVerificacao() {
+      const verificacao = document.getElementById('verificacaoStatus');
+      const voltar3 = document.getElementById('voltar3');
+      const finalizar = document.getElementById('finalizar');
+
+      const etapas = ['Imagem do produto', 'Nome', 'Arquivo ou Link'];
+      let index = 0;
+
+      const interval = setInterval(() => {
+        if (index < etapas.length) {
+          verificacao.textContent = `Verificando ${etapas[index]}...`;
+          index++;
         } else {
-          clearInterval(intervalo);
-          verificacao.innerHTML += `<p class='text-green-400'>✅ Tudo pronto!</p>`;
-          document.getElementById("btnFinalizar").classList.remove("hidden");
+          clearInterval(interval);
+          verificacao.textContent = 'Tudo preenchido corretamente!';
+          finalizar.classList.remove('hidden');
         }
-      }, 1500);
+      }, 3500);
     }
 
-    document.getElementById("btnFinalizar").onclick = () => {
-      const produto = {
-        nome: document.getElementById("nomeProduto").value,
-        preco: document.getElementById("precoProduto").value,
-        categoria: document.getElementById("categoriaProduto").value,
-        tipo: document.getElementById("tipoProduto").value,
-        descricao: document.getElementById("descricaoProduto").value,
-        status: "Pendente"
-      };
+    document.getElementById('finalizar').onclick = () => {
+      etapa3.classList.add('hidden');
+      document.getElementById('successMsg').style.display = 'block';
+      setTimeout(() => {
+        location.href = 'meus_produtos.html';
+      }, 3500);
+    };
 
-      let produtos = JSON.parse(localStorage.getItem("produtos")) || [];
-      produtos.push(produto);
-      localStorage.setItem("produtos", JSON.stringify(produtos));
-
-      alert("📦✅ Produto criado com sucesso! Você será redirecionado...");
-      window.location.href = "meus_produtos.html";
+    document.getElementById('closeMsg').onclick = () => {
+      document.getElementById('successMsg').style.display = 'none';
     };
   </script>
-
 </body>
 </html>
