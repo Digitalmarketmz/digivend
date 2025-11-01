@@ -14,30 +14,90 @@
       overflow-x: hidden;
     }
 
-    /* Sidebar */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 230px;
-      height: 100vh;
-      background: #111;
-      padding: 20px;
-      box-shadow: 2px 0 10px #007bff55;
-    }
-    .sidebar a {
-      display: block;
-      color: #fff;
-      text-decoration: none;
-      margin: 15px 0;
-      padding: 10px;
-      border-radius: 8px;
-      transition: 0.3s;
-    }
-    .sidebar a:hover,
-    .sidebar a.active {
-      background: #007bff;
-    }
+/* --- SIDEBAR --- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -250px; /* Começa fechada */
+  width: 250px;
+  height: 100%;
+  background-color: #111;
+  color: white;
+  transition: left 0.3s ease;
+  z-index: 999;
+  overflow-y: auto;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar .close-btn {
+  background: none;
+  border: none;
+  color: #007bff;
+  font-size: 22px;
+  padding: 15px;
+  cursor: pointer;
+  float: right;
+}
+
+.sidebar-logo {
+  text-align: center;
+  margin: 20px 0;
+  color: #007bff;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+
+.sidebar ul li {
+  margin: 10px 0;
+}
+
+.sidebar ul li a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 12px 20px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.sidebar ul li a:hover,
+.sidebar ul li a.active {
+  background-color: #007bff33;
+}
+
+.open-btn {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-size: 22px;
+  border-radius: 6px;
+  cursor: pointer;
+  padding: 8px 12px;
+  z-index: 1000;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 220px;
+  }
+  .open-btn {
+    top: 10px;
+    left: 10px;
+  }
+}
+</style>
 
     /* Topbar */
     .topbar {
@@ -204,15 +264,24 @@
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2 style="color:#007bff; text-align:center;">DIGIVEND</h2>
-    <a href="dashboard_vendedor.html">🏠 Dashboard</a>
-    <a href="meus_produtos.html" class="active">📦 Meus Produtos</a>
-    <a href="marketplace.html">🛍️ Marketplace</a>
-    <a href="configuracoes.html">⚙️ Configurações</a>
-    <a href="logout.html">🚪 Sair</a>
+<!-- Sidebar -->
+<div id="sidebar" class="sidebar">
+  <button class="close-btn" onclick="toggleSidebar()">✖</button>
+  <div class="sidebar-content">
+    <h2 class="sidebar-logo">DigiVend</h2>
+    <ul>
+      <li><a href="dashboard_vendedor.html">📊 Dashboard</a></li>
+      <li><a href="meus_produtos.html" class="active">📦 Meus Produtos</a></li>
+      <li><a href="adicionar_produtos.html">➕ Adicionar Produto</a></li>
+      <li><a href="loja.html">🛒 Marketplace</a></li>
+      <li><a href="#">⚙️ Configurações</a></li>
+      <li><a href="#">🚪 Sair</a></li>
+    </ul>
   </div>
+</div>
+
+<!-- Botão abrir sidebar -->
+<button id="openSidebar" class="open-btn" onclick="toggleSidebar()">☰</button>
 
   <!-- Topbar -->
   <div class="topbar">
@@ -328,6 +397,20 @@
   // --- CHATBOT SIMPLES ---
   document.querySelector('.chat-btn').addEventListener('click', () => {
     alert('🤖 Olá! Sou o assistente DigiVend.\nComo posso te ajudar hoje?');
+  });
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('open');
+  }
+
+  // Fechar sidebar clicando fora dela (mobile UX)
+  document.addEventListener('click', function (event) {
+    const sidebar = document.getElementById('sidebar');
+    const openBtn = document.getElementById('openSidebar');
+    if (!sidebar.contains(event.target) && !openBtn.contains(event.target)) {
+      sidebar.classList.remove('open');
+    }
   });
 </script>
 </body>
